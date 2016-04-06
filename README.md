@@ -3,6 +3,31 @@ ARTIK Cloud Swift SDK
 
 This SDK helps you connect your iOS, OS X, tvOS, and watchOS applications to ARTIK Cloud. It exposes a number of methods to easily execute REST API calls to ARTIK Cloud.
 
+## Requirements
+
+The Swift SDK requires [CocoaPods](https://guides.cocoapods.org/using/getting-started.html) to be installed. 
+
+## Installation
+
+To install it, put the API client library in your project and then simply add the following line to your Podfile:
+
+```ruby
+use_frameworks!
+source 'https://github.com/CocoaPods/Specs.git'
+pod "ArtikCloud", :path => "../"
+```
+
+## Coding Recommendation
+
+It's recommended to create an instance of ApiClient per thread in a multithreaded environment to avoid any potential issue.
+
+Usage
+------
+
+Peek into [tests](https://github.com/artikcloud/artikcloud-swift/tree/master/ArtikCloudTests/ArtikCloudClientTests) for examples about how to use the SDK.
+
+In addition, you can look at our tutorial and sample applications. These will give you a good overview of what you can do and how to do it.
+
 More about ARTIK Cloud
 ---------------------
 
