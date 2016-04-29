@@ -11,7 +11,7 @@ import Foundation
 /** Contains the array of Action Details */
 public class ActionDetailsArray: JSONEncodable {
 
-    public var tags: [ActionDetails]?
+    public var actions: [ActionDetails]?
     
 
     public init() {}
@@ -19,7 +19,7 @@ public class ActionDetailsArray: JSONEncodable {
     // MARK: JSONEncodable
     func encodeToJSON() -> AnyObject {
         var nillableDictionary = [String:AnyObject?]()
-        nillableDictionary["tags"] = self.tags?.encodeToJSON()
+        nillableDictionary["actions"] = self.actions?.encodeToJSON()
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
         return dictionary
     }

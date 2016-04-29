@@ -13,6 +13,148 @@ import PromiseKit
 public class UsersAPI: APIBase {
     /**
      
+     Create User Application Properties
+     
+     - parameter userId: (path) User Id 
+     - parameter properties: (body) Properties to be updated 
+     - parameter aid: (query) Application ID (optional)
+     - parameter completion: completion handler to receive the data and the error objects
+     */
+    public class func createUserProperties(userId userId: String, properties: AppProperties, aid: String?, completion: ((data: PropertiesEnvelope?, error: ErrorType?) -> Void)) {
+        createUserPropertiesWithRequestBuilder(userId: userId, properties: properties, aid: aid).execute { (response, error) -> Void in
+            completion(data: response?.body, error: error);
+        }
+    }
+
+    /**
+     
+     Create User Application Properties
+     
+     - parameter userId: (path) User Id 
+     - parameter properties: (body) Properties to be updated 
+     - parameter aid: (query) Application ID (optional)
+     - returns: Promise<PropertiesEnvelope>
+     */
+    public class func createUserProperties(userId userId: String, properties: AppProperties, aid: String?) -> Promise<PropertiesEnvelope> {
+        let deferred = Promise<PropertiesEnvelope>.pendingPromise()
+        createUserProperties(userId: userId, properties: properties, aid: aid) { data, error in
+            if let error = error {
+                deferred.reject(error)
+            } else {
+                deferred.fulfill(data!)
+            }
+        }
+        return deferred.promise
+    }
+
+    /**
+     
+     Create User Application Properties
+     
+     - POST /users/{userId}/properties
+     - Create application properties for a user
+     - OAuth:
+       - type: oauth2
+       - name: artikcloud_oauth
+     - examples: [{contentType=application/json, example={
+  "data" : {
+    "uid" : "aeiou",
+    "aid" : "aeiou",
+    "properties" : "aeiou"
+  }
+}}]
+     
+     - parameter userId: (path) User Id 
+     - parameter properties: (body) Properties to be updated 
+     - parameter aid: (query) Application ID (optional)
+
+     - returns: RequestBuilder<PropertiesEnvelope> 
+     */
+    public class func createUserPropertiesWithRequestBuilder(userId userId: String, properties: AppProperties, aid: String?) -> RequestBuilder<PropertiesEnvelope> {
+        var path = "/users/{userId}/properties"
+        path = path.stringByReplacingOccurrencesOfString("{userId}", withString: "\(userId)", options: .LiteralSearch, range: nil)
+        let URLString = ArtikCloudAPI.basePath + path
+        
+        let parameters = properties.encodeToJSON() as? [String:AnyObject]
+
+        let requestBuilder: RequestBuilder<PropertiesEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
+
+        return requestBuilder.init(method: "POST", URLString: URLString, parameters: parameters, isBody: false)
+    }
+
+    /**
+     
+     Delete User Application Properties
+     
+     - parameter userId: (path) User Id 
+     - parameter aid: (query) Application ID (optional)
+     - parameter completion: completion handler to receive the data and the error objects
+     */
+    public class func deleteUserProperties(userId userId: String, aid: String?, completion: ((data: PropertiesEnvelope?, error: ErrorType?) -> Void)) {
+        deleteUserPropertiesWithRequestBuilder(userId: userId, aid: aid).execute { (response, error) -> Void in
+            completion(data: response?.body, error: error);
+        }
+    }
+
+    /**
+     
+     Delete User Application Properties
+     
+     - parameter userId: (path) User Id 
+     - parameter aid: (query) Application ID (optional)
+     - returns: Promise<PropertiesEnvelope>
+     */
+    public class func deleteUserProperties(userId userId: String, aid: String?) -> Promise<PropertiesEnvelope> {
+        let deferred = Promise<PropertiesEnvelope>.pendingPromise()
+        deleteUserProperties(userId: userId, aid: aid) { data, error in
+            if let error = error {
+                deferred.reject(error)
+            } else {
+                deferred.fulfill(data!)
+            }
+        }
+        return deferred.promise
+    }
+
+    /**
+     
+     Delete User Application Properties
+     
+     - DELETE /users/{userId}/properties
+     - Deletes a user's application properties
+     - OAuth:
+       - type: oauth2
+       - name: artikcloud_oauth
+     - examples: [{contentType=application/json, example={
+  "data" : {
+    "uid" : "aeiou",
+    "aid" : "aeiou",
+    "properties" : "aeiou"
+  }
+}}]
+     
+     - parameter userId: (path) User Id 
+     - parameter aid: (query) Application ID (optional)
+
+     - returns: RequestBuilder<PropertiesEnvelope> 
+     */
+    public class func deleteUserPropertiesWithRequestBuilder(userId userId: String, aid: String?) -> RequestBuilder<PropertiesEnvelope> {
+        var path = "/users/{userId}/properties"
+        path = path.stringByReplacingOccurrencesOfString("{userId}", withString: "\(userId)", options: .LiteralSearch, range: nil)
+        let URLString = ArtikCloudAPI.basePath + path
+        
+        let nillableParameters: [String:AnyObject?] = [
+            "aid": aid
+        ]
+        let parameters = APIHelper.rejectNil(nillableParameters)
+
+        let requestBuilder: RequestBuilder<PropertiesEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
+
+        return requestBuilder.init(method: "DELETE", URLString: URLString, parameters: parameters, isBody: false)
+    }
+
+    /**
+     
      Get Current User Profile
      
      - parameter completion: completion handler to receive the data and the error objects
@@ -78,111 +220,12 @@ public class UsersAPI: APIBase {
 
     /**
      
-     Get User Devices
-     
-     - parameter userId: (path) User ID
-     - parameter offset: (query) Offset for pagination.
-     - parameter count: (query) Desired count of items in the result set
-     - parameter includeProperties: (query) Optional. Boolean (true/false) - If false, only return the user&#39;s device types. If true, also return device types shared by other users.
-     - parameter completion: completion handler to receive the data and the error objects
-     */
-    public class func getUserDevices(userId userId: String, offset: Int?, count: Int?, includeProperties: Bool?, completion: ((data: DevicesEnvelope?, error: ErrorType?) -> Void)) {
-        getUserDevicesWithRequestBuilder(userId: userId, offset: offset, count: count, includeProperties: includeProperties).execute { (response, error) -> Void in
-            completion(data: response?.body, error: error);
-        }
-    }
-
-    /**
-     
-     Get User Devices
-     
-     - parameter userId: (path) User ID
-     - parameter offset: (query) Offset for pagination.
-     - parameter count: (query) Desired count of items in the result set
-     - parameter includeProperties: (query) Optional. Boolean (true/false) - If false, only return the user&#39;s device types. If true, also return device types shared by other users.
-     - returns: Promise<DevicesEnvelope>
-     */
-    public class func getUserDevices(userId userId: String, offset: Int?, count: Int?, includeProperties: Bool?) -> Promise<DevicesEnvelope> {
-        let deferred = Promise<DevicesEnvelope>.pendingPromise()
-        getUserDevices(userId: userId, offset: offset, count: count, includeProperties: includeProperties) { data, error in
-            if let error = error {
-                deferred.reject(error)
-            } else {
-                deferred.fulfill(data!)
-            }
-        }
-        return deferred.promise
-    }
-
-    /**
-     
-     Get User Devices
-     
-     - GET /users/{userId}/devices
-     - Retrieve User's Devices
-     - OAuth:
-       - type: oauth2
-       - name: artikcloud_oauth
-     - examples: [{contentType=application/json, example={
-  "total" : 123,
-  "offset" : 123,
-  "data" : {
-    "devices" : [ {
-      "eid" : "aeiou",
-      "dtid" : "aeiou",
-      "manifestVersion" : 123,
-      "certificateInfo" : "aeiou",
-      "createdOn" : 123456789,
-      "connected" : true,
-      "uid" : "aeiou",
-      "manifestVersionPolicy" : "aeiou",
-      "name" : "aeiou",
-      "needProviderAuth" : true,
-      "certificateSignature" : "aeiou",
-      "id" : "aeiou",
-      "providerCredentials" : {
-        "key" : ""
-      },
-      "properties" : {
-        "key" : ""
-      }
-    } ]
-  },
-  "count" : 123
-}}]
-     
-     - parameter userId: (path) User ID
-     - parameter offset: (query) Offset for pagination.
-     - parameter count: (query) Desired count of items in the result set
-     - parameter includeProperties: (query) Optional. Boolean (true/false) - If false, only return the user&#39;s device types. If true, also return device types shared by other users.
-
-     - returns: RequestBuilder<DevicesEnvelope> 
-     */
-    public class func getUserDevicesWithRequestBuilder(userId userId: String, offset: Int?, count: Int?, includeProperties: Bool?) -> RequestBuilder<DevicesEnvelope> {
-        var path = "/users/{userId}/devices"
-        path = path.stringByReplacingOccurrencesOfString("{userId}", withString: "\(userId)", options: .LiteralSearch, range: nil)
-        let URLString = ArtikCloudAPI.basePath + path
-        
-        let nillableParameters: [String:AnyObject?] = [
-            "offset": offset,
-            "count": count,
-            "includeProperties": includeProperties
-        ]
-        let parameters = APIHelper.rejectNil(nillableParameters)
-
-        let requestBuilder: RequestBuilder<DevicesEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
-
-        return requestBuilder.init(method: "GET", URLString: URLString, parameters: parameters, isBody: false)
-    }
-
-    /**
-     
      Get User Device Types
      
-     - parameter userId: (path) User ID.
-     - parameter offset: (query) Offset for pagination.
-     - parameter count: (query) Desired count of items in the result set
-     - parameter includeShared: (query) Optional. Boolean (true/false) - If false, only return the user&#39;s device types. If true, also return device types shared by other users.
+     - parameter userId: (path) User ID. 
+     - parameter offset: (query) Offset for pagination. (optional)
+     - parameter count: (query) Desired count of items in the result set (optional)
+     - parameter includeShared: (query) Optional. Boolean (true/false) - If false, only return the user&#39;s device types. If true, also return device types shared by other users. (optional)
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func getUserDeviceTypes(userId userId: String, offset: Int?, count: Int?, includeShared: Bool?, completion: ((data: DeviceTypesEnvelope?, error: ErrorType?) -> Void)) {
@@ -195,10 +238,10 @@ public class UsersAPI: APIBase {
      
      Get User Device Types
      
-     - parameter userId: (path) User ID.
-     - parameter offset: (query) Offset for pagination.
-     - parameter count: (query) Desired count of items in the result set
-     - parameter includeShared: (query) Optional. Boolean (true/false) - If false, only return the user&#39;s device types. If true, also return device types shared by other users.
+     - parameter userId: (path) User ID. 
+     - parameter offset: (query) Offset for pagination. (optional)
+     - parameter count: (query) Desired count of items in the result set (optional)
+     - parameter includeShared: (query) Optional. Boolean (true/false) - If false, only return the user&#39;s device types. If true, also return device types shared by other users. (optional)
      - returns: Promise<DeviceTypesEnvelope>
      */
     public class func getUserDeviceTypes(userId userId: String, offset: Int?, count: Int?, includeShared: Bool?) -> Promise<DeviceTypesEnvelope> {
@@ -253,10 +296,10 @@ public class UsersAPI: APIBase {
   "count" : 123
 }}]
      
-     - parameter userId: (path) User ID.
-     - parameter offset: (query) Offset for pagination.
-     - parameter count: (query) Desired count of items in the result set
-     - parameter includeShared: (query) Optional. Boolean (true/false) - If false, only return the user&#39;s device types. If true, also return device types shared by other users.
+     - parameter userId: (path) User ID. 
+     - parameter offset: (query) Offset for pagination. (optional)
+     - parameter count: (query) Desired count of items in the result set (optional)
+     - parameter includeShared: (query) Optional. Boolean (true/false) - If false, only return the user&#39;s device types. If true, also return device types shared by other users. (optional)
 
      - returns: RequestBuilder<DeviceTypesEnvelope> 
      */
@@ -279,10 +322,109 @@ public class UsersAPI: APIBase {
 
     /**
      
+     Get User Devices
+     
+     - parameter userId: (path) User ID 
+     - parameter offset: (query) Offset for pagination. (optional)
+     - parameter count: (query) Desired count of items in the result set (optional)
+     - parameter includeProperties: (query) Optional. Boolean (true/false) - If false, only return the user&#39;s device types. If true, also return device types shared by other users. (optional)
+     - parameter completion: completion handler to receive the data and the error objects
+     */
+    public class func getUserDevices(userId userId: String, offset: Int?, count: Int?, includeProperties: Bool?, completion: ((data: DevicesEnvelope?, error: ErrorType?) -> Void)) {
+        getUserDevicesWithRequestBuilder(userId: userId, offset: offset, count: count, includeProperties: includeProperties).execute { (response, error) -> Void in
+            completion(data: response?.body, error: error);
+        }
+    }
+
+    /**
+     
+     Get User Devices
+     
+     - parameter userId: (path) User ID 
+     - parameter offset: (query) Offset for pagination. (optional)
+     - parameter count: (query) Desired count of items in the result set (optional)
+     - parameter includeProperties: (query) Optional. Boolean (true/false) - If false, only return the user&#39;s device types. If true, also return device types shared by other users. (optional)
+     - returns: Promise<DevicesEnvelope>
+     */
+    public class func getUserDevices(userId userId: String, offset: Int?, count: Int?, includeProperties: Bool?) -> Promise<DevicesEnvelope> {
+        let deferred = Promise<DevicesEnvelope>.pendingPromise()
+        getUserDevices(userId: userId, offset: offset, count: count, includeProperties: includeProperties) { data, error in
+            if let error = error {
+                deferred.reject(error)
+            } else {
+                deferred.fulfill(data!)
+            }
+        }
+        return deferred.promise
+    }
+
+    /**
+     
+     Get User Devices
+     
+     - GET /users/{userId}/devices
+     - Retrieve User's Devices
+     - OAuth:
+       - type: oauth2
+       - name: artikcloud_oauth
+     - examples: [{contentType=application/json, example={
+  "total" : 123,
+  "offset" : 123,
+  "data" : {
+    "devices" : [ {
+      "eid" : "aeiou",
+      "dtid" : "aeiou",
+      "manifestVersion" : 123,
+      "certificateInfo" : "aeiou",
+      "createdOn" : 123456789,
+      "connected" : true,
+      "uid" : "aeiou",
+      "manifestVersionPolicy" : "aeiou",
+      "name" : "aeiou",
+      "needProviderAuth" : true,
+      "certificateSignature" : "aeiou",
+      "id" : "aeiou",
+      "providerCredentials" : {
+        "key" : ""
+      },
+      "properties" : {
+        "key" : ""
+      }
+    } ]
+  },
+  "count" : 123
+}}]
+     
+     - parameter userId: (path) User ID 
+     - parameter offset: (query) Offset for pagination. (optional)
+     - parameter count: (query) Desired count of items in the result set (optional)
+     - parameter includeProperties: (query) Optional. Boolean (true/false) - If false, only return the user&#39;s device types. If true, also return device types shared by other users. (optional)
+
+     - returns: RequestBuilder<DevicesEnvelope> 
+     */
+    public class func getUserDevicesWithRequestBuilder(userId userId: String, offset: Int?, count: Int?, includeProperties: Bool?) -> RequestBuilder<DevicesEnvelope> {
+        var path = "/users/{userId}/devices"
+        path = path.stringByReplacingOccurrencesOfString("{userId}", withString: "\(userId)", options: .LiteralSearch, range: nil)
+        let URLString = ArtikCloudAPI.basePath + path
+        
+        let nillableParameters: [String:AnyObject?] = [
+            "offset": offset,
+            "count": count,
+            "includeProperties": includeProperties
+        ]
+        let parameters = APIHelper.rejectNil(nillableParameters)
+
+        let requestBuilder: RequestBuilder<DevicesEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
+
+        return requestBuilder.init(method: "GET", URLString: URLString, parameters: parameters, isBody: false)
+    }
+
+    /**
+     
      Get User application properties
      
-     - parameter userId: (path) User Id
-     - parameter aid: (query) Application ID
+     - parameter userId: (path) User Id 
+     - parameter aid: (query) Application ID (optional)
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func getUserProperties(userId userId: String, aid: String?, completion: ((data: PropertiesEnvelope?, error: ErrorType?) -> Void)) {
@@ -295,8 +437,8 @@ public class UsersAPI: APIBase {
      
      Get User application properties
      
-     - parameter userId: (path) User Id
-     - parameter aid: (query) Application ID
+     - parameter userId: (path) User Id 
+     - parameter aid: (query) Application ID (optional)
      - returns: Promise<PropertiesEnvelope>
      */
     public class func getUserProperties(userId userId: String, aid: String?) -> Promise<PropertiesEnvelope> {
@@ -328,8 +470,8 @@ public class UsersAPI: APIBase {
   }
 }}]
      
-     - parameter userId: (path) User Id
-     - parameter aid: (query) Application ID
+     - parameter userId: (path) User Id 
+     - parameter aid: (query) Application ID (optional)
 
      - returns: RequestBuilder<PropertiesEnvelope> 
      */
@@ -350,226 +492,13 @@ public class UsersAPI: APIBase {
 
     /**
      
-     Update User Application Properties
-     
-     - parameter userId: (path) User Id
-     - parameter properties: (body) Properties to be updated
-     - parameter aid: (query) Application ID
-     - parameter completion: completion handler to receive the data and the error objects
-     */
-    public class func updateUserProperties(userId userId: String, properties: AppProperties, aid: String?, completion: ((data: PropertiesEnvelope?, error: ErrorType?) -> Void)) {
-        updateUserPropertiesWithRequestBuilder(userId: userId, properties: properties, aid: aid).execute { (response, error) -> Void in
-            completion(data: response?.body, error: error);
-        }
-    }
-
-    /**
-     
-     Update User Application Properties
-     
-     - parameter userId: (path) User Id
-     - parameter properties: (body) Properties to be updated
-     - parameter aid: (query) Application ID
-     - returns: Promise<PropertiesEnvelope>
-     */
-    public class func updateUserProperties(userId userId: String, properties: AppProperties, aid: String?) -> Promise<PropertiesEnvelope> {
-        let deferred = Promise<PropertiesEnvelope>.pendingPromise()
-        updateUserProperties(userId: userId, properties: properties, aid: aid) { data, error in
-            if let error = error {
-                deferred.reject(error)
-            } else {
-                deferred.fulfill(data!)
-            }
-        }
-        return deferred.promise
-    }
-
-    /**
-     
-     Update User Application Properties
-     
-     - PUT /users/{userId}/properties
-     - Updates application properties of a user
-     - OAuth:
-       - type: oauth2
-       - name: artikcloud_oauth
-     - examples: [{contentType=application/json, example={
-  "data" : {
-    "uid" : "aeiou",
-    "aid" : "aeiou",
-    "properties" : "aeiou"
-  }
-}}]
-     
-     - parameter userId: (path) User Id
-     - parameter properties: (body) Properties to be updated
-     - parameter aid: (query) Application ID
-
-     - returns: RequestBuilder<PropertiesEnvelope> 
-     */
-    public class func updateUserPropertiesWithRequestBuilder(userId userId: String, properties: AppProperties, aid: String?) -> RequestBuilder<PropertiesEnvelope> {
-        var path = "/users/{userId}/properties"
-        path = path.stringByReplacingOccurrencesOfString("{userId}", withString: "\(userId)", options: .LiteralSearch, range: nil)
-        let URLString = ArtikCloudAPI.basePath + path
-        
-        let parameters = properties.encodeToJSON() as? [String:AnyObject]
-
-        let requestBuilder: RequestBuilder<PropertiesEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
-
-        return requestBuilder.init(method: "PUT", URLString: URLString, parameters: parameters, isBody: false)
-    }
-
-    /**
-     
-     Create User Application Properties
-     
-     - parameter userId: (path) User Id
-     - parameter properties: (body) Properties to be updated
-     - parameter aid: (query) Application ID
-     - parameter completion: completion handler to receive the data and the error objects
-     */
-    public class func createUserProperties(userId userId: String, properties: AppProperties, aid: String?, completion: ((data: PropertiesEnvelope?, error: ErrorType?) -> Void)) {
-        createUserPropertiesWithRequestBuilder(userId: userId, properties: properties, aid: aid).execute { (response, error) -> Void in
-            completion(data: response?.body, error: error);
-        }
-    }
-
-    /**
-     
-     Create User Application Properties
-     
-     - parameter userId: (path) User Id
-     - parameter properties: (body) Properties to be updated
-     - parameter aid: (query) Application ID
-     - returns: Promise<PropertiesEnvelope>
-     */
-    public class func createUserProperties(userId userId: String, properties: AppProperties, aid: String?) -> Promise<PropertiesEnvelope> {
-        let deferred = Promise<PropertiesEnvelope>.pendingPromise()
-        createUserProperties(userId: userId, properties: properties, aid: aid) { data, error in
-            if let error = error {
-                deferred.reject(error)
-            } else {
-                deferred.fulfill(data!)
-            }
-        }
-        return deferred.promise
-    }
-
-    /**
-     
-     Create User Application Properties
-     
-     - POST /users/{userId}/properties
-     - Create application properties for a user
-     - OAuth:
-       - type: oauth2
-       - name: artikcloud_oauth
-     - examples: [{contentType=application/json, example={
-  "data" : {
-    "uid" : "aeiou",
-    "aid" : "aeiou",
-    "properties" : "aeiou"
-  }
-}}]
-     
-     - parameter userId: (path) User Id
-     - parameter properties: (body) Properties to be updated
-     - parameter aid: (query) Application ID
-
-     - returns: RequestBuilder<PropertiesEnvelope> 
-     */
-    public class func createUserPropertiesWithRequestBuilder(userId userId: String, properties: AppProperties, aid: String?) -> RequestBuilder<PropertiesEnvelope> {
-        var path = "/users/{userId}/properties"
-        path = path.stringByReplacingOccurrencesOfString("{userId}", withString: "\(userId)", options: .LiteralSearch, range: nil)
-        let URLString = ArtikCloudAPI.basePath + path
-        
-        let parameters = properties.encodeToJSON() as? [String:AnyObject]
-
-        let requestBuilder: RequestBuilder<PropertiesEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
-
-        return requestBuilder.init(method: "POST", URLString: URLString, parameters: parameters, isBody: false)
-    }
-
-    /**
-     
-     Delete User Application Properties
-     
-     - parameter userId: (path) User Id
-     - parameter aid: (query) Application ID
-     - parameter completion: completion handler to receive the data and the error objects
-     */
-    public class func deleteUserProperties(userId userId: String, aid: String?, completion: ((data: PropertiesEnvelope?, error: ErrorType?) -> Void)) {
-        deleteUserPropertiesWithRequestBuilder(userId: userId, aid: aid).execute { (response, error) -> Void in
-            completion(data: response?.body, error: error);
-        }
-    }
-
-    /**
-     
-     Delete User Application Properties
-     
-     - parameter userId: (path) User Id
-     - parameter aid: (query) Application ID
-     - returns: Promise<PropertiesEnvelope>
-     */
-    public class func deleteUserProperties(userId userId: String, aid: String?) -> Promise<PropertiesEnvelope> {
-        let deferred = Promise<PropertiesEnvelope>.pendingPromise()
-        deleteUserProperties(userId: userId, aid: aid) { data, error in
-            if let error = error {
-                deferred.reject(error)
-            } else {
-                deferred.fulfill(data!)
-            }
-        }
-        return deferred.promise
-    }
-
-    /**
-     
-     Delete User Application Properties
-     
-     - DELETE /users/{userId}/properties
-     - Deletes a user's application properties
-     - OAuth:
-       - type: oauth2
-       - name: artikcloud_oauth
-     - examples: [{contentType=application/json, example={
-  "data" : {
-    "uid" : "aeiou",
-    "aid" : "aeiou",
-    "properties" : "aeiou"
-  }
-}}]
-     
-     - parameter userId: (path) User Id
-     - parameter aid: (query) Application ID
-
-     - returns: RequestBuilder<PropertiesEnvelope> 
-     */
-    public class func deleteUserPropertiesWithRequestBuilder(userId userId: String, aid: String?) -> RequestBuilder<PropertiesEnvelope> {
-        var path = "/users/{userId}/properties"
-        path = path.stringByReplacingOccurrencesOfString("{userId}", withString: "\(userId)", options: .LiteralSearch, range: nil)
-        let URLString = ArtikCloudAPI.basePath + path
-        
-        let nillableParameters: [String:AnyObject?] = [
-            "aid": aid
-        ]
-        let parameters = APIHelper.rejectNil(nillableParameters)
-
-        let requestBuilder: RequestBuilder<PropertiesEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
-
-        return requestBuilder.init(method: "DELETE", URLString: URLString, parameters: parameters, isBody: false)
-    }
-
-    /**
-     
      Get User Rules
      
-     - parameter userId: (path) User ID.
-     - parameter excludeDisabled: (query) Exclude disabled rules in the result.
-     - parameter otherApplications: (query) List rules of other applications if current application id has full read access
-     - parameter count: (query) Desired count of items in the result set.
-     - parameter offset: (query) Offset for pagination.
+     - parameter userId: (path) User ID. 
+     - parameter excludeDisabled: (query) Exclude disabled rules in the result. (optional)
+     - parameter otherApplications: (query) List rules of other applications if current application id has full read access (optional)
+     - parameter count: (query) Desired count of items in the result set. (optional)
+     - parameter offset: (query) Offset for pagination. (optional)
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func getUserRules(userId userId: String, excludeDisabled: Bool?, otherApplications: Bool?, count: Int?, offset: Int?, completion: ((data: RulesEnvelope?, error: ErrorType?) -> Void)) {
@@ -582,11 +511,11 @@ public class UsersAPI: APIBase {
      
      Get User Rules
      
-     - parameter userId: (path) User ID.
-     - parameter excludeDisabled: (query) Exclude disabled rules in the result.
-     - parameter otherApplications: (query) List rules of other applications if current application id has full read access
-     - parameter count: (query) Desired count of items in the result set.
-     - parameter offset: (query) Offset for pagination.
+     - parameter userId: (path) User ID. 
+     - parameter excludeDisabled: (query) Exclude disabled rules in the result. (optional)
+     - parameter otherApplications: (query) List rules of other applications if current application id has full read access (optional)
+     - parameter count: (query) Desired count of items in the result set. (optional)
+     - parameter offset: (query) Offset for pagination. (optional)
      - returns: Promise<RulesEnvelope>
      */
     public class func getUserRules(userId userId: String, excludeDisabled: Bool?, otherApplications: Bool?, count: Int?, offset: Int?) -> Promise<RulesEnvelope> {
@@ -648,11 +577,11 @@ public class UsersAPI: APIBase {
   "count" : 123
 }}]
      
-     - parameter userId: (path) User ID.
-     - parameter excludeDisabled: (query) Exclude disabled rules in the result.
-     - parameter otherApplications: (query) List rules of other applications if current application id has full read access
-     - parameter count: (query) Desired count of items in the result set.
-     - parameter offset: (query) Offset for pagination.
+     - parameter userId: (path) User ID. 
+     - parameter excludeDisabled: (query) Exclude disabled rules in the result. (optional)
+     - parameter otherApplications: (query) List rules of other applications if current application id has full read access (optional)
+     - parameter count: (query) Desired count of items in the result set. (optional)
+     - parameter offset: (query) Offset for pagination. (optional)
 
      - returns: RequestBuilder<RulesEnvelope> 
      */
@@ -672,6 +601,77 @@ public class UsersAPI: APIBase {
         let requestBuilder: RequestBuilder<RulesEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "GET", URLString: URLString, parameters: parameters, isBody: false)
+    }
+
+    /**
+     
+     Update User Application Properties
+     
+     - parameter userId: (path) User Id 
+     - parameter properties: (body) Properties to be updated 
+     - parameter aid: (query) Application ID (optional)
+     - parameter completion: completion handler to receive the data and the error objects
+     */
+    public class func updateUserProperties(userId userId: String, properties: AppProperties, aid: String?, completion: ((data: PropertiesEnvelope?, error: ErrorType?) -> Void)) {
+        updateUserPropertiesWithRequestBuilder(userId: userId, properties: properties, aid: aid).execute { (response, error) -> Void in
+            completion(data: response?.body, error: error);
+        }
+    }
+
+    /**
+     
+     Update User Application Properties
+     
+     - parameter userId: (path) User Id 
+     - parameter properties: (body) Properties to be updated 
+     - parameter aid: (query) Application ID (optional)
+     - returns: Promise<PropertiesEnvelope>
+     */
+    public class func updateUserProperties(userId userId: String, properties: AppProperties, aid: String?) -> Promise<PropertiesEnvelope> {
+        let deferred = Promise<PropertiesEnvelope>.pendingPromise()
+        updateUserProperties(userId: userId, properties: properties, aid: aid) { data, error in
+            if let error = error {
+                deferred.reject(error)
+            } else {
+                deferred.fulfill(data!)
+            }
+        }
+        return deferred.promise
+    }
+
+    /**
+     
+     Update User Application Properties
+     
+     - PUT /users/{userId}/properties
+     - Updates application properties of a user
+     - OAuth:
+       - type: oauth2
+       - name: artikcloud_oauth
+     - examples: [{contentType=application/json, example={
+  "data" : {
+    "uid" : "aeiou",
+    "aid" : "aeiou",
+    "properties" : "aeiou"
+  }
+}}]
+     
+     - parameter userId: (path) User Id 
+     - parameter properties: (body) Properties to be updated 
+     - parameter aid: (query) Application ID (optional)
+
+     - returns: RequestBuilder<PropertiesEnvelope> 
+     */
+    public class func updateUserPropertiesWithRequestBuilder(userId userId: String, properties: AppProperties, aid: String?) -> RequestBuilder<PropertiesEnvelope> {
+        var path = "/users/{userId}/properties"
+        path = path.stringByReplacingOccurrencesOfString("{userId}", withString: "\(userId)", options: .LiteralSearch, range: nil)
+        let URLString = ArtikCloudAPI.basePath + path
+        
+        let parameters = properties.encodeToJSON() as? [String:AnyObject]
+
+        let requestBuilder: RequestBuilder<PropertiesEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
+
+        return requestBuilder.init(method: "PUT", URLString: URLString, parameters: parameters, isBody: false)
     }
 
 }

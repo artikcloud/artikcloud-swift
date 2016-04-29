@@ -15,7 +15,7 @@ public class ExportAPI: APIBase {
      
      Create Export Request
      
-     - parameter exportRequestInfo: (body) ExportRequest object that is passed in the body
+     - parameter exportRequestInfo: (body) ExportRequest object that is passed in the body 
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func exportRequest(exportRequestInfo exportRequestInfo: ExportRequestInfo, completion: ((data: ExportRequestResponse?, error: ErrorType?) -> Void)) {
@@ -28,7 +28,7 @@ public class ExportAPI: APIBase {
      
      Create Export Request
      
-     - parameter exportRequestInfo: (body) ExportRequest object that is passed in the body
+     - parameter exportRequestInfo: (body) ExportRequest object that is passed in the body 
      - returns: Promise<ExportRequestResponse>
      */
     public class func exportRequest(exportRequestInfo exportRequestInfo: ExportRequestInfo) -> Promise<ExportRequestResponse> {
@@ -68,7 +68,7 @@ public class ExportAPI: APIBase {
   }
 }}]
      
-     - parameter exportRequestInfo: (body) ExportRequest object that is passed in the body
+     - parameter exportRequestInfo: (body) ExportRequest object that is passed in the body 
 
      - returns: RequestBuilder<ExportRequestResponse> 
      */
@@ -87,9 +87,9 @@ public class ExportAPI: APIBase {
      
      Get Export History
      
-     - parameter trialId: (query) Filter by trialId.
-     - parameter count: (query) Pagination count.
-     - parameter offset: (query) Pagination offset.
+     - parameter trialId: (query) Filter by trialId. (optional)
+     - parameter count: (query) Pagination count. (optional)
+     - parameter offset: (query) Pagination offset. (optional)
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func getExportHistory(trialId trialId: String?, count: Int?, offset: Int?, completion: ((data: ExportHistoryResponse?, error: ErrorType?) -> Void)) {
@@ -102,9 +102,9 @@ public class ExportAPI: APIBase {
      
      Get Export History
      
-     - parameter trialId: (query) Filter by trialId.
-     - parameter count: (query) Pagination count.
-     - parameter offset: (query) Pagination offset.
+     - parameter trialId: (query) Filter by trialId. (optional)
+     - parameter count: (query) Pagination count. (optional)
+     - parameter offset: (query) Pagination offset. (optional)
      - returns: Promise<ExportHistoryResponse>
      */
     public class func getExportHistory(trialId trialId: String?, count: Int?, offset: Int?) -> Promise<ExportHistoryResponse> {
@@ -154,9 +154,9 @@ public class ExportAPI: APIBase {
   "count" : 123456789
 }}]
      
-     - parameter trialId: (query) Filter by trialId.
-     - parameter count: (query) Pagination count.
-     - parameter offset: (query) Pagination offset.
+     - parameter trialId: (query) Filter by trialId. (optional)
+     - parameter count: (query) Pagination count. (optional)
+     - parameter offset: (query) Pagination offset. (optional)
 
      - returns: RequestBuilder<ExportHistoryResponse> 
      */
@@ -180,7 +180,7 @@ public class ExportAPI: APIBase {
      
      Get Export Result
      
-     - parameter exportId: (path) Export ID of the export query.
+     - parameter exportId: (path) Export ID of the export query. 
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func getExportResult(exportId exportId: String, completion: ((data: String?, error: ErrorType?) -> Void)) {
@@ -193,7 +193,7 @@ public class ExportAPI: APIBase {
      
      Get Export Result
      
-     - parameter exportId: (path) Export ID of the export query.
+     - parameter exportId: (path) Export ID of the export query. 
      - returns: Promise<String>
      */
     public class func getExportResult(exportId exportId: String) -> Promise<String> {
@@ -219,7 +219,7 @@ public class ExportAPI: APIBase {
        - name: artikcloud_oauth
      - examples: [{contentType=application/json, example=""}]
      
-     - parameter exportId: (path) Export ID of the export query.
+     - parameter exportId: (path) Export ID of the export query. 
 
      - returns: RequestBuilder<String> 
      */
@@ -240,7 +240,7 @@ public class ExportAPI: APIBase {
      
      Check Export Status
      
-     - parameter exportId: (path) Export ID of the export query.
+     - parameter exportId: (path) Export ID of the export query. 
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func getExportStatus(exportId exportId: String, completion: ((data: ExportStatusResponse?, error: ErrorType?) -> Void)) {
@@ -253,7 +253,7 @@ public class ExportAPI: APIBase {
      
      Check Export Status
      
-     - parameter exportId: (path) Export ID of the export query.
+     - parameter exportId: (path) Export ID of the export query. 
      - returns: Promise<ExportStatusResponse>
      */
     public class func getExportStatus(exportId exportId: String) -> Promise<ExportStatusResponse> {
@@ -285,7 +285,7 @@ public class ExportAPI: APIBase {
   "status" : "aeiou"
 }}]
      
-     - parameter exportId: (path) Export ID of the export query.
+     - parameter exportId: (path) Export ID of the export query. 
 
      - returns: RequestBuilder<ExportStatusResponse> 
      */

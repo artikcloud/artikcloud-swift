@@ -22,10 +22,10 @@ public class Token: JSONEncodable {
     // MARK: JSONEncodable
     func encodeToJSON() -> AnyObject {
         var nillableDictionary = [String:AnyObject?]()
-        nillableDictionary["accessToken"] = self.accessToken
-        nillableDictionary["expiresIn"] = self.expiresIn
+        nillableDictionary["access_token"] = self.accessToken
+        nillableDictionary["expires_in"] = self.expiresIn
         nillableDictionary["scope"] = self.scope
-        nillableDictionary["tokenType"] = self.tokenType
+        nillableDictionary["token_type"] = self.tokenType
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
         return dictionary
     }

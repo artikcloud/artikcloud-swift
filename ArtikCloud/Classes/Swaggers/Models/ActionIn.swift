@@ -34,7 +34,7 @@ public class ActionIn: JSONEncodable {
         nillableDictionary["ddid"] = self.ddid
         nillableDictionary["sdid"] = self.sdid
         nillableDictionary["ts"] = self.ts
-        nillableDictionary["_type"] = self._type
+        nillableDictionary["type"] = self._type
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
         return dictionary
     }

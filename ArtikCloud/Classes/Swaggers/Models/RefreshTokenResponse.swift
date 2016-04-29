@@ -22,10 +22,10 @@ public class RefreshTokenResponse: JSONEncodable {
     // MARK: JSONEncodable
     func encodeToJSON() -> AnyObject {
         var nillableDictionary = [String:AnyObject?]()
-        nillableDictionary["accessToken"] = self.accessToken
-        nillableDictionary["expiresIn"] = self.expiresIn
-        nillableDictionary["refreshToken"] = self.refreshToken
-        nillableDictionary["tokenType"] = self.tokenType
+        nillableDictionary["access_token"] = self.accessToken
+        nillableDictionary["expires_in"] = self.expiresIn
+        nillableDictionary["refresh_token"] = self.refreshToken
+        nillableDictionary["token_type"] = self.tokenType
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
         return dictionary
     }

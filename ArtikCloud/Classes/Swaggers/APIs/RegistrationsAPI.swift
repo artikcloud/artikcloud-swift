@@ -15,7 +15,7 @@ public class RegistrationsAPI: APIBase {
      
      Confirm User
      
-     - parameter registrationInfo: (body) Device Registration information.
+     - parameter registrationInfo: (body) Device Registration information. 
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func confirmUser(registrationInfo registrationInfo: DeviceRegConfirmUserRequest, completion: ((data: DeviceRegConfirmUserResponseEnvelope?, error: ErrorType?) -> Void)) {
@@ -28,7 +28,7 @@ public class RegistrationsAPI: APIBase {
      
      Confirm User
      
-     - parameter registrationInfo: (body) Device Registration information.
+     - parameter registrationInfo: (body) Device Registration information. 
      - returns: Promise<DeviceRegConfirmUserResponseEnvelope>
      */
     public class func confirmUser(registrationInfo registrationInfo: DeviceRegConfirmUserRequest) -> Promise<DeviceRegConfirmUserResponseEnvelope> {
@@ -58,7 +58,7 @@ public class RegistrationsAPI: APIBase {
   }
 }}]
      
-     - parameter registrationInfo: (body) Device Registration information.
+     - parameter registrationInfo: (body) Device Registration information. 
 
      - returns: RequestBuilder<DeviceRegConfirmUserResponseEnvelope> 
      */
@@ -77,7 +77,7 @@ public class RegistrationsAPI: APIBase {
      
      Get Request Status For User
      
-     - parameter requestId: (path) Request ID.
+     - parameter requestId: (path) Request ID. 
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func getRequestStatusForUser(requestId requestId: String, completion: ((data: DeviceRegStatusResponseEnvelope?, error: ErrorType?) -> Void)) {
@@ -90,7 +90,7 @@ public class RegistrationsAPI: APIBase {
      
      Get Request Status For User
      
-     - parameter requestId: (path) Request ID.
+     - parameter requestId: (path) Request ID. 
      - returns: Promise<DeviceRegStatusResponseEnvelope>
      */
     public class func getRequestStatusForUser(requestId requestId: String) -> Promise<DeviceRegStatusResponseEnvelope> {
@@ -121,7 +121,7 @@ public class RegistrationsAPI: APIBase {
   }
 }}]
      
-     - parameter requestId: (path) Request ID.
+     - parameter requestId: (path) Request ID. 
 
      - returns: RequestBuilder<DeviceRegStatusResponseEnvelope> 
      */
@@ -142,7 +142,7 @@ public class RegistrationsAPI: APIBase {
      
      Unregister Device
      
-     - parameter deviceId: (path) Device ID.
+     - parameter deviceId: (path) Device ID. 
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func unregisterDevice(deviceId deviceId: String, completion: ((data: UnregisterDeviceResponseEnvelope?, error: ErrorType?) -> Void)) {
@@ -155,7 +155,7 @@ public class RegistrationsAPI: APIBase {
      
      Unregister Device
      
-     - parameter deviceId: (path) Device ID.
+     - parameter deviceId: (path) Device ID. 
      - returns: Promise<UnregisterDeviceResponseEnvelope>
      */
     public class func unregisterDevice(deviceId deviceId: String) -> Promise<UnregisterDeviceResponseEnvelope> {
@@ -195,7 +195,7 @@ public class RegistrationsAPI: APIBase {
   }
 }}]
      
-     - parameter deviceId: (path) Device ID.
+     - parameter deviceId: (path) Device ID. 
 
      - returns: RequestBuilder<UnregisterDeviceResponseEnvelope> 
      */

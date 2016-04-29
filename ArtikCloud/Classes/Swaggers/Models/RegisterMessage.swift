@@ -32,7 +32,7 @@ public class RegisterMessage: JSONEncodable {
         nillableDictionary["authorization"] = self.authorization
         nillableDictionary["sdid"] = self.sdid
         nillableDictionary["ts"] = self.ts
-        nillableDictionary["_type"] = self._type
+        nillableDictionary["type"] = self._type
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
         return dictionary
     }
