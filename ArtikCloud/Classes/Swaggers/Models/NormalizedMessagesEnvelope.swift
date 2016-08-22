@@ -10,18 +10,16 @@ import Foundation
 
 /** Normalized Messages Envelope */
 public class NormalizedMessagesEnvelope: JSONEncodable {
-
     public var sdids: String?
     public var sdid: String?
     public var uid: String?
-    public var startDate: Int?
-    public var endDate: Int?
+    public var startDate: Int64?
+    public var endDate: Int64?
     public var order: String?
     public var next: String?
-    public var count: Int?
-    public var size: Int?
+    public var count: Int64?
+    public var size: Int64?
     public var data: [NormalizedMessage]?
-    
 
     public init() {}
 
@@ -31,12 +29,12 @@ public class NormalizedMessagesEnvelope: JSONEncodable {
         nillableDictionary["sdids"] = self.sdids
         nillableDictionary["sdid"] = self.sdid
         nillableDictionary["uid"] = self.uid
-        nillableDictionary["startDate"] = self.startDate
-        nillableDictionary["endDate"] = self.endDate
+        nillableDictionary["startDate"] = self.startDate?.encodeToJSON()
+        nillableDictionary["endDate"] = self.endDate?.encodeToJSON()
         nillableDictionary["order"] = self.order
         nillableDictionary["next"] = self.next
-        nillableDictionary["count"] = self.count
-        nillableDictionary["size"] = self.size
+        nillableDictionary["count"] = self.count?.encodeToJSON()
+        nillableDictionary["size"] = self.size?.encodeToJSON()
         nillableDictionary["data"] = self.data?.encodeToJSON()
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
         return dictionary

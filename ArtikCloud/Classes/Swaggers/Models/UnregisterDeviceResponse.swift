@@ -10,13 +10,12 @@ import Foundation
 
 /**  */
 public class UnregisterDeviceResponse: JSONEncodable {
-
     /** Device certificate information. */
     public var certificateInfo: String?
     /** Certificate&#39;s signature. */
     public var certificateSignature: String?
     /** Device created on date. */
-    public var createdOn: Int?
+    public var createdOn: Int64?
     /** Device type id. */
     public var dtid: String?
     /** External ID of the device. */
@@ -24,7 +23,7 @@ public class UnregisterDeviceResponse: JSONEncodable {
     /** Device id. */
     public var id: String?
     /** Device manifest version. */
-    public var manifestVersion: Int?
+    public var manifestVersion: Int64?
     /** Device manifest version policy. */
     public var manifestVersionPolicy: String?
     /** Device name. */
@@ -33,7 +32,6 @@ public class UnregisterDeviceResponse: JSONEncodable {
     public var needProviderAuth: Bool?
     /** User id. */
     public var uid: String?
-    
 
     public init() {}
 
@@ -42,11 +40,11 @@ public class UnregisterDeviceResponse: JSONEncodable {
         var nillableDictionary = [String:AnyObject?]()
         nillableDictionary["certificateInfo"] = self.certificateInfo
         nillableDictionary["certificateSignature"] = self.certificateSignature
-        nillableDictionary["createdOn"] = self.createdOn
+        nillableDictionary["createdOn"] = self.createdOn?.encodeToJSON()
         nillableDictionary["dtid"] = self.dtid
         nillableDictionary["eid"] = self.eid
         nillableDictionary["id"] = self.id
-        nillableDictionary["manifestVersion"] = self.manifestVersion
+        nillableDictionary["manifestVersion"] = self.manifestVersion?.encodeToJSON()
         nillableDictionary["manifestVersionPolicy"] = self.manifestVersionPolicy
         nillableDictionary["name"] = self.name
         nillableDictionary["needProviderAuth"] = self.needProviderAuth

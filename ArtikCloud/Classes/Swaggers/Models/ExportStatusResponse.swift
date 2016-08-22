@@ -10,21 +10,19 @@ import Foundation
 
 /** Export Status Response. */
 public class ExportStatusResponse: JSONEncodable {
-
-    public var expirationDate: Int?
+    public var expirationDate: Int64?
     public var exportId: String?
     public var md5: String?
     /** Export status */
     public var status: String?
     public var ttl: String?
-    
 
     public init() {}
 
     // MARK: JSONEncodable
     func encodeToJSON() -> AnyObject {
         var nillableDictionary = [String:AnyObject?]()
-        nillableDictionary["expirationDate"] = self.expirationDate
+        nillableDictionary["expirationDate"] = self.expirationDate?.encodeToJSON()
         nillableDictionary["exportId"] = self.exportId
         nillableDictionary["md5"] = self.md5
         nillableDictionary["status"] = self.status

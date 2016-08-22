@@ -10,22 +10,20 @@ import Foundation
 
 /** Rules Envelope. */
 public class RulesEnvelope: JSONEncodable {
-
-    public var count: Int?
-    public var data: RuleArray?
-    public var offset: Int?
-    public var total: Int?
-    
+    public var count: Int32?
+    public var data: [OutputRule]?
+    public var offset: Int32?
+    public var total: Int32?
 
     public init() {}
 
     // MARK: JSONEncodable
     func encodeToJSON() -> AnyObject {
         var nillableDictionary = [String:AnyObject?]()
-        nillableDictionary["count"] = self.count
+        nillableDictionary["count"] = self.count?.encodeToJSON()
         nillableDictionary["data"] = self.data?.encodeToJSON()
-        nillableDictionary["offset"] = self.offset
-        nillableDictionary["total"] = self.total
+        nillableDictionary["offset"] = self.offset?.encodeToJSON()
+        nillableDictionary["total"] = self.total?.encodeToJSON()
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
         return dictionary
     }

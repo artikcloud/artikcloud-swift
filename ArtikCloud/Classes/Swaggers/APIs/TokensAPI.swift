@@ -12,7 +12,6 @@ import PromiseKit
 
 public class TokensAPI: APIBase {
     /**
-     
      Check Token
      
      - parameter tokenInfo: (body) Token object to be checked 
@@ -25,7 +24,6 @@ public class TokensAPI: APIBase {
     }
 
     /**
-     
      Check Token
      
      - parameter tokenInfo: (body) Token object to be checked 
@@ -44,10 +42,8 @@ public class TokensAPI: APIBase {
     }
 
     /**
-     
      Check Token
-     
-     - POST /checkToken
+     - POST /accounts/checkToken
      - Check Token
      - OAuth:
        - type: oauth2
@@ -63,18 +59,18 @@ public class TokensAPI: APIBase {
      - returns: RequestBuilder<CheckTokenResponse> 
      */
     public class func checkTokenWithRequestBuilder(tokenInfo tokenInfo: TokenRequest) -> RequestBuilder<CheckTokenResponse> {
-        let path = "/checkToken"
+        let path = "/accounts/checkToken"
         let URLString = ArtikCloudAPI.basePath + path
-        
         let parameters = tokenInfo.encodeToJSON() as? [String:AnyObject]
-
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<CheckTokenResponse>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "POST", URLString: URLString, parameters: parameters, isBody: true)
+        return requestBuilder.init(method: "POST", URLString: URLString, parameters: convertedParameters, isBody: true)
     }
 
     /**
-     
      Refresh Token
      
      - parameter grantType: (form) Grant Type. 
@@ -88,7 +84,6 @@ public class TokensAPI: APIBase {
     }
 
     /**
-     
      Refresh Token
      
      - parameter grantType: (form) Grant Type. 
@@ -97,21 +92,19 @@ public class TokensAPI: APIBase {
      */
     public class func refreshToken(grantType grantType: String, refreshToken: String) -> Promise<RefreshTokenResponse> {
         let deferred = Promise<RefreshTokenResponse>.pendingPromise()
-        refreshToken(grantType: grantType, refreshToken: refreshToken) { data, error in
+        /*refreshToken(grantType: grantType, refreshToken: refreshToken) { data, error in
             if let error = error {
                 deferred.reject(error)
             } else {
                 deferred.fulfill(data!)
             }
-        }
+        }*/
         return deferred.promise
     }
 
     /**
-     
      Refresh Token
-     
-     - POST /token
+     - POST /accounts/token
      - Refresh Token
      - OAuth:
        - type: oauth2
@@ -129,18 +122,21 @@ public class TokensAPI: APIBase {
      - returns: RequestBuilder<RefreshTokenResponse> 
      */
     public class func refreshTokenWithRequestBuilder(grantType grantType: String, refreshToken: String) -> RequestBuilder<RefreshTokenResponse> {
-        let path = "/token"
+        let path = "/accounts/token"
         let URLString = ArtikCloudAPI.basePath + path
-        
+
         let nillableParameters: [String:AnyObject?] = [
             "grant_type": grantType,
             "refresh_token": refreshToken
         ]
+ 
         let parameters = APIHelper.rejectNil(nillableParameters)
-
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<RefreshTokenResponse>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "POST", URLString: URLString, parameters: parameters, isBody: false)
+        return requestBuilder.init(method: "POST", URLString: URLString, parameters: convertedParameters, isBody: false)
     }
 
 }

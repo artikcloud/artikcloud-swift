@@ -10,9 +10,7 @@ import Foundation
 
 /** Tags Envelope. */
 public class TagsEnvelope: JSONEncodable {
-
     public var data: TagArray?
-    
 
     public init() {}
 

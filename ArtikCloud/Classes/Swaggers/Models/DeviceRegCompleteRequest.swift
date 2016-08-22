@@ -10,10 +10,8 @@ import Foundation
 
 /**  */
 public class DeviceRegCompleteRequest: JSONEncodable {
-
     /** Nonce obtained from the initial registration request. */
     public var nonce: String?
-    
 
     public init() {}
 

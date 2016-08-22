@@ -10,9 +10,7 @@ import Foundation
 
 /**  */
 public class UnregisterDeviceResponseEnvelope: JSONEncodable {
-
     public var data: UnregisterDeviceResponse?
-    
 
     public init() {}
 

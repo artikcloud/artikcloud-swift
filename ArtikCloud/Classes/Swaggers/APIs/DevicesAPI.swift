@@ -12,7 +12,6 @@ import PromiseKit
 
 public class DevicesAPI: APIBase {
     /**
-     
      Add Device
      
      - parameter device: (body) Device to be added to the user 
@@ -25,7 +24,6 @@ public class DevicesAPI: APIBase {
     }
 
     /**
-     
      Add Device
      
      - parameter device: (body) Device to be added to the user 
@@ -44,9 +42,7 @@ public class DevicesAPI: APIBase {
     }
 
     /**
-     
      Add Device
-     
      - POST /devices
      - Create a device
      - OAuth:
@@ -82,16 +78,16 @@ public class DevicesAPI: APIBase {
     public class func addDeviceWithRequestBuilder(device device: Device) -> RequestBuilder<DeviceEnvelope> {
         let path = "/devices"
         let URLString = ArtikCloudAPI.basePath + path
-        
         let parameters = device.encodeToJSON() as? [String:AnyObject]
-
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<DeviceEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "POST", URLString: URLString, parameters: parameters, isBody: true)
+        return requestBuilder.init(method: "POST", URLString: URLString, parameters: convertedParameters, isBody: true)
     }
 
     /**
-     
      Delete Device
      
      - parameter deviceId: (path) deviceId 
@@ -104,7 +100,6 @@ public class DevicesAPI: APIBase {
     }
 
     /**
-     
      Delete Device
      
      - parameter deviceId: (path) deviceId 
@@ -123,9 +118,7 @@ public class DevicesAPI: APIBase {
     }
 
     /**
-     
      Delete Device
-     
      - DELETE /devices/{deviceId}
      - Deletes a device
      - OAuth:
@@ -162,17 +155,19 @@ public class DevicesAPI: APIBase {
         var path = "/devices/{deviceId}"
         path = path.stringByReplacingOccurrencesOfString("{deviceId}", withString: "\(deviceId)", options: .LiteralSearch, range: nil)
         let URLString = ArtikCloudAPI.basePath + path
-        
-        let nillableParameters: [String:AnyObject?] = [:]
-        let parameters = APIHelper.rejectNil(nillableParameters)
 
+        let nillableParameters: [String:AnyObject?] = [:]
+ 
+        let parameters = APIHelper.rejectNil(nillableParameters)
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<DeviceEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "DELETE", URLString: URLString, parameters: parameters, isBody: true)
+        return requestBuilder.init(method: "DELETE", URLString: URLString, parameters: convertedParameters, isBody: true)
     }
 
     /**
-     
      Delete Device Token
      
      - parameter deviceId: (path) deviceId 
@@ -185,7 +180,6 @@ public class DevicesAPI: APIBase {
     }
 
     /**
-     
      Delete Device Token
      
      - parameter deviceId: (path) deviceId 
@@ -204,9 +198,7 @@ public class DevicesAPI: APIBase {
     }
 
     /**
-     
      Delete Device Token
-     
      - DELETE /devices/{deviceId}/tokens
      - Deletes a device's token
      - OAuth:
@@ -229,17 +221,19 @@ public class DevicesAPI: APIBase {
         var path = "/devices/{deviceId}/tokens"
         path = path.stringByReplacingOccurrencesOfString("{deviceId}", withString: "\(deviceId)", options: .LiteralSearch, range: nil)
         let URLString = ArtikCloudAPI.basePath + path
-        
-        let nillableParameters: [String:AnyObject?] = [:]
-        let parameters = APIHelper.rejectNil(nillableParameters)
 
+        let nillableParameters: [String:AnyObject?] = [:]
+ 
+        let parameters = APIHelper.rejectNil(nillableParameters)
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<DeviceTokenEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "DELETE", URLString: URLString, parameters: parameters, isBody: true)
+        return requestBuilder.init(method: "DELETE", URLString: URLString, parameters: convertedParameters, isBody: true)
     }
 
     /**
-     
      Get Device
      
      - parameter deviceId: (path) deviceId 
@@ -252,7 +246,6 @@ public class DevicesAPI: APIBase {
     }
 
     /**
-     
      Get Device
      
      - parameter deviceId: (path) deviceId 
@@ -271,9 +264,7 @@ public class DevicesAPI: APIBase {
     }
 
     /**
-     
      Get Device
-     
      - GET /devices/{deviceId}
      - Retrieves a device
      - OAuth:
@@ -310,17 +301,84 @@ public class DevicesAPI: APIBase {
         var path = "/devices/{deviceId}"
         path = path.stringByReplacingOccurrencesOfString("{deviceId}", withString: "\(deviceId)", options: .LiteralSearch, range: nil)
         let URLString = ArtikCloudAPI.basePath + path
-        
-        let nillableParameters: [String:AnyObject?] = [:]
-        let parameters = APIHelper.rejectNil(nillableParameters)
 
+        let nillableParameters: [String:AnyObject?] = [:]
+ 
+        let parameters = APIHelper.rejectNil(nillableParameters)
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<DeviceEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "GET", URLString: URLString, parameters: parameters, isBody: true)
+        return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: true)
     }
 
     /**
+     Get device presence information
      
+     - parameter deviceId: (path) Device ID. 
+     - parameter completion: completion handler to receive the data and the error objects
+     */
+    public class func getDevicePresence(deviceId deviceId: String, completion: ((data: PresenceEnvelope?, error: ErrorType?) -> Void)) {
+        getDevicePresenceWithRequestBuilder(deviceId: deviceId).execute { (response, error) -> Void in
+            completion(data: response?.body, error: error);
+        }
+    }
+
+    /**
+     Get device presence information
+     
+     - parameter deviceId: (path) Device ID. 
+     - returns: Promise<PresenceEnvelope>
+     */
+    public class func getDevicePresence(deviceId deviceId: String) -> Promise<PresenceEnvelope> {
+        let deferred = Promise<PresenceEnvelope>.pendingPromise()
+        getDevicePresence(deviceId: deviceId) { data, error in
+            if let error = error {
+                deferred.reject(error)
+            } else {
+                deferred.fulfill(data!)
+            }
+        }
+        return deferred.promise
+    }
+
+    /**
+     Get device presence information
+     - GET /devices/{deviceId}/presence
+     - Return the presence status of the given device along with the time it was last seen
+     - OAuth:
+       - type: oauth2
+       - name: artikcloud_oauth
+     - examples: [{contentType=application/json, example={
+  "data" : {
+    "connected" : true,
+    "lastSeenOn" : 123456789
+  },
+  "sdid" : "aeiou"
+}}]
+     
+     - parameter deviceId: (path) Device ID. 
+
+     - returns: RequestBuilder<PresenceEnvelope> 
+     */
+    public class func getDevicePresenceWithRequestBuilder(deviceId deviceId: String) -> RequestBuilder<PresenceEnvelope> {
+        var path = "/devices/{deviceId}/presence"
+        path = path.stringByReplacingOccurrencesOfString("{deviceId}", withString: "\(deviceId)", options: .LiteralSearch, range: nil)
+        let URLString = ArtikCloudAPI.basePath + path
+
+        let nillableParameters: [String:AnyObject?] = [:]
+ 
+        let parameters = APIHelper.rejectNil(nillableParameters)
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
+        let requestBuilder: RequestBuilder<PresenceEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
+
+        return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: true)
+    }
+
+    /**
      Get Device Token
      
      - parameter deviceId: (path) deviceId 
@@ -333,7 +391,6 @@ public class DevicesAPI: APIBase {
     }
 
     /**
-     
      Get Device Token
      
      - parameter deviceId: (path) deviceId 
@@ -352,9 +409,7 @@ public class DevicesAPI: APIBase {
     }
 
     /**
-     
      Get Device Token
-     
      - GET /devices/{deviceId}/tokens
      - Retrieves a device's token
      - OAuth:
@@ -377,17 +432,19 @@ public class DevicesAPI: APIBase {
         var path = "/devices/{deviceId}/tokens"
         path = path.stringByReplacingOccurrencesOfString("{deviceId}", withString: "\(deviceId)", options: .LiteralSearch, range: nil)
         let URLString = ArtikCloudAPI.basePath + path
-        
-        let nillableParameters: [String:AnyObject?] = [:]
-        let parameters = APIHelper.rejectNil(nillableParameters)
 
+        let nillableParameters: [String:AnyObject?] = [:]
+ 
+        let parameters = APIHelper.rejectNil(nillableParameters)
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<DeviceTokenEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "GET", URLString: URLString, parameters: parameters, isBody: true)
+        return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: true)
     }
 
     /**
-     
      Update Device
      
      - parameter deviceId: (path) deviceId 
@@ -401,7 +458,6 @@ public class DevicesAPI: APIBase {
     }
 
     /**
-     
      Update Device
      
      - parameter deviceId: (path) deviceId 
@@ -421,9 +477,7 @@ public class DevicesAPI: APIBase {
     }
 
     /**
-     
      Update Device
-     
      - PUT /devices/{deviceId}
      - Updates a device
      - OAuth:
@@ -461,16 +515,16 @@ public class DevicesAPI: APIBase {
         var path = "/devices/{deviceId}"
         path = path.stringByReplacingOccurrencesOfString("{deviceId}", withString: "\(deviceId)", options: .LiteralSearch, range: nil)
         let URLString = ArtikCloudAPI.basePath + path
-        
         let parameters = device.encodeToJSON() as? [String:AnyObject]
-
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<DeviceEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "PUT", URLString: URLString, parameters: parameters, isBody: true)
+        return requestBuilder.init(method: "PUT", URLString: URLString, parameters: convertedParameters, isBody: true)
     }
 
     /**
-     
      Update Device Token
      
      - parameter deviceId: (path) deviceId 
@@ -483,7 +537,6 @@ public class DevicesAPI: APIBase {
     }
 
     /**
-     
      Update Device Token
      
      - parameter deviceId: (path) deviceId 
@@ -502,9 +555,7 @@ public class DevicesAPI: APIBase {
     }
 
     /**
-     
      Update Device Token
-     
      - PUT /devices/{deviceId}/tokens
      - Updates a device's token
      - OAuth:
@@ -527,13 +578,16 @@ public class DevicesAPI: APIBase {
         var path = "/devices/{deviceId}/tokens"
         path = path.stringByReplacingOccurrencesOfString("{deviceId}", withString: "\(deviceId)", options: .LiteralSearch, range: nil)
         let URLString = ArtikCloudAPI.basePath + path
-        
-        let nillableParameters: [String:AnyObject?] = [:]
-        let parameters = APIHelper.rejectNil(nillableParameters)
 
+        let nillableParameters: [String:AnyObject?] = [:]
+ 
+        let parameters = APIHelper.rejectNil(nillableParameters)
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<DeviceTokenEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "PUT", URLString: URLString, parameters: parameters, isBody: true)
+        return requestBuilder.init(method: "PUT", URLString: URLString, parameters: convertedParameters, isBody: true)
     }
 
 }

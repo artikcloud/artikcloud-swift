@@ -10,12 +10,10 @@ import Foundation
 
 /** Fields and Actions */
 public class FieldsActions: JSONEncodable {
-
     /** Message Fields */
     public var fields: [String:AnyObject]?
     /** Actions */
     public var actions: [String:AnyObject]?
-    
 
     public init() {}
 

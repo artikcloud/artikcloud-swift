@@ -10,19 +10,17 @@ import Foundation
 
 /** Rule Error. */
 public class RuleError: JSONEncodable {
-
-    public var errorCode: Int?
+    public var errorCode: Int32?
     public var fieldPath: FieldPath?
     public var messageArgs: [String]?
     public var messageKey: String?
-    
 
     public init() {}
 
     // MARK: JSONEncodable
     func encodeToJSON() -> AnyObject {
         var nillableDictionary = [String:AnyObject?]()
-        nillableDictionary["errorCode"] = self.errorCode
+        nillableDictionary["errorCode"] = self.errorCode?.encodeToJSON()
         nillableDictionary["fieldPath"] = self.fieldPath?.encodeToJSON()
         nillableDictionary["messageArgs"] = self.messageArgs?.encodeToJSON()
         nillableDictionary["messageKey"] = self.messageKey

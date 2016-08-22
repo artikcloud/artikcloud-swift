@@ -10,14 +10,12 @@ import Foundation
 
 /** Aggregates Response */
 public class AggregatesResponse: JSONEncodable {
-
     public var data: [AggregateData]?
-    public var endDate: Int?
+    public var endDate: Int64?
     public var field: String?
     public var sdid: String?
-    public var size: Int?
-    public var startDate: Int?
-    
+    public var size: Int32?
+    public var startDate: Int64?
 
     public init() {}
 
@@ -25,11 +23,11 @@ public class AggregatesResponse: JSONEncodable {
     func encodeToJSON() -> AnyObject {
         var nillableDictionary = [String:AnyObject?]()
         nillableDictionary["data"] = self.data?.encodeToJSON()
-        nillableDictionary["endDate"] = self.endDate
+        nillableDictionary["endDate"] = self.endDate?.encodeToJSON()
         nillableDictionary["field"] = self.field
         nillableDictionary["sdid"] = self.sdid
-        nillableDictionary["size"] = self.size
-        nillableDictionary["startDate"] = self.startDate
+        nillableDictionary["size"] = self.size?.encodeToJSON()
+        nillableDictionary["startDate"] = self.startDate?.encodeToJSON()
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
         return dictionary
     }

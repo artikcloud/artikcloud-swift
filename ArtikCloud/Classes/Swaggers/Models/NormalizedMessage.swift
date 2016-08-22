@@ -10,29 +10,27 @@ import Foundation
 
 /** Normalized Message */
 public class NormalizedMessage: JSONEncodable {
-
-    public var cts: Int?
-    public var ts: Int?
+    public var cts: Int64?
+    public var ts: Int64?
     public var mid: String?
     public var sdid: String?
     public var sdtid: String?
     public var uid: String?
-    public var mv: Int?
+    public var mv: Int32?
     public var data: [String:AnyObject]?
-    
 
     public init() {}
 
     // MARK: JSONEncodable
     func encodeToJSON() -> AnyObject {
         var nillableDictionary = [String:AnyObject?]()
-        nillableDictionary["cts"] = self.cts
-        nillableDictionary["ts"] = self.ts
+        nillableDictionary["cts"] = self.cts?.encodeToJSON()
+        nillableDictionary["ts"] = self.ts?.encodeToJSON()
         nillableDictionary["mid"] = self.mid
         nillableDictionary["sdid"] = self.sdid
         nillableDictionary["sdtid"] = self.sdtid
         nillableDictionary["uid"] = self.uid
-        nillableDictionary["mv"] = self.mv
+        nillableDictionary["mv"] = self.mv?.encodeToJSON()
         nillableDictionary["data"] = self.data?.encodeToJSON()
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
         return dictionary

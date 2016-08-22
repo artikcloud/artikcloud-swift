@@ -10,9 +10,7 @@ import Foundation
 
 /** Manifest Properties Envelope */
 public class ManifestPropertiesEnvelope: JSONEncodable {
-
     public var data: ManifestProperties?
-    
 
     public init() {}
 

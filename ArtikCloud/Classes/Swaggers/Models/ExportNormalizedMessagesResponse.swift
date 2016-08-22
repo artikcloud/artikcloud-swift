@@ -10,21 +10,19 @@ import Foundation
 
 /** Export Normalized Messages Response. */
 public class ExportNormalizedMessagesResponse: JSONEncodable {
-
     public var csvHeaders: Bool?
-    public var endDate: Int?
+    public var endDate: Int64?
     public var exportId: String?
     public var format: String?
     public var order: String?
     public var sdid: String?
     public var sdids: String?
-    public var startDate: Int?
+    public var startDate: Int64?
     public var stdids: String?
     public var trialId: String?
     public var uid: String?
     public var uids: String?
     public var url: String?
-    
 
     public init() {}
 
@@ -32,13 +30,13 @@ public class ExportNormalizedMessagesResponse: JSONEncodable {
     func encodeToJSON() -> AnyObject {
         var nillableDictionary = [String:AnyObject?]()
         nillableDictionary["csvHeaders"] = self.csvHeaders
-        nillableDictionary["endDate"] = self.endDate
+        nillableDictionary["endDate"] = self.endDate?.encodeToJSON()
         nillableDictionary["exportId"] = self.exportId
         nillableDictionary["format"] = self.format
         nillableDictionary["order"] = self.order
         nillableDictionary["sdid"] = self.sdid
         nillableDictionary["sdids"] = self.sdids
-        nillableDictionary["startDate"] = self.startDate
+        nillableDictionary["startDate"] = self.startDate?.encodeToJSON()
         nillableDictionary["stdids"] = self.stdids
         nillableDictionary["trialId"] = self.trialId
         nillableDictionary["uid"] = self.uid

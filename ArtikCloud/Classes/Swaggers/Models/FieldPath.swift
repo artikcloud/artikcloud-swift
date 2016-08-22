@@ -10,9 +10,7 @@ import Foundation
 
 /**  */
 public class FieldPath: JSONEncodable {
-
     public var path: [NonEmptyString]?
-    
 
     public init() {}
 

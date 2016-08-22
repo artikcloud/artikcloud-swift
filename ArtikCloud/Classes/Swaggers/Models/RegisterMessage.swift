@@ -10,7 +10,6 @@ import Foundation
 
 /** WebSocket Registration Message */
 public class RegisterMessage: JSONEncodable {
-
     /** Confirmation ID. */
     public var cid: String?
     /** Authorization header containing access token (Bearer &lt;access_token&gt;). */
@@ -18,10 +17,9 @@ public class RegisterMessage: JSONEncodable {
     /** Source Device ID. */
     public var sdid: String?
     /** Timestamp (past, present or future). Defaults to current time if not provided. */
-    public var ts: Int?
+    public var ts: Int64?
     /** Type. */
-    public var _type: String?
-    
+    public var type: String?
 
     public init() {}
 
@@ -31,8 +29,8 @@ public class RegisterMessage: JSONEncodable {
         nillableDictionary["cid"] = self.cid
         nillableDictionary["authorization"] = self.authorization
         nillableDictionary["sdid"] = self.sdid
-        nillableDictionary["ts"] = self.ts
-        nillableDictionary["type"] = self._type
+        nillableDictionary["ts"] = self.ts?.encodeToJSON()
+        nillableDictionary["type"] = self.type
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
         return dictionary
     }

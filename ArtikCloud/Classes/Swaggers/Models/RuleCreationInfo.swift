@@ -10,7 +10,6 @@ import Foundation
 
 /** Class to create a new Rule. */
 public class RuleCreationInfo: JSONEncodable {
-
     /** Description */
     public var description: String?
     /** Is Enabled */
@@ -19,7 +18,6 @@ public class RuleCreationInfo: JSONEncodable {
     public var name: String?
     /** Rule */
     public var rule: [String:AnyObject]?
-    
 
     public init() {}
 

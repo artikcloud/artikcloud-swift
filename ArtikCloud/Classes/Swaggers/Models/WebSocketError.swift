@@ -10,14 +10,12 @@ import Foundation
 
 /** WebSocket Error Information */
 public class WebSocketError: JSONEncodable {
-
     /** Message. */
     public var message: String?
     /** Code */
-    public var code: Int?
+    public var code: Int32?
     /** Confirmation ID */
     public var cid: String?
-    
 
     public init() {}
 
@@ -25,7 +23,7 @@ public class WebSocketError: JSONEncodable {
     func encodeToJSON() -> AnyObject {
         var nillableDictionary = [String:AnyObject?]()
         nillableDictionary["message"] = self.message
-        nillableDictionary["code"] = self.code
+        nillableDictionary["code"] = self.code?.encodeToJSON()
         nillableDictionary["cid"] = self.cid
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
         return dictionary

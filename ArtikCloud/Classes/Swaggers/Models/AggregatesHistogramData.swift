@@ -10,27 +10,25 @@ import Foundation
 
 /** Aggregates Histogram Data */
 public class AggregatesHistogramData: JSONEncodable {
-
-    public var count: Int?
+    public var count: Int64?
     public var max: Float?
     public var mean: Float?
     public var min: Float?
     public var sum: Float?
-    public var ts: Int?
+    public var ts: Int64?
     public var variance: Float?
-    
 
     public init() {}
 
     // MARK: JSONEncodable
     func encodeToJSON() -> AnyObject {
         var nillableDictionary = [String:AnyObject?]()
-        nillableDictionary["count"] = self.count
+        nillableDictionary["count"] = self.count?.encodeToJSON()
         nillableDictionary["max"] = self.max
         nillableDictionary["mean"] = self.mean
         nillableDictionary["min"] = self.min
         nillableDictionary["sum"] = self.sum
-        nillableDictionary["ts"] = self.ts
+        nillableDictionary["ts"] = self.ts?.encodeToJSON()
         nillableDictionary["variance"] = self.variance
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
         return dictionary

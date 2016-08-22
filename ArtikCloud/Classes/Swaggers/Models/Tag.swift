@@ -10,12 +10,10 @@ import Foundation
 
 /** Tag information. */
 public class Tag: JSONEncodable {
-
     /** Tag Name. */
     public var name: String?
     /** Is Category. */
     public var isCategory: Bool?
-    
 
     public init() {}
 

@@ -12,7 +12,6 @@ import PromiseKit
 
 public class RegistrationsAPI: APIBase {
     /**
-     
      Confirm User
      
      - parameter registrationInfo: (body) Device Registration information. 
@@ -25,7 +24,6 @@ public class RegistrationsAPI: APIBase {
     }
 
     /**
-     
      Confirm User
      
      - parameter registrationInfo: (body) Device Registration information. 
@@ -44,9 +42,7 @@ public class RegistrationsAPI: APIBase {
     }
 
     /**
-     
      Confirm User
-     
      - PUT /devices/registrations/pin
      - This call updates the registration request issued earlier by associating it with an authenticated user and captures all additional information required to add a new device.
      - OAuth:
@@ -65,16 +61,16 @@ public class RegistrationsAPI: APIBase {
     public class func confirmUserWithRequestBuilder(registrationInfo registrationInfo: DeviceRegConfirmUserRequest) -> RequestBuilder<DeviceRegConfirmUserResponseEnvelope> {
         let path = "/devices/registrations/pin"
         let URLString = ArtikCloudAPI.basePath + path
-        
         let parameters = registrationInfo.encodeToJSON() as? [String:AnyObject]
-
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<DeviceRegConfirmUserResponseEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "PUT", URLString: URLString, parameters: parameters, isBody: true)
+        return requestBuilder.init(method: "PUT", URLString: URLString, parameters: convertedParameters, isBody: true)
     }
 
     /**
-     
      Get Request Status For User
      
      - parameter requestId: (path) Request ID. 
@@ -87,7 +83,6 @@ public class RegistrationsAPI: APIBase {
     }
 
     /**
-     
      Get Request Status For User
      
      - parameter requestId: (path) Request ID. 
@@ -106,9 +101,7 @@ public class RegistrationsAPI: APIBase {
     }
 
     /**
-     
      Get Request Status For User
-     
      - GET /devices/registrations/{requestId}/status
      - This call checks the status of the request so users can poll and know when registration is complete.
      - OAuth:
@@ -129,17 +122,19 @@ public class RegistrationsAPI: APIBase {
         var path = "/devices/registrations/{requestId}/status"
         path = path.stringByReplacingOccurrencesOfString("{requestId}", withString: "\(requestId)", options: .LiteralSearch, range: nil)
         let URLString = ArtikCloudAPI.basePath + path
-        
-        let nillableParameters: [String:AnyObject?] = [:]
-        let parameters = APIHelper.rejectNil(nillableParameters)
 
+        let nillableParameters: [String:AnyObject?] = [:]
+ 
+        let parameters = APIHelper.rejectNil(nillableParameters)
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<DeviceRegStatusResponseEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "GET", URLString: URLString, parameters: parameters, isBody: true)
+        return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: true)
     }
 
     /**
-     
      Unregister Device
      
      - parameter deviceId: (path) Device ID. 
@@ -152,7 +147,6 @@ public class RegistrationsAPI: APIBase {
     }
 
     /**
-     
      Unregister Device
      
      - parameter deviceId: (path) Device ID. 
@@ -171,9 +165,7 @@ public class RegistrationsAPI: APIBase {
     }
 
     /**
-     
      Unregister Device
-     
      - DELETE /devices/{deviceId}/registrations
      - This call clears any associations from the secure device registration.
      - OAuth:
@@ -203,13 +195,16 @@ public class RegistrationsAPI: APIBase {
         var path = "/devices/{deviceId}/registrations"
         path = path.stringByReplacingOccurrencesOfString("{deviceId}", withString: "\(deviceId)", options: .LiteralSearch, range: nil)
         let URLString = ArtikCloudAPI.basePath + path
-        
-        let nillableParameters: [String:AnyObject?] = [:]
-        let parameters = APIHelper.rejectNil(nillableParameters)
 
+        let nillableParameters: [String:AnyObject?] = [:]
+ 
+        let parameters = APIHelper.rejectNil(nillableParameters)
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<UnregisterDeviceResponseEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "DELETE", URLString: URLString, parameters: parameters, isBody: true)
+        return requestBuilder.init(method: "DELETE", URLString: URLString, parameters: convertedParameters, isBody: true)
     }
 
 }

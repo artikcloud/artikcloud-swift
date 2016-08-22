@@ -10,9 +10,7 @@ import Foundation
 
 /** User Application Properties Envelope */
 public class PropertiesEnvelope: JSONEncodable {
-
     public var data: AppProperties?
-    
 
     public init() {}
 

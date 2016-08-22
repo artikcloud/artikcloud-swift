@@ -10,9 +10,7 @@ import Foundation
 
 /** Export Data Array. */
 public class ExportDataArray: JSONEncodable {
-
     public var exports: [ExportData]?
-    
 
     public init() {}
 

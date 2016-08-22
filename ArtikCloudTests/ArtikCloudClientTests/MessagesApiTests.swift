@@ -6,18 +6,20 @@
 //  Copyright © 2016 Samsung Strategy and Innovation Center. All rights reserved.
 //
 
-import ArtikCloud
+import ArtikCloudSwift
 import XCTest
 import PromiseKit
 @testable import ArtikCloudClient
 
-class MessagesApiTests: XCTestCase {
+class MessagesApiTests: ArtikCloudTests {
     
     let testTimeout = 100.0
 
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        
+        ArtikCloudAPI.customHeaders["Authorization"] = "Bearer " + getProperty(key: "device1.token")
+
     }
     
     override func tearDown() {
@@ -26,18 +28,16 @@ class MessagesApiTests: XCTestCase {
     }
 
     func testSendMessage() {
-        let sdid = "993925c3cd994bf7a51c620884be65e9"
-        let token = "1eef3e3251e147d1ac707a57f6779c49"
+        let sdid = self.getProperty(key: "device1.id")
         
         let expectation = self.expectationWithDescription("testSendMessage")
-        
-        ArtikCloudAPI.customHeaders["Authorization"] = "Bearer " + token
         
         let message = MessageAction()
         message.sdid = sdid
         message.ts = 0
-        message._type = "message"
-        message.data = [ "volume": 5 ]
+        //message._type = "message"
+        message.type = "message"
+        message.data = [ "steps": 500 ]
         
         MessagesAPI.sendMessageAction(data: message).then { messageIDEnvelope -> Void in
             XCTAssertNotNil(messageIDEnvelope.data)
@@ -52,9 +52,9 @@ class MessagesApiTests: XCTestCase {
                     let normalizedMessage = responseEnvelope.data?[0]
                     XCTAssertNotNil(normalizedMessage)
                 
-                    let volume = normalizedMessage!.data!["volume"] as? NSNumber
-                    XCTAssertNotNil(volume)
-                    XCTAssertEqual(NSNumber(int: 5), volume)
+                    let steps = normalizedMessage!.data!["steps"] as? NSNumber
+                    XCTAssertNotNil(steps)
+                    XCTAssertEqual(NSNumber(int: 500), steps)
                 
                     expectation.fulfill()
                 }.always {
@@ -65,6 +65,7 @@ class MessagesApiTests: XCTestCase {
             }.always {
                 // Noop for now
             }.error { error -> Void in
+               
                 XCTFail("Could not send Message")
                 
         }

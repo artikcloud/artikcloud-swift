@@ -10,12 +10,10 @@ import Foundation
 
 /** Device Token */
 public class DeviceToken: JSONEncodable {
-
     public var accessToken: String?
     public var uid: String?
     public var did: String?
     public var cid: String?
-    
 
     public init() {}
 

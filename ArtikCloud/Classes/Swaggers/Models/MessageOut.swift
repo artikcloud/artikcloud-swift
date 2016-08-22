@@ -10,7 +10,6 @@ import Foundation
 
 /** Message received by a WebSocket. */
 public class MessageOut: JSONEncodable {
-
     /** Message ID. */
     public var mid: String?
     /** User ID. */
@@ -18,10 +17,9 @@ public class MessageOut: JSONEncodable {
     /** Source Device Type ID. */
     public var sdtid: String?
     /** Created Timestamp (past, present or future). Defaults to current time if not provided. */
-    public var cts: Int?
+    public var cts: Int64?
     /** Manifest Version. */
-    public var mv: Int?
-    
+    public var mv: Int32?
 
     public init() {}
 
@@ -31,8 +29,8 @@ public class MessageOut: JSONEncodable {
         nillableDictionary["mid"] = self.mid
         nillableDictionary["uid"] = self.uid
         nillableDictionary["sdtid"] = self.sdtid
-        nillableDictionary["cts"] = self.cts
-        nillableDictionary["mv"] = self.mv
+        nillableDictionary["cts"] = self.cts?.encodeToJSON()
+        nillableDictionary["mv"] = self.mv?.encodeToJSON()
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
         return dictionary
     }

@@ -10,12 +10,10 @@ import Foundation
 
 /** Action details. */
 public class ActionDetails: JSONEncodable {
-
     /** Parameters. */
     public var parameters: [String:AnyObject]?
     /** Name. */
     public var name: String?
-    
 
     public init() {}
 

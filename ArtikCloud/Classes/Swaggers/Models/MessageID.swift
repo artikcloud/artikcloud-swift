@@ -10,10 +10,8 @@ import Foundation
 
 /** Mesage ID. */
 public class MessageID: JSONEncodable {
-
     /** Message ID. */
     public var mid: String?
-    
 
     public init() {}
 

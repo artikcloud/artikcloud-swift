@@ -10,11 +10,9 @@ import Foundation
 
 /** User Application Properties */
 public class AppProperties: JSONEncodable {
-
     public var uid: String?
     public var aid: String?
     public var properties: String?
-    
 
     public init() {}
 

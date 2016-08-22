@@ -10,9 +10,7 @@ import Foundation
 
 /** Export Request Response. */
 public class ExportRequestResponse: JSONEncodable {
-
     public var data: ExportRequestData?
-    
 
     public init() {}
 

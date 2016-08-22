@@ -4,7 +4,6 @@
 
 ## Build generated
 build/
-ArtikCloudTests/Pods/
 DerivedData
 
 ## Various settings
@@ -62,4 +61,4 @@ Carthage/Build
 
 fastlane/report.xml
 fastlane/screenshots
-Podfile.lock
+ArtikCloudTests/Pods/

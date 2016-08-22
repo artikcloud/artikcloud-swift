@@ -10,22 +10,20 @@ import Foundation
 
 /** Export History Response. */
 public class ExportHistoryResponse: JSONEncodable {
-
-    public var count: Int?
+    public var count: Int64?
     public var data: ExportDataArray?
-    public var offset: Int?
-    public var total: Int?
-    
+    public var offset: Int64?
+    public var total: Int64?
 
     public init() {}
 
     // MARK: JSONEncodable
     func encodeToJSON() -> AnyObject {
         var nillableDictionary = [String:AnyObject?]()
-        nillableDictionary["count"] = self.count
+        nillableDictionary["count"] = self.count?.encodeToJSON()
         nillableDictionary["data"] = self.data?.encodeToJSON()
-        nillableDictionary["offset"] = self.offset
-        nillableDictionary["total"] = self.total
+        nillableDictionary["offset"] = self.offset?.encodeToJSON()
+        nillableDictionary["total"] = self.total?.encodeToJSON()
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
         return dictionary
     }

@@ -10,9 +10,7 @@ import Foundation
 
 /** Holds an array of DeviceTypes */
 public class DeviceTypeArray: JSONEncodable {
-
     public var deviceTypes: [DeviceType]?
-    
 
     public init() {}
 

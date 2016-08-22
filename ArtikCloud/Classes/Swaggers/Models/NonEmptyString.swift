@@ -10,9 +10,7 @@ import Foundation
 
 /**  */
 public class NonEmptyString: JSONEncodable {
-
     public var text: String?
-    
 
     public init() {}
 

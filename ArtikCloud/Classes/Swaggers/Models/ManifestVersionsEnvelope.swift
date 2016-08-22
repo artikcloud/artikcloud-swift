@@ -10,9 +10,7 @@ import Foundation
 
 /** Manifest Versions Envelope */
 public class ManifestVersionsEnvelope: JSONEncodable {
-
     public var data: ManifestVersions?
-    
 
     public init() {}
 

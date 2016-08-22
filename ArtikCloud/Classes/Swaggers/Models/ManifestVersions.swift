@@ -10,9 +10,7 @@ import Foundation
 
 /** Manifest Versions */
 public class ManifestVersions: JSONEncodable {
-
     public var versions: [String]?
-    
 
     public init() {}
 

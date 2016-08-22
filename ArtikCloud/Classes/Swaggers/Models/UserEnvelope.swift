@@ -10,9 +10,7 @@ import Foundation
 
 /** User Envelope */
 public class UserEnvelope: JSONEncodable {
-
     public var data: User?
-    
 
     public init() {}
 

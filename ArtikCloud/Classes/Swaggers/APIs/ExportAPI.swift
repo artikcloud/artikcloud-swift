@@ -12,7 +12,6 @@ import PromiseKit
 
 public class ExportAPI: APIBase {
     /**
-     
      Create Export Request
      
      - parameter exportRequestInfo: (body) ExportRequest object that is passed in the body 
@@ -25,7 +24,6 @@ public class ExportAPI: APIBase {
     }
 
     /**
-     
      Create Export Request
      
      - parameter exportRequestInfo: (body) ExportRequest object that is passed in the body 
@@ -44,9 +42,7 @@ public class ExportAPI: APIBase {
     }
 
     /**
-     
      Create Export Request
-     
      - POST /messages/export
      - Export normalized messages. The following input combinations are supported:<br/><table><tr><th>Combination</th><th>Parameters</th><th>Description</th></tr><tr><td>Get by users</td><td>uids</td><td>Search by a list of User IDs. For each user in the list, the current authenticated user must have read access over the specified user.</td></tr><tr><td>Get by devices</td><td>sdids</td><td>Search by Source Device IDs.</td></tr><tr><td>Get by device types</td><td>uids,sdtids</td><td>Search by list of Source Device Type IDs for the given list of users.</td></tr><tr><td>Get by trial</td><td>trialId</td><td>Search by Trial ID.</td></tr><tr><td>Get by combination of parameters</td><td>uids,sdids,sdtids</td><td>Search by list of Source Device IDs. Each Device ID must belong to a Source Device Type ID and a User ID.</td></tr><tr><td>Common</td><td>startDate,endDate,order,format,url,csvHeaders</td><td>Parameters that can be used with the above combinations.</td></tr></table>
      - OAuth:
@@ -75,16 +71,16 @@ public class ExportAPI: APIBase {
     public class func exportRequestWithRequestBuilder(exportRequestInfo exportRequestInfo: ExportRequestInfo) -> RequestBuilder<ExportRequestResponse> {
         let path = "/messages/export"
         let URLString = ArtikCloudAPI.basePath + path
-        
         let parameters = exportRequestInfo.encodeToJSON() as? [String:AnyObject]
-
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<ExportRequestResponse>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "POST", URLString: URLString, parameters: parameters, isBody: true)
+        return requestBuilder.init(method: "POST", URLString: URLString, parameters: convertedParameters, isBody: true)
     }
 
     /**
-     
      Get Export History
      
      - parameter trialId: (query) Filter by trialId. (optional)
@@ -92,14 +88,13 @@ public class ExportAPI: APIBase {
      - parameter offset: (query) Pagination offset. (optional)
      - parameter completion: completion handler to receive the data and the error objects
      */
-    public class func getExportHistory(trialId trialId: String?, count: Int?, offset: Int?, completion: ((data: ExportHistoryResponse?, error: ErrorType?) -> Void)) {
+    public class func getExportHistory(trialId trialId: String? = nil, count: Int32? = nil, offset: Int32? = nil, completion: ((data: ExportHistoryResponse?, error: ErrorType?) -> Void)) {
         getExportHistoryWithRequestBuilder(trialId: trialId, count: count, offset: offset).execute { (response, error) -> Void in
             completion(data: response?.body, error: error);
         }
     }
 
     /**
-     
      Get Export History
      
      - parameter trialId: (query) Filter by trialId. (optional)
@@ -107,7 +102,7 @@ public class ExportAPI: APIBase {
      - parameter offset: (query) Pagination offset. (optional)
      - returns: Promise<ExportHistoryResponse>
      */
-    public class func getExportHistory(trialId trialId: String?, count: Int?, offset: Int?) -> Promise<ExportHistoryResponse> {
+    public class func getExportHistory(trialId trialId: String? = nil, count: Int32? = nil, offset: Int32? = nil) -> Promise<ExportHistoryResponse> {
         let deferred = Promise<ExportHistoryResponse>.pendingPromise()
         getExportHistory(trialId: trialId, count: count, offset: offset) { data, error in
             if let error = error {
@@ -120,9 +115,7 @@ public class ExportAPI: APIBase {
     }
 
     /**
-     
      Get Export History
-     
      - GET /messages/export/history
      - Get the history of export requests.
      - OAuth:
@@ -160,24 +153,26 @@ public class ExportAPI: APIBase {
 
      - returns: RequestBuilder<ExportHistoryResponse> 
      */
-    public class func getExportHistoryWithRequestBuilder(trialId trialId: String?, count: Int?, offset: Int?) -> RequestBuilder<ExportHistoryResponse> {
+    public class func getExportHistoryWithRequestBuilder(trialId trialId: String? = nil, count: Int32? = nil, offset: Int32? = nil) -> RequestBuilder<ExportHistoryResponse> {
         let path = "/messages/export/history"
         let URLString = ArtikCloudAPI.basePath + path
-        
+
         let nillableParameters: [String:AnyObject?] = [
             "trialId": trialId,
-            "count": count,
-            "offset": offset
+            "count": count?.encodeToJSON(),
+            "offset": offset?.encodeToJSON()
         ]
+ 
         let parameters = APIHelper.rejectNil(nillableParameters)
-
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<ExportHistoryResponse>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "GET", URLString: URLString, parameters: parameters, isBody: false)
+        return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: false)
     }
 
     /**
-     
      Get Export Result
      
      - parameter exportId: (path) Export ID of the export query. 
@@ -190,7 +185,6 @@ public class ExportAPI: APIBase {
     }
 
     /**
-     
      Get Export Result
      
      - parameter exportId: (path) Export ID of the export query. 
@@ -209,9 +203,7 @@ public class ExportAPI: APIBase {
     }
 
     /**
-     
      Get Export Result
-     
      - GET /messages/export/{exportId}/result
      - Retrieve result of the export query in tgz format. The tar file may contain one or more files with the results.
      - OAuth:
@@ -227,17 +219,19 @@ public class ExportAPI: APIBase {
         var path = "/messages/export/{exportId}/result"
         path = path.stringByReplacingOccurrencesOfString("{exportId}", withString: "\(exportId)", options: .LiteralSearch, range: nil)
         let URLString = ArtikCloudAPI.basePath + path
-        
-        let nillableParameters: [String:AnyObject?] = [:]
-        let parameters = APIHelper.rejectNil(nillableParameters)
 
+        let nillableParameters: [String:AnyObject?] = [:]
+ 
+        let parameters = APIHelper.rejectNil(nillableParameters)
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<String>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "GET", URLString: URLString, parameters: parameters, isBody: true)
+        return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: true)
     }
 
     /**
-     
      Check Export Status
      
      - parameter exportId: (path) Export ID of the export query. 
@@ -250,7 +244,6 @@ public class ExportAPI: APIBase {
     }
 
     /**
-     
      Check Export Status
      
      - parameter exportId: (path) Export ID of the export query. 
@@ -269,9 +262,7 @@ public class ExportAPI: APIBase {
     }
 
     /**
-     
      Check Export Status
-     
      - GET /messages/export/{exportId}/status
      - Check status of the export query.
      - OAuth:
@@ -293,13 +284,16 @@ public class ExportAPI: APIBase {
         var path = "/messages/export/{exportId}/status"
         path = path.stringByReplacingOccurrencesOfString("{exportId}", withString: "\(exportId)", options: .LiteralSearch, range: nil)
         let URLString = ArtikCloudAPI.basePath + path
-        
-        let nillableParameters: [String:AnyObject?] = [:]
-        let parameters = APIHelper.rejectNil(nillableParameters)
 
+        let nillableParameters: [String:AnyObject?] = [:]
+ 
+        let parameters = APIHelper.rejectNil(nillableParameters)
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<ExportStatusResponse>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "GET", URLString: URLString, parameters: parameters, isBody: true)
+        return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: true)
     }
 
 }

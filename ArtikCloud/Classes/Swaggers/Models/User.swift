@@ -10,15 +10,13 @@ import Foundation
 
 /** User Information */
 public class User: JSONEncodable {
-
     public var id: String?
     public var name: String?
     public var email: String?
     public var fullName: String?
     public var saIdentity: String?
-    public var createdOn: Int?
-    public var modifiedOn: Int?
-    
+    public var createdOn: Int64?
+    public var modifiedOn: Int64?
 
     public init() {}
 
@@ -30,8 +28,8 @@ public class User: JSONEncodable {
         nillableDictionary["email"] = self.email
         nillableDictionary["fullName"] = self.fullName
         nillableDictionary["saIdentity"] = self.saIdentity
-        nillableDictionary["createdOn"] = self.createdOn
-        nillableDictionary["modifiedOn"] = self.modifiedOn
+        nillableDictionary["createdOn"] = self.createdOn?.encodeToJSON()
+        nillableDictionary["modifiedOn"] = self.modifiedOn?.encodeToJSON()
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
         return dictionary
     }

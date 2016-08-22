@@ -10,9 +10,7 @@ import Foundation
 
 /** Device Type Envelope */
 public class DeviceTypeEnvelope: JSONEncodable {
-
     public var data: DeviceType?
-    
 
     public init() {}
 

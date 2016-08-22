@@ -10,9 +10,7 @@ import Foundation
 
 /** Contains the arry of Tags. */
 public class TagArray: JSONEncodable {
-
     public var tags: [Tag]?
-    
 
     public init() {}
 

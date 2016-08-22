@@ -10,9 +10,7 @@ import Foundation
 
 /** Manifest Properties */
 public class ManifestProperties: JSONEncodable {
-
     public var properties: FieldsActions?
-    
 
     public init() {}
 

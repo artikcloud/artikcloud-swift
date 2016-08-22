@@ -10,9 +10,7 @@ import Foundation
 
 /**  */
 public class CheckTokenMessage: JSONEncodable {
-
     public var message: String?
-    
 
     public init() {}
 

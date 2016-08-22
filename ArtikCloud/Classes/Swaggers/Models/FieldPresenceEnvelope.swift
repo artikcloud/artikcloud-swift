@@ -10,15 +10,13 @@ import Foundation
 
 /** Field Presence Envelope */
 public class FieldPresenceEnvelope: JSONEncodable {
-
     public var sdid: String?
     public var fieldPresence: String?
-    public var startDate: Int?
-    public var endDate: Int?
+    public var startDate: Int64?
+    public var endDate: Int64?
     public var interval: String?
-    public var size: Int?
+    public var size: Int64?
     public var data: [FieldPresence]?
-    
 
     public init() {}
 
@@ -27,10 +25,10 @@ public class FieldPresenceEnvelope: JSONEncodable {
         var nillableDictionary = [String:AnyObject?]()
         nillableDictionary["sdid"] = self.sdid
         nillableDictionary["fieldPresence"] = self.fieldPresence
-        nillableDictionary["startDate"] = self.startDate
-        nillableDictionary["endDate"] = self.endDate
+        nillableDictionary["startDate"] = self.startDate?.encodeToJSON()
+        nillableDictionary["endDate"] = self.endDate?.encodeToJSON()
         nillableDictionary["interval"] = self.interval
-        nillableDictionary["size"] = self.size
+        nillableDictionary["size"] = self.size?.encodeToJSON()
         nillableDictionary["data"] = self.data?.encodeToJSON()
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
         return dictionary

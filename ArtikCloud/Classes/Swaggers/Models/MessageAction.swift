@@ -10,17 +10,15 @@ import Foundation
 
 /** Message or Action Information. */
 public class MessageAction: JSONEncodable {
-
     public var data: [String:AnyObject]?
     /** Destination Device ID. */
     public var ddid: String?
     /** Source Device ID. */
     public var sdid: String?
     /** Timestamp (past, present or future). Defaults to current time if not provided. */
-    public var ts: Int?
+    public var ts: Int64?
     /** Type. */
-    public var _type: String?
-    
+    public var type: String?
 
     public init() {}
 
@@ -30,8 +28,8 @@ public class MessageAction: JSONEncodable {
         nillableDictionary["data"] = self.data?.encodeToJSON()
         nillableDictionary["ddid"] = self.ddid
         nillableDictionary["sdid"] = self.sdid
-        nillableDictionary["ts"] = self.ts
-        nillableDictionary["type"] = self._type
+        nillableDictionary["ts"] = self.ts?.encodeToJSON()
+        nillableDictionary["type"] = self.type
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
         return dictionary
     }

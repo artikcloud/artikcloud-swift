@@ -10,9 +10,7 @@ import Foundation
 
 /**  */
 public class DeviceRegConfirmUserResponseEnvelope: JSONEncodable {
-
     public var data: DeviceRegConfirmUserResponse?
-    
 
     public init() {}
 

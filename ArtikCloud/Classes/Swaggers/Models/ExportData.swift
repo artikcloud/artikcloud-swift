@@ -10,29 +10,27 @@ import Foundation
 
 /** Export Data. */
 public class ExportData: JSONEncodable {
-
-    public var expirationDate: Int?
+    public var expirationDate: Int64?
     public var exportId: String?
-    public var fileSize: Int?
+    public var fileSize: Int64?
     public var md5: String?
     public var request: ExportRequest?
     /** Export status */
     public var status: String?
-    public var totalMessages: Int?
-    
+    public var totalMessages: Int64?
 
     public init() {}
 
     // MARK: JSONEncodable
     func encodeToJSON() -> AnyObject {
         var nillableDictionary = [String:AnyObject?]()
-        nillableDictionary["expirationDate"] = self.expirationDate
+        nillableDictionary["expirationDate"] = self.expirationDate?.encodeToJSON()
         nillableDictionary["exportId"] = self.exportId
-        nillableDictionary["fileSize"] = self.fileSize
+        nillableDictionary["fileSize"] = self.fileSize?.encodeToJSON()
         nillableDictionary["md5"] = self.md5
         nillableDictionary["request"] = self.request?.encodeToJSON()
         nillableDictionary["status"] = self.status
-        nillableDictionary["totalMessages"] = self.totalMessages
+        nillableDictionary["totalMessages"] = self.totalMessages?.encodeToJSON()
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]
         return dictionary
     }

@@ -10,10 +10,8 @@ import Foundation
 
 /**  */
 public class DeviceRegConfirmUserResponse: JSONEncodable {
-
     /** The registration request id. */
     public var rid: String?
-    
 
     public init() {}
 

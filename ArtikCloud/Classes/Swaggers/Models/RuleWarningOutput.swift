@@ -10,10 +10,8 @@ import Foundation
 
 /** Rule Warnings */
 public class RuleWarningOutput: JSONEncodable {
-
     public var code: String?
     public var message: String?
-    
 
     public init() {}
 

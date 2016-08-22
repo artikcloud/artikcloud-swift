@@ -10,9 +10,7 @@ import Foundation
 
 /**  */
 public class TokenResponse: JSONEncodable {
-
     public var data: Token?
-    
 
     public init() {}
 

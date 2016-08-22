@@ -10,14 +10,13 @@ import Foundation
 
 /** Device Type Information */
 public class DeviceType: JSONEncodable {
-
     /** Device Type ID. */
     public var id: String?
     /** Unique Name. */
     public var uniqueName: String?
     /** Latest Manifest version. */
-    public var latestVersion: Int?
-    public var lastUpdated: Int?
+    public var latestVersion: Int32?
+    public var lastUpdated: Int64?
     /** Name. */
     public var name: String?
     /** Description. */
@@ -46,7 +45,6 @@ public class DeviceType: JSONEncodable {
     public var issuerDn: String?
     /** Vendor ID. (Used in SDR) */
     public var vid: String?
-    
 
     public init() {}
 
@@ -55,8 +53,8 @@ public class DeviceType: JSONEncodable {
         var nillableDictionary = [String:AnyObject?]()
         nillableDictionary["id"] = self.id
         nillableDictionary["uniqueName"] = self.uniqueName
-        nillableDictionary["latestVersion"] = self.latestVersion
-        nillableDictionary["lastUpdated"] = self.lastUpdated
+        nillableDictionary["latestVersion"] = self.latestVersion?.encodeToJSON()
+        nillableDictionary["lastUpdated"] = self.lastUpdated?.encodeToJSON()
         nillableDictionary["name"] = self.name
         nillableDictionary["description"] = self.description
         nillableDictionary["uid"] = self.uid

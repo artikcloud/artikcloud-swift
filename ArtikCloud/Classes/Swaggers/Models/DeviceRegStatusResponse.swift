@@ -10,12 +10,10 @@ import Foundation
 
 /**  */
 public class DeviceRegStatusResponse: JSONEncodable {
-
     /** The created or existing device id. */
     public var did: String?
     /** Status of the ongoing device registration request. */
     public var status: String?
-    
 
     public init() {}
 

@@ -10,9 +10,7 @@ import Foundation
 
 /** Holds an array of Rules. */
 public class RuleArray: JSONEncodable {
-
     public var rules: [OutputRule]?
-    
 
     public init() {}
 

@@ -10,12 +10,10 @@ import Foundation
 
 /**  */
 public class Token: JSONEncodable {
-
     public var accessToken: String?
-    public var expiresIn: Int?
+    public var expiresIn: Int64?
     public var scope: String?
     public var tokenType: String?
-    
 
     public init() {}
 
@@ -23,7 +21,7 @@ public class Token: JSONEncodable {
     func encodeToJSON() -> AnyObject {
         var nillableDictionary = [String:AnyObject?]()
         nillableDictionary["access_token"] = self.accessToken
-        nillableDictionary["expires_in"] = self.expiresIn
+        nillableDictionary["expires_in"] = self.expiresIn?.encodeToJSON()
         nillableDictionary["scope"] = self.scope
         nillableDictionary["token_type"] = self.tokenType
         let dictionary: [String:AnyObject] = APIHelper.rejectNil(nillableDictionary) ?? [:]

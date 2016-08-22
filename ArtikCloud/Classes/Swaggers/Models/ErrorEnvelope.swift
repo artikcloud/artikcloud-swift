@@ -10,10 +10,8 @@ import Foundation
 
 /** WebSocket Error Envelope */
 public class ErrorEnvelope: JSONEncodable {
-
     /** Error Data */
     public var error: WebSocketError?
-    
 
     public init() {}
 

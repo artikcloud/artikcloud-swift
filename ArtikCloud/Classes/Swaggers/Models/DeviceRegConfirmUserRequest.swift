@@ -10,14 +10,12 @@ import Foundation
 
 /**  */
 public class DeviceRegConfirmUserRequest: JSONEncodable {
-
     /** Device ID. Optional if deviceName is present */
     public var deviceId: String?
     /** Device Name. Optional if deviceId is present */
     public var deviceName: String?
     /** Pin obtained in the registrations call. */
     public var pin: String?
-    
 
     public init() {}
 

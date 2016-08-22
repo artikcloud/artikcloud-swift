@@ -10,9 +10,7 @@ import Foundation
 
 /** Message ID Envelope */
 public class MessageIDEnvelope: JSONEncodable {
-
     public var data: MessageID?
-    
 
     public init() {}
 

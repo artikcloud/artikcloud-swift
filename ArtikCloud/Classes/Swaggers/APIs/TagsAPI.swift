@@ -12,7 +12,6 @@ import PromiseKit
 
 public class TagsAPI: APIBase {
     /**
-     
      Get all categories
      
      - parameter completion: completion handler to receive the data and the error objects
@@ -24,7 +23,6 @@ public class TagsAPI: APIBase {
     }
 
     /**
-     
      Get all categories
      
      - returns: Promise<TagsEnvelope>
@@ -42,9 +40,7 @@ public class TagsAPI: APIBase {
     }
 
     /**
-     
      Get all categories
-     
      - GET /tags/categories
      - Get all tags marked as categories
      - OAuth:
@@ -64,17 +60,28 @@ public class TagsAPI: APIBase {
     public class func getTagCategoriesWithRequestBuilder() -> RequestBuilder<TagsEnvelope> {
         let path = "/tags/categories"
         let URLString = ArtikCloudAPI.basePath + path
-        
-        let nillableParameters: [String:AnyObject?] = [:]
-        let parameters = APIHelper.rejectNil(nillableParameters)
 
+        let nillableParameters: [String:AnyObject?] = [:]
+ 
+        let parameters = APIHelper.rejectNil(nillableParameters)
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<TagsEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "GET", URLString: URLString, parameters: parameters, isBody: true)
+        return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: true)
     }
 
     /**
-     
+     * enum for parameter entityType
+     */
+    public enum EntityType_getTagSuggestions: String { 
+        case Tag = "TAG"
+        case Application = "APPLICATION"
+        case DeviceType = "DEVICE_TYPE"
+    }
+
+    /**
      Get tag suggestions
      
      - parameter entityType: (query) Entity type name. (optional)
@@ -83,14 +90,13 @@ public class TagsAPI: APIBase {
      - parameter count: (query) Number of results to return. Max 10. (optional)
      - parameter completion: completion handler to receive the data and the error objects
      */
-    public class func getTagSuggestions(entityType entityType: String?, tags: String?, name: String?, count: Int?, completion: ((data: TagsEnvelope?, error: ErrorType?) -> Void)) {
+    public class func getTagSuggestions(entityType entityType: EntityType_getTagSuggestions? = nil, tags: String? = nil, name: String? = nil, count: Int32? = nil, completion: ((data: TagsEnvelope?, error: ErrorType?) -> Void)) {
         getTagSuggestionsWithRequestBuilder(entityType: entityType, tags: tags, name: name, count: count).execute { (response, error) -> Void in
             completion(data: response?.body, error: error);
         }
     }
 
     /**
-     
      Get tag suggestions
      
      - parameter entityType: (query) Entity type name. (optional)
@@ -99,7 +105,7 @@ public class TagsAPI: APIBase {
      - parameter count: (query) Number of results to return. Max 10. (optional)
      - returns: Promise<TagsEnvelope>
      */
-    public class func getTagSuggestions(entityType entityType: String?, tags: String?, name: String?, count: Int?) -> Promise<TagsEnvelope> {
+    public class func getTagSuggestions(entityType entityType: EntityType_getTagSuggestions? = nil, tags: String? = nil, name: String? = nil, count: Int32? = nil) -> Promise<TagsEnvelope> {
         let deferred = Promise<TagsEnvelope>.pendingPromise()
         getTagSuggestions(entityType: entityType, tags: tags, name: name, count: count) { data, error in
             if let error = error {
@@ -112,9 +118,7 @@ public class TagsAPI: APIBase {
     }
 
     /**
-     
      Get tag suggestions
-     
      - GET /tags/suggestions
      - Get tag suggestions for applications, device types that have been most used with a group of tags.
      - OAuth:
@@ -136,44 +140,45 @@ public class TagsAPI: APIBase {
 
      - returns: RequestBuilder<TagsEnvelope> 
      */
-    public class func getTagSuggestionsWithRequestBuilder(entityType entityType: String?, tags: String?, name: String?, count: Int?) -> RequestBuilder<TagsEnvelope> {
+    public class func getTagSuggestionsWithRequestBuilder(entityType entityType: EntityType_getTagSuggestions? = nil, tags: String? = nil, name: String? = nil, count: Int32? = nil) -> RequestBuilder<TagsEnvelope> {
         let path = "/tags/suggestions"
         let URLString = ArtikCloudAPI.basePath + path
-        
+
         let nillableParameters: [String:AnyObject?] = [
-            "entity_type": entityType,
+            "entity_type": entityType?.rawValue,
             "tags": tags,
             "name": name,
-            "count": count
+            "count": count?.encodeToJSON()
         ]
+ 
         let parameters = APIHelper.rejectNil(nillableParameters)
-
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<TagsEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "GET", URLString: URLString, parameters: parameters, isBody: false)
+        return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: false)
     }
 
     /**
-     
      Get all tags of categories
      
      - parameter categories: (query) Comma separated list of categories. (optional)
      - parameter completion: completion handler to receive the data and the error objects
      */
-    public class func getTagsByCategories(categories categories: String?, completion: ((data: TagsEnvelope?, error: ErrorType?) -> Void)) {
+    public class func getTagsByCategories(categories categories: String? = nil, completion: ((data: TagsEnvelope?, error: ErrorType?) -> Void)) {
         getTagsByCategoriesWithRequestBuilder(categories: categories).execute { (response, error) -> Void in
             completion(data: response?.body, error: error);
         }
     }
 
     /**
-     
      Get all tags of categories
      
      - parameter categories: (query) Comma separated list of categories. (optional)
      - returns: Promise<TagsEnvelope>
      */
-    public class func getTagsByCategories(categories categories: String?) -> Promise<TagsEnvelope> {
+    public class func getTagsByCategories(categories categories: String? = nil) -> Promise<TagsEnvelope> {
         let deferred = Promise<TagsEnvelope>.pendingPromise()
         getTagsByCategories(categories: categories) { data, error in
             if let error = error {
@@ -186,9 +191,7 @@ public class TagsAPI: APIBase {
     }
 
     /**
-     
      Get all tags of categories
-     
      - GET /tags
      - Get all tags related to the list of categories
      - OAuth:
@@ -207,18 +210,21 @@ public class TagsAPI: APIBase {
 
      - returns: RequestBuilder<TagsEnvelope> 
      */
-    public class func getTagsByCategoriesWithRequestBuilder(categories categories: String?) -> RequestBuilder<TagsEnvelope> {
+    public class func getTagsByCategoriesWithRequestBuilder(categories categories: String? = nil) -> RequestBuilder<TagsEnvelope> {
         let path = "/tags"
         let URLString = ArtikCloudAPI.basePath + path
-        
+
         let nillableParameters: [String:AnyObject?] = [
             "categories": categories
         ]
+ 
         let parameters = APIHelper.rejectNil(nillableParameters)
-
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<TagsEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "GET", URLString: URLString, parameters: parameters, isBody: false)
+        return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: false)
     }
 
 }

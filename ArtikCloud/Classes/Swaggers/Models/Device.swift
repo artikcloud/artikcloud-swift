@@ -10,7 +10,6 @@ import Foundation
 
 /** Device information. */
 public class Device: JSONEncodable {
-
     /** Device ID */
     public var id: String?
     /** User ID */
@@ -20,14 +19,14 @@ public class Device: JSONEncodable {
     /** Name */
     public var name: String?
     /** Manifest Version */
-    public var manifestVersion: Int?
+    public var manifestVersion: Int32?
     /** Manifest Version Policy (LATEST, DEVICE) */
     public var manifestVersionPolicy: String?
     /** Needs Provider Authentication */
     public var needProviderAuth: Bool?
     public var properties: [String:AnyObject]?
     /** Created On (milliseconds since epoch) */
-    public var createdOn: Int?
+    public var createdOn: Int64?
     /** Is Connected */
     public var connected: Bool?
     /** Certificate Info (if any) */
@@ -37,7 +36,6 @@ public class Device: JSONEncodable {
     /** External ID (if any) */
     public var eid: String?
     public var providerCredentials: [String:AnyObject]?
-    
 
     public init() {}
 
@@ -48,11 +46,11 @@ public class Device: JSONEncodable {
         nillableDictionary["uid"] = self.uid
         nillableDictionary["dtid"] = self.dtid
         nillableDictionary["name"] = self.name
-        nillableDictionary["manifestVersion"] = self.manifestVersion
+        nillableDictionary["manifestVersion"] = self.manifestVersion?.encodeToJSON()
         nillableDictionary["manifestVersionPolicy"] = self.manifestVersionPolicy
         nillableDictionary["needProviderAuth"] = self.needProviderAuth
         nillableDictionary["properties"] = self.properties?.encodeToJSON()
-        nillableDictionary["createdOn"] = self.createdOn
+        nillableDictionary["createdOn"] = self.createdOn?.encodeToJSON()
         nillableDictionary["connected"] = self.connected
         nillableDictionary["certificateInfo"] = self.certificateInfo
         nillableDictionary["certificateSignature"] = self.certificateSignature

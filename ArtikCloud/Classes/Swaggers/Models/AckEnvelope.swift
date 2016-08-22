@@ -10,9 +10,7 @@ import Foundation
 
 /** Acknowledgement Envelope. */
 public class AckEnvelope: JSONEncodable {
-
     public var data: Acknowledgement?
-    
 
     public init() {}
 

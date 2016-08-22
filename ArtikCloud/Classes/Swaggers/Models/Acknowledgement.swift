@@ -10,7 +10,6 @@ import Foundation
 
 /** Acknowledgement received by a WebSocket in response to a RegisterMessage, MessageIn or ActionIn. */
 public class Acknowledgement: JSONEncodable {
-
     /** Message ID. */
     public var mid: String?
     /** Confirmation ID. */
@@ -19,7 +18,6 @@ public class Acknowledgement: JSONEncodable {
     public var message: String?
     /** Code */
     public var code: String?
-    
 
     public init() {}
 

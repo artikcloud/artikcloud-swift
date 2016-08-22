@@ -12,7 +12,6 @@ import PromiseKit
 
 public class RulesAPI: APIBase {
     /**
-     
      Create Rule
      
      - parameter ruleInfo: (body) Rule object that needs to be added 
@@ -26,7 +25,6 @@ public class RulesAPI: APIBase {
     }
 
     /**
-     
      Create Rule
      
      - parameter ruleInfo: (body) Rule object that needs to be added 
@@ -46,9 +44,7 @@ public class RulesAPI: APIBase {
     }
 
     /**
-     
      Create Rule
-     
      - POST /rules
      - Create a new Rule
      - OAuth:
@@ -95,16 +91,16 @@ public class RulesAPI: APIBase {
     public class func createRuleWithRequestBuilder(ruleInfo ruleInfo: RuleCreationInfo, userId: String) -> RequestBuilder<RuleEnvelope> {
         let path = "/rules"
         let URLString = ArtikCloudAPI.basePath + path
-        
         let parameters = ruleInfo.encodeToJSON() as? [String:AnyObject]
-
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<RuleEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "POST", URLString: URLString, parameters: parameters, isBody: false)
+        return requestBuilder.init(method: "POST", URLString: URLString, parameters: convertedParameters, isBody: false)
     }
 
     /**
-     
      Delete Rule
      
      - parameter ruleId: (path) Rule ID. 
@@ -117,7 +113,6 @@ public class RulesAPI: APIBase {
     }
 
     /**
-     
      Delete Rule
      
      - parameter ruleId: (path) Rule ID. 
@@ -136,9 +131,7 @@ public class RulesAPI: APIBase {
     }
 
     /**
-     
      Delete Rule
-     
      - DELETE /rules/{ruleId}
      - Delete a Rule
      - OAuth:
@@ -185,17 +178,19 @@ public class RulesAPI: APIBase {
         var path = "/rules/{ruleId}"
         path = path.stringByReplacingOccurrencesOfString("{ruleId}", withString: "\(ruleId)", options: .LiteralSearch, range: nil)
         let URLString = ArtikCloudAPI.basePath + path
-        
-        let nillableParameters: [String:AnyObject?] = [:]
-        let parameters = APIHelper.rejectNil(nillableParameters)
 
+        let nillableParameters: [String:AnyObject?] = [:]
+ 
+        let parameters = APIHelper.rejectNil(nillableParameters)
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<RuleEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "DELETE", URLString: URLString, parameters: parameters, isBody: true)
+        return requestBuilder.init(method: "DELETE", URLString: URLString, parameters: convertedParameters, isBody: true)
     }
 
     /**
-     
      Get Rule
      
      - parameter ruleId: (path) Rule ID. 
@@ -208,7 +203,6 @@ public class RulesAPI: APIBase {
     }
 
     /**
-     
      Get Rule
      
      - parameter ruleId: (path) Rule ID. 
@@ -227,9 +221,7 @@ public class RulesAPI: APIBase {
     }
 
     /**
-     
      Get Rule
-     
      - GET /rules/{ruleId}
      - Get a rule using the Rule ID
      - OAuth:
@@ -276,17 +268,19 @@ public class RulesAPI: APIBase {
         var path = "/rules/{ruleId}"
         path = path.stringByReplacingOccurrencesOfString("{ruleId}", withString: "\(ruleId)", options: .LiteralSearch, range: nil)
         let URLString = ArtikCloudAPI.basePath + path
-        
-        let nillableParameters: [String:AnyObject?] = [:]
-        let parameters = APIHelper.rejectNil(nillableParameters)
 
+        let nillableParameters: [String:AnyObject?] = [:]
+ 
+        let parameters = APIHelper.rejectNil(nillableParameters)
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<RuleEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "GET", URLString: URLString, parameters: parameters, isBody: true)
+        return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: true)
     }
 
     /**
-     
      Update Rule
      
      - parameter ruleId: (path) Rule ID. 
@@ -300,7 +294,6 @@ public class RulesAPI: APIBase {
     }
 
     /**
-     
      Update Rule
      
      - parameter ruleId: (path) Rule ID. 
@@ -320,9 +313,7 @@ public class RulesAPI: APIBase {
     }
 
     /**
-     
      Update Rule
-     
      - PUT /rules/{ruleId}
      - Update an existing Rule
      - OAuth:
@@ -370,12 +361,13 @@ public class RulesAPI: APIBase {
         var path = "/rules/{ruleId}"
         path = path.stringByReplacingOccurrencesOfString("{ruleId}", withString: "\(ruleId)", options: .LiteralSearch, range: nil)
         let URLString = ArtikCloudAPI.basePath + path
-        
         let parameters = ruleInfo.encodeToJSON() as? [String:AnyObject]
-
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
         let requestBuilder: RequestBuilder<RuleEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "PUT", URLString: URLString, parameters: parameters, isBody: true)
+        return requestBuilder.init(method: "PUT", URLString: URLString, parameters: convertedParameters, isBody: true)
     }
 
 }

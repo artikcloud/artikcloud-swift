@@ -10,9 +10,7 @@ import Foundation
 
 /** Rule Envelope. */
 public class RuleEnvelope: JSONEncodable {
-
     public var data: OutputRule?
-    
 
     public init() {}
 
