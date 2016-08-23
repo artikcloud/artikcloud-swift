@@ -56,7 +56,7 @@ public class RulesAPI: APIBase {
     "description" : "aeiou",
     "index" : 123,
     "rule" : {
-      "key" : ""
+      "key" : "{}"
     },
     "error" : {
       "messageKey" : "aeiou",
@@ -65,7 +65,7 @@ public class RulesAPI: APIBase {
           "text" : "aeiou"
         } ]
       },
-      "messageArgs" : [ "" ],
+      "messageArgs" : [ "aeiou" ],
       "errorCode" : 123
     },
     "createdOn" : 123456789,
@@ -143,7 +143,7 @@ public class RulesAPI: APIBase {
     "description" : "aeiou",
     "index" : 123,
     "rule" : {
-      "key" : ""
+      "key" : "{}"
     },
     "error" : {
       "messageKey" : "aeiou",
@@ -152,7 +152,7 @@ public class RulesAPI: APIBase {
           "text" : "aeiou"
         } ]
       },
-      "messageArgs" : [ "" ],
+      "messageArgs" : [ "aeiou" ],
       "errorCode" : 123
     },
     "createdOn" : 123456789,
@@ -233,7 +233,7 @@ public class RulesAPI: APIBase {
     "description" : "aeiou",
     "index" : 123,
     "rule" : {
-      "key" : ""
+      "key" : "{}"
     },
     "error" : {
       "messageKey" : "aeiou",
@@ -242,7 +242,7 @@ public class RulesAPI: APIBase {
           "text" : "aeiou"
         } ]
       },
-      "messageArgs" : [ "" ],
+      "messageArgs" : [ "aeiou" ],
       "errorCode" : 123
     },
     "createdOn" : 123456789,
@@ -325,7 +325,7 @@ public class RulesAPI: APIBase {
     "description" : "aeiou",
     "index" : 123,
     "rule" : {
-      "key" : ""
+      "key" : "{}"
     },
     "error" : {
       "messageKey" : "aeiou",
@@ -334,7 +334,7 @@ public class RulesAPI: APIBase {
           "text" : "aeiou"
         } ]
       },
-      "messageArgs" : [ "" ],
+      "messageArgs" : [ "aeiou" ],
       "errorCode" : 123
     },
     "createdOn" : 123456789,

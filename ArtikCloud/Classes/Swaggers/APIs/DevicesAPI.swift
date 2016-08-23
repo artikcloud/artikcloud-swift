@@ -63,10 +63,10 @@ public class DevicesAPI: APIBase {
     "certificateSignature" : "aeiou",
     "id" : "aeiou",
     "providerCredentials" : {
-      "key" : ""
+      "key" : "{}"
     },
     "properties" : {
-      "key" : ""
+      "key" : "{}"
     }
   }
 }}]
@@ -139,10 +139,10 @@ public class DevicesAPI: APIBase {
     "certificateSignature" : "aeiou",
     "id" : "aeiou",
     "providerCredentials" : {
-      "key" : ""
+      "key" : "{}"
     },
     "properties" : {
-      "key" : ""
+      "key" : "{}"
     }
   }
 }}]
@@ -285,10 +285,10 @@ public class DevicesAPI: APIBase {
     "certificateSignature" : "aeiou",
     "id" : "aeiou",
     "providerCredentials" : {
-      "key" : ""
+      "key" : "{}"
     },
     "properties" : {
-      "key" : ""
+      "key" : "{}"
     }
   }
 }}]
@@ -498,10 +498,10 @@ public class DevicesAPI: APIBase {
     "certificateSignature" : "aeiou",
     "id" : "aeiou",
     "providerCredentials" : {
-      "key" : ""
+      "key" : "{}"
     },
     "properties" : {
-      "key" : ""
+      "key" : "{}"
     }
   }
 }}]

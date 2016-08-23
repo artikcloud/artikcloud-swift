@@ -50,7 +50,7 @@ public class DeviceTypesAPI: APIBase {
        - name: artikcloud_oauth
      - examples: [{contentType=application/json, example={
   "data" : {
-    "versions" : [ "" ]
+    "versions" : [ "aeiou" ]
   }
 }}]
      
@@ -299,10 +299,10 @@ public class DeviceTypesAPI: APIBase {
   "data" : {
     "properties" : {
       "fields" : {
-        "key" : ""
+        "key" : "{}"
       },
       "actions" : {
-        "key" : ""
+        "key" : "{}"
       }
     }
   }
@@ -371,10 +371,10 @@ public class DeviceTypesAPI: APIBase {
   "data" : {
     "properties" : {
       "fields" : {
-        "key" : ""
+        "key" : "{}"
       },
       "actions" : {
-        "key" : ""
+        "key" : "{}"
       }
     }
   }

@@ -375,10 +375,10 @@ public class UsersAPI: APIBase {
       "certificateSignature" : "aeiou",
       "id" : "aeiou",
       "providerCredentials" : {
-        "key" : ""
+        "key" : "{}"
       },
       "properties" : {
-        "key" : ""
+        "key" : "{}"
       }
     } ]
   },
@@ -532,7 +532,7 @@ public class UsersAPI: APIBase {
     "description" : "aeiou",
     "index" : 123,
     "rule" : {
-      "key" : ""
+      "key" : "{}"
     },
     "error" : {
       "messageKey" : "aeiou",
@@ -541,7 +541,7 @@ public class UsersAPI: APIBase {
           "text" : "aeiou"
         } ]
       },
-      "messageArgs" : [ "" ],
+      "messageArgs" : [ "aeiou" ],
       "errorCode" : 123
     },
     "createdOn" : 123456789,
