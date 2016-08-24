@@ -166,6 +166,33 @@ class Decoders {
             }
 
 
+            // Decoder for [Action]
+            Decoders.addDecoder(clazz: [Action].self) { (source: AnyObject) -> [Action] in
+                return Decoders.decode(clazz: [Action].self, source: source)
+            }
+            // Decoder for Action
+            Decoders.addDecoder(clazz: Action.self) { (source: AnyObject) -> Action in
+                let sourceDictionary = source as! [NSObject:AnyObject]
+                let instance = Action()
+                instance.name = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["name"])
+                instance.parameters = Decoders.decodeOptional(clazz: Dictionary.self, source: sourceDictionary["parameters"])
+                return instance
+            }
+
+
+            // Decoder for [ActionArray]
+            Decoders.addDecoder(clazz: [ActionArray].self) { (source: AnyObject) -> [ActionArray] in
+                return Decoders.decode(clazz: [ActionArray].self, source: source)
+            }
+            // Decoder for ActionArray
+            Decoders.addDecoder(clazz: ActionArray.self) { (source: AnyObject) -> ActionArray in
+                let sourceDictionary = source as! [NSObject:AnyObject]
+                let instance = ActionArray()
+                instance.actions = Decoders.decodeOptional(clazz: Array.self, source: sourceDictionary["actions"])
+                return instance
+            }
+
+
             // Decoder for [ActionDetails]
             Decoders.addDecoder(clazz: [ActionDetails].self) { (source: AnyObject) -> [ActionDetails] in
                 return Decoders.decode(clazz: [ActionDetails].self, source: source)
@@ -224,6 +251,23 @@ class Decoders {
                 instance.sdtid = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["sdtid"])
                 instance.cts = Decoders.decodeOptional(clazz: Int64.self, source: sourceDictionary["cts"])
                 instance.mv = Decoders.decodeOptional(clazz: Int32.self, source: sourceDictionary["mv"])
+                return instance
+            }
+
+
+            // Decoder for [Actions]
+            Decoders.addDecoder(clazz: [Actions].self) { (source: AnyObject) -> [Actions] in
+                return Decoders.decode(clazz: [Actions].self, source: source)
+            }
+            // Decoder for Actions
+            Decoders.addDecoder(clazz: Actions.self) { (source: AnyObject) -> Actions in
+                let sourceDictionary = source as! [NSObject:AnyObject]
+                let instance = Actions()
+                instance.data = Decoders.decodeOptional(clazz: ActionArray.self, source: sourceDictionary["data"])
+                instance.ddid = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["ddid"])
+                instance.sdid = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["sdid"])
+                instance.ts = Decoders.decodeOptional(clazz: Int64.self, source: sourceDictionary["ts"])
+                instance.type = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["type"])
                 return instance
             }
 
@@ -908,6 +952,22 @@ class Decoders {
             }
 
 
+            // Decoder for [Message]
+            Decoders.addDecoder(clazz: [Message].self) { (source: AnyObject) -> [Message] in
+                return Decoders.decode(clazz: [Message].self, source: source)
+            }
+            // Decoder for Message
+            Decoders.addDecoder(clazz: Message.self) { (source: AnyObject) -> Message in
+                let sourceDictionary = source as! [NSObject:AnyObject]
+                let instance = Message()
+                instance.data = Decoders.decodeOptional(clazz: Dictionary.self, source: sourceDictionary["data"])
+                instance.sdid = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["sdid"])
+                instance.ts = Decoders.decodeOptional(clazz: Int64.self, source: sourceDictionary["ts"])
+                instance.type = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["type"])
+                return instance
+            }
+
+
             // Decoder for [MessageAction]
             Decoders.addDecoder(clazz: [MessageAction].self) { (source: AnyObject) -> [MessageAction] in
                 return Decoders.decode(clazz: [MessageAction].self, source: source)
@@ -995,6 +1055,49 @@ class Decoders {
                 let sourceDictionary = source as! [NSObject:AnyObject]
                 let instance = NonEmptyString()
                 instance.text = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["text"])
+                return instance
+            }
+
+
+            // Decoder for [NormalizedAction]
+            Decoders.addDecoder(clazz: [NormalizedAction].self) { (source: AnyObject) -> [NormalizedAction] in
+                return Decoders.decode(clazz: [NormalizedAction].self, source: source)
+            }
+            // Decoder for NormalizedAction
+            Decoders.addDecoder(clazz: NormalizedAction.self) { (source: AnyObject) -> NormalizedAction in
+                let sourceDictionary = source as! [NSObject:AnyObject]
+                let instance = NormalizedAction()
+                instance.cts = Decoders.decodeOptional(clazz: Int64.self, source: sourceDictionary["cts"])
+                instance.ts = Decoders.decodeOptional(clazz: Int64.self, source: sourceDictionary["ts"])
+                instance.mid = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["mid"])
+                instance.sdid = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["sdid"])
+                instance.ddid = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["ddid"])
+                instance.ddtid = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["ddtid"])
+                instance.uid = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["uid"])
+                instance.mv = Decoders.decodeOptional(clazz: Int32.self, source: sourceDictionary["mv"])
+                instance.data = Decoders.decodeOptional(clazz: ActionArray.self, source: sourceDictionary["data"])
+                return instance
+            }
+
+
+            // Decoder for [NormalizedActionsEnvelope]
+            Decoders.addDecoder(clazz: [NormalizedActionsEnvelope].self) { (source: AnyObject) -> [NormalizedActionsEnvelope] in
+                return Decoders.decode(clazz: [NormalizedActionsEnvelope].self, source: source)
+            }
+            // Decoder for NormalizedActionsEnvelope
+            Decoders.addDecoder(clazz: NormalizedActionsEnvelope.self) { (source: AnyObject) -> NormalizedActionsEnvelope in
+                let sourceDictionary = source as! [NSObject:AnyObject]
+                let instance = NormalizedActionsEnvelope()
+                instance.ddids = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["ddids"])
+                instance.ddid = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["ddid"])
+                instance.uid = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["uid"])
+                instance.startDate = Decoders.decodeOptional(clazz: Int64.self, source: sourceDictionary["startDate"])
+                instance.endDate = Decoders.decodeOptional(clazz: Int64.self, source: sourceDictionary["endDate"])
+                instance.order = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["order"])
+                instance.next = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["next"])
+                instance.count = Decoders.decodeOptional(clazz: Int64.self, source: sourceDictionary["count"])
+                instance.size = Decoders.decodeOptional(clazz: Int64.self, source: sourceDictionary["size"])
+                instance.data = Decoders.decodeOptional(clazz: Array.self, source: sourceDictionary["data"])
                 return instance
             }
 
@@ -1340,6 +1443,35 @@ class Decoders {
                 instance.expiresIn = Decoders.decodeOptional(clazz: Int64.self, source: sourceDictionary["expires_in"])
                 instance.scope = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["scope"])
                 instance.tokenType = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["token_type"])
+                return instance
+            }
+
+
+            // Decoder for [TokenInfo]
+            Decoders.addDecoder(clazz: [TokenInfo].self) { (source: AnyObject) -> [TokenInfo] in
+                return Decoders.decode(clazz: [TokenInfo].self, source: source)
+            }
+            // Decoder for TokenInfo
+            Decoders.addDecoder(clazz: TokenInfo.self) { (source: AnyObject) -> TokenInfo in
+                let sourceDictionary = source as! [NSObject:AnyObject]
+                let instance = TokenInfo()
+                instance.clientId = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["client_id"])
+                instance.deviceId = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["device_id"])
+                instance.expiresIn = Decoders.decodeOptional(clazz: Int32.self, source: sourceDictionary["expires_in"])
+                instance.userId = Decoders.decodeOptional(clazz: String.self, source: sourceDictionary["user_id"])
+                return instance
+            }
+
+
+            // Decoder for [TokenInfoSuccessResponse]
+            Decoders.addDecoder(clazz: [TokenInfoSuccessResponse].self) { (source: AnyObject) -> [TokenInfoSuccessResponse] in
+                return Decoders.decode(clazz: [TokenInfoSuccessResponse].self, source: source)
+            }
+            // Decoder for TokenInfoSuccessResponse
+            Decoders.addDecoder(clazz: TokenInfoSuccessResponse.self) { (source: AnyObject) -> TokenInfoSuccessResponse in
+                let sourceDictionary = source as! [NSObject:AnyObject]
+                let instance = TokenInfoSuccessResponse()
+                instance.data = Decoders.decodeOptional(clazz: TokenInfo.self, source: sourceDictionary["data"])
                 return instance
             }
 

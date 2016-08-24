@@ -439,11 +439,127 @@ public class MessagesAPI: APIBase {
     }
 
     /**
+     Get Normalized Actions
+     
+     - parameter uid: (query) User ID. If not specified, assume that of the current authenticated user. If specified, it must be that of a user for which the current authenticated user has read access to. (optional)
+     - parameter ddid: (query) Destination device ID of the actions being searched. (optional)
+     - parameter mid: (query) The message ID being searched. (optional)
+     - parameter offset: (query) A string that represents the starting item, should be the value of &#39;next&#39; field received in the last response. (required for pagination) (optional)
+     - parameter count: (query) count (optional)
+     - parameter startDate: (query) startDate (optional)
+     - parameter endDate: (query) endDate (optional)
+     - parameter order: (query) Desired sort order: &#39;asc&#39; or &#39;desc&#39; (optional)
+     - parameter completion: completion handler to receive the data and the error objects
+     */
+    public class func getNormalizedActions(uid uid: String? = nil, ddid: String? = nil, mid: String? = nil, offset: String? = nil, count: Int32? = nil, startDate: Int64? = nil, endDate: Int64? = nil, order: String? = nil, completion: ((data: NormalizedActionsEnvelope?, error: ErrorType?) -> Void)) {
+        getNormalizedActionsWithRequestBuilder(uid: uid, ddid: ddid, mid: mid, offset: offset, count: count, startDate: startDate, endDate: endDate, order: order).execute { (response, error) -> Void in
+            completion(data: response?.body, error: error);
+        }
+    }
+
+    /**
+     Get Normalized Actions
+     
+     - parameter uid: (query) User ID. If not specified, assume that of the current authenticated user. If specified, it must be that of a user for which the current authenticated user has read access to. (optional)
+     - parameter ddid: (query) Destination device ID of the actions being searched. (optional)
+     - parameter mid: (query) The message ID being searched. (optional)
+     - parameter offset: (query) A string that represents the starting item, should be the value of &#39;next&#39; field received in the last response. (required for pagination) (optional)
+     - parameter count: (query) count (optional)
+     - parameter startDate: (query) startDate (optional)
+     - parameter endDate: (query) endDate (optional)
+     - parameter order: (query) Desired sort order: &#39;asc&#39; or &#39;desc&#39; (optional)
+     - returns: Promise<NormalizedActionsEnvelope>
+     */
+    public class func getNormalizedActions(uid uid: String? = nil, ddid: String? = nil, mid: String? = nil, offset: String? = nil, count: Int32? = nil, startDate: Int64? = nil, endDate: Int64? = nil, order: String? = nil) -> Promise<NormalizedActionsEnvelope> {
+        let deferred = Promise<NormalizedActionsEnvelope>.pendingPromise()
+        getNormalizedActions(uid: uid, ddid: ddid, mid: mid, offset: offset, count: count, startDate: startDate, endDate: endDate, order: order) { data, error in
+            if let error = error {
+                deferred.reject(error)
+            } else {
+                deferred.fulfill(data!)
+            }
+        }
+        return deferred.promise
+    }
+
+    /**
+     Get Normalized Actions
+     - GET /actions
+     - Get the actions normalized
+     - OAuth:
+       - type: oauth2
+       - name: artikcloud_oauth
+     - examples: [{contentType=application/json, example={
+  "next" : "aeiou",
+  "uid" : "aeiou",
+  "size" : 123456789,
+  "data" : [ {
+    "uid" : "aeiou",
+    "cts" : 123456789,
+    "data" : {
+      "actions" : [ {
+        "name" : "aeiou",
+        "parameters" : {
+          "key" : "{}"
+        }
+      } ]
+    },
+    "ddid" : "aeiou",
+    "mid" : "aeiou",
+    "sdid" : "aeiou",
+    "mv" : 123,
+    "ts" : 123456789,
+    "ddtid" : "aeiou"
+  } ],
+  "ddid" : "aeiou",
+  "endDate" : 123456789,
+  "ddids" : "aeiou",
+  "count" : 123456789,
+  "startDate" : 123456789,
+  "order" : "aeiou"
+}}]
+     
+     - parameter uid: (query) User ID. If not specified, assume that of the current authenticated user. If specified, it must be that of a user for which the current authenticated user has read access to. (optional)
+     - parameter ddid: (query) Destination device ID of the actions being searched. (optional)
+     - parameter mid: (query) The message ID being searched. (optional)
+     - parameter offset: (query) A string that represents the starting item, should be the value of &#39;next&#39; field received in the last response. (required for pagination) (optional)
+     - parameter count: (query) count (optional)
+     - parameter startDate: (query) startDate (optional)
+     - parameter endDate: (query) endDate (optional)
+     - parameter order: (query) Desired sort order: &#39;asc&#39; or &#39;desc&#39; (optional)
+
+     - returns: RequestBuilder<NormalizedActionsEnvelope> 
+     */
+    public class func getNormalizedActionsWithRequestBuilder(uid uid: String? = nil, ddid: String? = nil, mid: String? = nil, offset: String? = nil, count: Int32? = nil, startDate: Int64? = nil, endDate: Int64? = nil, order: String? = nil) -> RequestBuilder<NormalizedActionsEnvelope> {
+        let path = "/actions"
+        let URLString = ArtikCloudAPI.basePath + path
+
+        let nillableParameters: [String:AnyObject?] = [
+            "uid": uid,
+            "ddid": ddid,
+            "mid": mid,
+            "offset": offset,
+            "count": count?.encodeToJSON(),
+            "startDate": startDate?.encodeToJSON(),
+            "endDate": endDate?.encodeToJSON(),
+            "order": order
+        ]
+ 
+        let parameters = APIHelper.rejectNil(nillableParameters)
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
+        let requestBuilder: RequestBuilder<NormalizedActionsEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
+
+        return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: false)
+    }
+
+    /**
      Get Normalized Messages
      
      - parameter uid: (query) User ID. If not specified, assume that of the current authenticated user. If specified, it must be that of a user for which the current authenticated user has read access to. (optional)
      - parameter sdid: (query) Source device ID of the messages being searched. (optional)
-     - parameter mid: (query) The SAMI message ID being searched. (optional)
+     - parameter mid: (query) The message ID being searched. (optional)
      - parameter fieldPresence: (query) String representing a field from the specified device ID. (optional)
      - parameter filter: (query) Filter. (optional)
      - parameter offset: (query) A string that represents the starting item, should be the value of &#39;next&#39; field received in the last response. (required for pagination) (optional)
@@ -464,7 +580,7 @@ public class MessagesAPI: APIBase {
      
      - parameter uid: (query) User ID. If not specified, assume that of the current authenticated user. If specified, it must be that of a user for which the current authenticated user has read access to. (optional)
      - parameter sdid: (query) Source device ID of the messages being searched. (optional)
-     - parameter mid: (query) The SAMI message ID being searched. (optional)
+     - parameter mid: (query) The message ID being searched. (optional)
      - parameter fieldPresence: (query) String representing a field from the specified device ID. (optional)
      - parameter filter: (query) Filter. (optional)
      - parameter offset: (query) A string that represents the starting item, should be the value of &#39;next&#39; field received in the last response. (required for pagination) (optional)
@@ -519,7 +635,7 @@ public class MessagesAPI: APIBase {
      
      - parameter uid: (query) User ID. If not specified, assume that of the current authenticated user. If specified, it must be that of a user for which the current authenticated user has read access to. (optional)
      - parameter sdid: (query) Source device ID of the messages being searched. (optional)
-     - parameter mid: (query) The SAMI message ID being searched. (optional)
+     - parameter mid: (query) The message ID being searched. (optional)
      - parameter fieldPresence: (query) String representing a field from the specified device ID. (optional)
      - parameter filter: (query) Filter. (optional)
      - parameter offset: (query) A string that represents the starting item, should be the value of &#39;next&#39; field received in the last response. (required for pagination) (optional)
@@ -557,26 +673,26 @@ public class MessagesAPI: APIBase {
     }
 
     /**
-     Send Message Action
+     Send Actions
      
-     - parameter data: (body) Message or Action object that is passed in the body 
+     - parameter data: (body) Actions that are passed in the body 
      - parameter completion: completion handler to receive the data and the error objects
      */
-    public class func sendMessageAction(data data: MessageAction, completion: ((data: MessageIDEnvelope?, error: ErrorType?) -> Void)) {
-        sendMessageActionWithRequestBuilder(data: data).execute { (response, error) -> Void in
+    public class func sendActions(data data: Actions, completion: ((data: MessageIDEnvelope?, error: ErrorType?) -> Void)) {
+        sendActionsWithRequestBuilder(data: data).execute { (response, error) -> Void in
             completion(data: response?.body, error: error);
         }
     }
 
     /**
-     Send Message Action
+     Send Actions
      
-     - parameter data: (body) Message or Action object that is passed in the body 
+     - parameter data: (body) Actions that are passed in the body 
      - returns: Promise<MessageIDEnvelope>
      */
-    public class func sendMessageAction(data data: MessageAction) -> Promise<MessageIDEnvelope> {
+    public class func sendActions(data data: Actions) -> Promise<MessageIDEnvelope> {
         let deferred = Promise<MessageIDEnvelope>.pendingPromise()
-        sendMessageAction(data: data) { data, error in
+        sendActions(data: data) { data, error in
             if let error = error {
                 deferred.reject(error)
             } else {
@@ -587,9 +703,9 @@ public class MessagesAPI: APIBase {
     }
 
     /**
-     Send Message Action
-     - POST /messages
-     - (Deprecated) Send a message or an Action:<br/><table><tr><th>Combination</th><th>Parameters</th><th>Description</th></tr><tr><td>Send Message</td><td>sdid, type=message</td><td>Send a message from a Source Device</td></tr><tr><td>Send Action</td><td>ddid, type=action</td><td>Send an action to a Destination Device</td></tr><tr><td>Common</td><td>data, ts, token</td><td>Parameters that can be used with the above combinations.</td></tr></table>
+     Send Actions
+     - POST /actions
+     - Send Actions
      - OAuth:
        - type: oauth2
        - name: artikcloud_oauth
@@ -599,11 +715,70 @@ public class MessagesAPI: APIBase {
   }
 }}]
      
-     - parameter data: (body) Message or Action object that is passed in the body 
+     - parameter data: (body) Actions that are passed in the body 
 
      - returns: RequestBuilder<MessageIDEnvelope> 
      */
-    public class func sendMessageActionWithRequestBuilder(data data: MessageAction) -> RequestBuilder<MessageIDEnvelope> {
+    public class func sendActionsWithRequestBuilder(data data: Actions) -> RequestBuilder<MessageIDEnvelope> {
+        let path = "/actions"
+        let URLString = ArtikCloudAPI.basePath + path
+        let parameters = data.encodeToJSON() as? [String:AnyObject]
+ 
+        let convertedParameters = APIHelper.convertBoolToString(parameters)
+ 
+        let requestBuilder: RequestBuilder<MessageIDEnvelope>.Type = ArtikCloudAPI.requestBuilderFactory.getBuilder()
+
+        return requestBuilder.init(method: "POST", URLString: URLString, parameters: convertedParameters, isBody: true)
+    }
+
+    /**
+     Send Message
+     
+     - parameter data: (body) Message object that is passed in the body 
+     - parameter completion: completion handler to receive the data and the error objects
+     */
+    public class func sendMessage(data data: Message, completion: ((data: MessageIDEnvelope?, error: ErrorType?) -> Void)) {
+        sendMessageWithRequestBuilder(data: data).execute { (response, error) -> Void in
+            completion(data: response?.body, error: error);
+        }
+    }
+
+    /**
+     Send Message
+     
+     - parameter data: (body) Message object that is passed in the body 
+     - returns: Promise<MessageIDEnvelope>
+     */
+    public class func sendMessage(data data: Message) -> Promise<MessageIDEnvelope> {
+        let deferred = Promise<MessageIDEnvelope>.pendingPromise()
+        sendMessage(data: data) { data, error in
+            if let error = error {
+                deferred.reject(error)
+            } else {
+                deferred.fulfill(data!)
+            }
+        }
+        return deferred.promise
+    }
+
+    /**
+     Send Message
+     - POST /messages
+     - Send a message
+     - OAuth:
+       - type: oauth2
+       - name: artikcloud_oauth
+     - examples: [{contentType=application/json, example={
+  "data" : {
+    "mid" : "aeiou"
+  }
+}}]
+     
+     - parameter data: (body) Message object that is passed in the body 
+
+     - returns: RequestBuilder<MessageIDEnvelope> 
+     */
+    public class func sendMessageWithRequestBuilder(data data: Message) -> RequestBuilder<MessageIDEnvelope> {
         let path = "/messages"
         let URLString = ArtikCloudAPI.basePath + path
         let parameters = data.encodeToJSON() as? [String:AnyObject]

@@ -17,10 +17,7 @@ class UsersApiTests: ArtikCloudTests {
     override func setUp() {
         super.setUp()
         
-        
         ArtikCloudAPI.customHeaders["Authorization"] = "Bearer " + getProperty(key: "user1.token")
-        
-    
     }
     
     override func tearDown() {

@@ -10,6 +10,7 @@
 		06B96EB81066E46BA56F1631 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C758F871A68DB484B7F1BA36 /* Pods.framework */; };
 		630374151D67C544007E81FE /* artik.properties in Resources */ = {isa = PBXBuildFile; fileRef = 630374141D67C544007E81FE /* artik.properties */; };
 		630374171D67C568007E81FE /* ArtikCloudTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 630374161D67C568007E81FE /* ArtikCloudTests.swift */; };
+		630374191D6E5FE8007E81FE /* TokensApiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 630374181D6E5FE8007E81FE /* TokensApiTests.swift */; };
 		63933F8F1CB33BB7004B4006 /* MessagesApiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63933F8E1CB33BB7004B4006 /* MessagesApiTests.swift */; };
 		63E535CD1CB32CB800B31E71 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E535CC1CB32CB800B31E71 /* AppDelegate.swift */; };
 		63E535CF1CB32CB800B31E71 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E535CE1CB32CB800B31E71 /* ViewController.swift */; };
@@ -33,6 +34,7 @@
 		458F1905708172DCF4105735 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		630374141D67C544007E81FE /* artik.properties */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = artik.properties; sourceTree = "<group>"; };
 		630374161D67C568007E81FE /* ArtikCloudTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArtikCloudTests.swift; sourceTree = "<group>"; };
+		630374181D6E5FE8007E81FE /* TokensApiTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TokensApiTests.swift; sourceTree = "<group>"; };
 		63933F8E1CB33BB7004B4006 /* MessagesApiTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagesApiTests.swift; sourceTree = "<group>"; };
 		63E535C91CB32CB800B31E71 /* ArtikCloudClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ArtikCloudClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63E535CC1CB32CB800B31E71 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -116,6 +118,7 @@
 				63E535E31CB32CB800B31E71 /* Info.plist */,
 				630374141D67C544007E81FE /* artik.properties */,
 				630374161D67C568007E81FE /* ArtikCloudTests.swift */,
+				630374181D6E5FE8007E81FE /* TokensApiTests.swift */,
 			);
 			path = ArtikCloudClientTests;
 			sourceTree = "<group>";
@@ -293,6 +296,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				630374191D6E5FE8007E81FE /* TokensApiTests.swift in Sources */,
 				63933F8F1CB33BB7004B4006 /* MessagesApiTests.swift in Sources */,
 				63E535E21CB32CB800B31E71 /* UsersApiTests.swift in Sources */,
 				630374171D67C568007E81FE /* ArtikCloudTests.swift in Sources */,

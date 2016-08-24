@@ -32,14 +32,12 @@ class MessagesApiTests: ArtikCloudTests {
         
         let expectation = self.expectationWithDescription("testSendMessage")
         
-        let message = MessageAction()
+        let message = Message()
         message.sdid = sdid
         message.ts = 0
-        //message._type = "message"
-        message.type = "message"
         message.data = [ "steps": 500 ]
         
-        MessagesAPI.sendMessageAction(data: message).then { messageIDEnvelope -> Void in
+        MessagesAPI.sendMessage(data: message).then { messageIDEnvelope -> Void in
             XCTAssertNotNil(messageIDEnvelope.data)
             
             let messageId = messageIDEnvelope.data?.mid
@@ -60,16 +58,66 @@ class MessagesApiTests: ArtikCloudTests {
                 }.always {
                     // Noop
                 }.error { error2 -> Void in
-                    XCTFail("Could not retrieve Normalized messasge")
+                    XCTFail("Could not retrieve Normalized message. Reason \(error2)")
                 }
             }.always {
                 // Noop for now
             }.error { error -> Void in
                
-                XCTFail("Could not send Message")
+                XCTFail("Could not send Message \(error)")
                 
         }
         
-        self.waitForExpectationsWithTimeout(testTimeout, handler: nil)    }
+        self.waitForExpectationsWithTimeout(testTimeout, handler: nil)
+    }
+
+    
+    func testSendActions() {
+        let ddid = self.getProperty(key: "device4.id")
+        
+        let expectation = self.expectationWithDescription("testSendActions")
+        
+        let action = Action()
+        action.name = "setVolume"
+        action.parameters = [ "volume": 5]
+        
+        let actionArray = ActionArray()
+        actionArray.actions = [action]
+        
+        let actions = Actions()
+        actions.ddid = ddid
+        actions.ts = 0
+        actions.type = "action"
+        actions.data = actionArray
+        
+        ArtikCloudAPI.customHeaders["Authorization"] = "Bearer " + getProperty(key: "device4.token")
+        
+        MessagesAPI.sendActions(data: actions).then { messageIDEnvelope -> Void in
+            XCTAssertNotNil(messageIDEnvelope.data)
+            
+            let messageId = messageIDEnvelope.data?.mid
+            NSLog("\(messageId)")
+            
+            MessagesAPI.getNormalizedActions(uid: nil, ddid: nil, mid: messageId, offset: nil, count: nil, startDate: nil, endDate: nil, order: nil ).then { responseEnvelope -> Void in
+                NSLog("Got Normalized Messages Response \(responseEnvelope)")
+                XCTAssertTrue((responseEnvelope.size == 1), "Size should be 1")
+                
+                let normalizedMessage = responseEnvelope.data?[0]
+                XCTAssertNotNil(normalizedMessage)
+                
+                expectation.fulfill()
+                }.always {
+                    // Noop
+                }.error { error2 -> Void in
+                    XCTFail("Could not retrieve Normalized actions. Reason \(error2)")
+                }
+            }.always {
+                // Noop for now
+            }.error { error -> Void in
+                XCTFail("Could not send Actions \(error)")
+            }
+        
+        self.waitForExpectationsWithTimeout(testTimeout, handler: nil)
+    }
 
 }
