@@ -1,5 +1,7 @@
 ARTIK Cloud Swift SDK
-==========================
+=====================
+
+[![Build Status](https://travis-ci.org/artikcloud/artikcloud-swift.svg?branch=master)](https://travis-ci.org/artikcloud/artikcloud-swift)
 
 This SDK helps you connect your iOS, OS X, tvOS, and watchOS applications to ARTIK Cloud. It exposes a number of methods to easily execute REST API calls to ARTIK Cloud.
 
