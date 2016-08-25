@@ -16,7 +16,7 @@ To install it, put the API client library in your project and then simply add th
 ```ruby
 use_frameworks!
 source 'https://github.com/CocoaPods/Specs.git'
-pod "ArtikCloud", :path => "../"
+pod "ArtikCloudSwift", :path => "../"
 ```
 
 ## Coding Recommendation
