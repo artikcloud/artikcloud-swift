@@ -2,8 +2,8 @@ Pod::Spec.new do |s|
   s.name = 'ArtikCloudSwift'
   s.ios.deployment_target = '8.0'
   s.osx.deployment_target = '10.9'
-  s.version = '0.0.1'
-  s.source = { :git => 'https://github.com/artikcloud/artikcloud-swift.git', :tag => '2.0.0' }
+  s.version = '2.0.5'
+  s.source = { :git => 'https://github.com/artikcloud/artikcloud-swift.git', :tag => '2.0.5' }
   s.license = 'Apache License, Version 2.0'
   s.source_files = 'ArtikCloud/Classes/Swaggers/**/*.swift'
   s.dependency 'PromiseKit', '~> 3.2.1'
