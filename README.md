@@ -4,11 +4,11 @@
 ![CocoaPods](https://img.shields.io/badge/CocoaPods-1.1-green.svg)
 ![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20iOS%20%7C%20watchOS%20%7C%20tvOS-lightgrey.svg)
 
-ARTIK Cloud is an open data exchange platform for the Internet of Things (IoT).
+This SDK helps you connect your iOS, tvOS, watchOS, and macOS applications to ARTIK cloud services. It exposes a number of methods to easily execute REST and WebSockets calls to ARTIK cloud services.
 
 ## Specifications
 
-Connect with ARTIK Cloud and handle its response asynchronously 
+Connect with ARTIK cloud services and handle its response asynchronously. 
 ```swift
 DevicesAPI.get(id: "example-id").then { device -> Void in
     if device.isSharable() {
@@ -26,36 +26,8 @@ DevicesAPI.get(id: "example-id").then { device -> Void in
     print(error)
 }
 ```
-Most classes have convenience methods to easily act upon your Users, Devices, Messages, Rules, etc.
 
-### Endpoints
-- [x] Users
-- [x] Devices
-- [x] Device Types
-- [x] Messages
-- [x] Monetization
-- [x] Subscriptions
-- [x] Notifications
-- [x] Rules
-- [x] Scenes
-- [x] Machine Learning
-- [x] Device Management
-
-### Websockets
-- [x] Events
-- [x] Live (Firehose)
-- [x] Device
-
-### Features
-- [x] Authorization Code (+ PKCE) Authentication
-- [x] Implicit Authentication
-- [x] Limited Input Authentication
-- [x] Client Credentials Authentication
-- [x] Automatic Token Management and Refreshing
-- [x] Delegate for Rate Limit/Quota Monitoring
-- [x] Simplified Callback Handling
-
-## Requirements
+## Prerequisites
 
 - [Alamofire](https://github.com/Alamofire/Alamofire) >= 4.5.1
 - [PromiseKit](https://github.com/mxcl/PromiseKit) >= 4.5.0
@@ -67,8 +39,9 @@ Most classes have convenience methods to easily act upon your Users, Devices, Me
 
 ### CocoaPods
 
-This SDK requires [CocoaPods 1.1+](https://guides.cocoapods.org/using/getting-started.html) to be installed. 
-To install it, specify `ArtikCloudSwift` in your `PodFile` using one of the following:
+[CocoaPods 1.1](https://guides.cocoapods.org/using/getting-started.html) or higher is required. 
+
+Specify `ArtikCloudSwift` in your `PodFile` using one of the following:
 
 ```ruby
 source 'https://github.com/CocoaPods/Specs.git'
@@ -80,49 +53,53 @@ Then run the following command:
 pod install
 ```
 
-### Manual Install
+### Manual installation
 
-Drop `ArtikCloudSwift.xcodeproj` into your project and add `ArtikCloudSwift.framework` to your app's embedded frameworks.
+Drop `ArtikCloudSwift.xcodeproj` into your project and add `ArtikCloudSwift.framework` to your application's embedded frameworks.
 
 ## Getting Started
+
+Please follow the [installation](#installation) instructions and execute the following line of Swift code:
 
 ```swift
 import ArtikCloudSwift
 ```
 
-### ARTIK Application Settings
+### Application setup
 
-Before you begin making requests, make sure to provide the Client ID and redirect URI of your ARTIK Cloud Application. 
+Before you begin making requests, provide the client ID and redirect URI of your application.
 ```swift
 ArtikCloudSwiftSettings.clientID = "my-clientid"
 ArtikCloudSwiftSettings.redirectURI = "my-uri://"
 ``` 
-For more information on how to create an ARTIK Cloud application, obtaining its Client ID or getting its redirect URI, visit the following [tutorial](https://developer.artik.cloud/documentation/tools/web-tools.html#creating-an-application).
+To learn how to create an application on ARTIK cloud services and obtain its client ID (application ID) and redirect URI, read our [documentation](https://developer.artik.cloud/documentation/tools/web-tools.html#creating-an-application).
 
 ### Authentication
 
-If you plan to make API calls which require authentication, you will need to obtain a `Token` through any of the available [authentication flows](https://developer.artik.cloud/documentation/user-management/authentication.html). These are all implemented in `AuthenticationAPI`, pick which ever fits your needs best.
+API calls require authentication, and you must obtain a `Token` through any of the available [authentication flows](https://developer.artik.cloud/documentation/user-management/authentication.html). These flows are implemented in `AuthenticationAPI`. 
 
-Once you have obtained a `Token`, you can set it using the following methods:
+This [How To guide](https://developer.artik.cloud/documentation/tutorials/how-to/choose-oauth2-method.html) describes how to choose the best authentication flow for your use case.
+
+Once you have obtained a `Token`, set it using one of the following methods:
 ```swift
 ArtikCloudSwiftSettings.setUserToken(_ token: UserToken)
 ArtikCloudSwiftSettings.setApplicationToken(_ token: ApplicationToken)
 ArtikCloudSwiftSettings.setDeviceToken(_ token: DeviceToken)
 ```
-Every time a token is used, its validity is verified locally (if possible). For `UserToken`s that have expired, the framework will attempt to refresh it with ARTIK Cloud before executing the request, which can be disabled by setting `ArtikCloudSwiftSettings.attemptToRefreshToken = false`.
+Each time a token is used, its validity is verified locally (if possible). For a `UserToken` that has expired, the framework will attempt to refresh it with ARTIK cloud services before executing the request. This can be disabled by setting `ArtikCloudSwiftSettings.attemptToRefreshToken = false`.
 
-### Using Multiple Types of Tokens
+### Using multiple token types
 
-If you plan on using multiple types of `Token` for different requests, you can set `preferredTokenForRequests` to a certain `Token.Type` and the framework will attempt to use it first before falling back on other types if unavailable. For example, to prioritize the current `ApplicationToken`:
+If you plan on using multiple `Token` types for different requests, you can set `preferredTokenForRequests` to a certain `Token.Type`. The framework will first attempt to use this token type before falling back on other types if unavailable. For example, to prioritize the current `ApplicationToken`:
 ```swift
 ArtikCloudSwiftSettings.preferredTokenForRequests = ApplicationToken.self
 ```
 
-### Handling Callbacks
+### Handling callbacks
 
-When using certain APIs, ARTIK Cloud will attempt to callback to your application, such as when using Authorization Code Authentication or upgrading a device. For this to work, first make sure that the Redirect URI of your ARTIK Application (server-side), your URL Scheme (client-side) and `ArtikCloudSwiftSettings.redirectURI` are set to the same value.
+When using certain APIs, ARTIK cloud services will attempt a callback to your application, such as when using the [Authorization Code](https://developer.artik.cloud/documentation/user-management/authentication.html#authorization-code-method) authentication flow or upgrading a device type for [Monetization](https://developer.artik.cloud/documentation/monetization.html). For this to work, first make sure that the redirect URI of your application (server-side), your URL scheme (client-side), and `ArtikCloudSwiftSettings.redirectURI` are set to the same value.
 
-Once your application receives a callback, identify which flow it is targetting by passing the `URL` to `ArtikCloudSwiftSettings.identifyRedirectEndpoint(_ callback: URL)` and use the `RedirectEndpoint` value returned to determine how to process it.
+Once your application receives a callback, identify which endpoint it is targeting by passing the `URL` to `ArtikCloudSwiftSettings.identifyRedirectEndpoint(_ callback: URL)`. Use the `RedirectEndpoint` value returned to determine how to process it.
 
 ```swift
 // iOS Example
@@ -159,7 +136,7 @@ func application(_ application: UIApplication, open url: URL, sourceApplication:
 
 ### ArtikCloudSwiftDelegate
 
-You can set `ArtikCloudSwiftSettings.delegate` to stay informed of various usage related data. All methods are optional.
+You can set `ArtikCloudSwiftSettings.delegate` to stay informed of various usage-related data. All methods are optional.
 <br><br>
 ```swift
 func maxPayload(_ size: UInt64)
@@ -179,18 +156,18 @@ func organizationQuota(_ quota: APIOrganizationQuota)
 ```swift
 func deviceQuota(_ quota: APIDeviceQuota)
 ```
-*Called after an API is used counting towards a Device's Quota.*
+*Called after an API is used counting towards a device's quota.*
 <br><br>
 ```swift
 func tokenRefreshed(_ token: UserToken)
 ```
-*Called every time the current `UserToken` has been refreshed. Use this method to save the newly refreshed token if needed.*
+*Called each time the current `UserToken` has been refreshed. Use this method to save the newly refreshed token if needed.*
 <br><br>
 
-### Websockets
+### WebSockets
 
-ARTIK Cloud's websockets are easily accesible using their respective implementations: `EventsWebsocket`, `LiveWebsocket`, and `DeviceWebsocket`. Once initialized use `.connect()` and `.disconnect()` to initiate or terminate their connections. You can also make use of their delegates to react to any of their connection events, messages, etc.  
-_NOTE: Websocket features are not available on WatchOS at this time (missing access to CFNetwork String constants)._
+ARTIK cloud services' WebSockets are easily accesible using their respective implementations: `EventsWebsocket`, `LiveWebsocket`, and `DeviceWebsocket`. Once initialized, use `.connect()` and `.disconnect()` to initiate or terminate their connections. You can also make use of their delegates to react to any of their connection events, messages, etc.  
+_NOTE: Websocket features are not available on watchOS at this time (missing access to CFNetwork String constants)._
 
 #### ArtikWebsocketDelegate (implemented by all delegates below)
 ```swift
@@ -226,9 +203,48 @@ func websocketDidReceiveAction(socket: DeviceWebsocket, mid: String, data: [Stri
 ```
 *Called when the socket receives an action for a device.*
 
-## Additional Documentation
+## API documentation
 
-Markup documentation is available for all API methods. You can also refer to the [ARTIK Cloud REST API Documentation](https://developer.artik.cloud/documentation/api-reference/rest-api.html). 
+[Markup documentation](https://github.com/artikcloud/artikcloud-swift/tree/master/Source) is available for all API methods. 
+
+You can also refer to our documentation.
+
+### REST
+- [Users](https://developer.artik.cloud/documentation/api-reference/rest-api.html#users)
+- [Devices](https://developer.artik.cloud/documentation/api-reference/rest-api.html#devices)
+- [Device Types](https://developer.artik.cloud/documentation/api-reference/rest-api.html#device-types)
+- [Messages](https://developer.artik.cloud/documentation/api-reference/rest-api.html#messages)
+- [Monetization](https://developer.artik.cloud/documentation/api-reference/rest-api.html#monetization)
+- [Subscriptions](https://developer.artik.cloud/documentation/api-reference/rest-api.html#subscriptions)
+- [Notifications](https://developer.artik.cloud/documentation/api-reference/rest-api.html#notifications)
+- [Rules](https://developer.artik.cloud/documentation/api-reference/rest-api.html#rules)
+- [Scenes](https://developer.artik.cloud/documentation/api-reference/rest-api.html#scenes)
+- [Machine Learning](https://developer.artik.cloud/documentation/api-reference/rest-api.html#machine-learning)
+- [Device Management](https://developer.artik.cloud/documentation/api-reference/rest-api.html#device-management)
+
+### WebSockets
+- [Events](https://developer.artik.cloud/documentation/api-reference/websockets-api.html#event-feed-websocket)
+- [Live (Firehose)](https://developer.artik.cloud/documentation/api-reference/websockets-api.html#firehose-websocket)
+- [Device](https://developer.artik.cloud/documentation/api-reference/websockets-api.html#device-channel-websocket)
+
+## Usage
+
+See [tests](https://github.com/artikcloud/artikcloud-swift/tree/master/ArtikCloudSwiftTests) for examples of how to use the SDK.
+
+In addition, our tutorial and sample applications will give you a good overview of what you can do and how to do it. Read more at https://developer.artik.cloud/documentation/tutorials/code-samples/
+
+More about ARTIK Cloud
+----------------------
+
+If you are not familiar with ARTIK cloud services, we have extensive documentation at https://developer.artik.cloud/documentation
+
+The full ARTIK cloud services API specification can be found at https://developer.artik.cloud/documentation/api-reference/
+
+Check out advanced sample applications at https://developer.artik.cloud/documentation/tutorials/code-samples/
+
+To create and manage your services and devices on ARTIK cloud services, create an account at https://developer.artik.cloud
+
+Also see the ARTIK cloud services blog for tutorials, updates, and more: http://artik.io/blog/cloud
 
 ## Licence and Copyright
 
