@@ -59,8 +59,6 @@ Drop `ArtikCloudSwift.xcodeproj` into your project and add `ArtikCloudSwift.fram
 
 ## Getting Started
 
-Please follow the [installation](#installation) instructions and execute the following line of Swift code:
-
 ```swift
 import ArtikCloudSwift
 ```
@@ -76,9 +74,7 @@ To learn how to create an application on ARTIK cloud services and obtain its cli
 
 ### Authentication
 
-API calls require authentication, and you must obtain a `Token` through any of the available [authentication flows](https://developer.artik.cloud/documentation/user-management/authentication.html). These flows are implemented in `AuthenticationAPI`. 
-
-This [How To guide](https://developer.artik.cloud/documentation/tutorials/how-to/choose-oauth2-method.html) describes how to choose the best authentication flow for your use case.
+API calls require authentication, and you must obtain a `Token` through any of the available [authentication flows](https://developer.artik.cloud/documentation/user-management/authentication.html). These flows are implemented in `AuthenticationAPI`. This [How To guide](https://developer.artik.cloud/documentation/tutorials/how-to/choose-oauth2-method.html) describes how to choose the best authentication flow for your use case.
 
 Once you have obtained a `Token`, set it using one of the following methods:
 ```swift
@@ -99,7 +95,7 @@ ArtikCloudSwiftSettings.preferredTokenForRequests = ApplicationToken.self
 
 When using certain APIs, ARTIK cloud services will attempt a callback to your application, such as when using the [Authorization Code](https://developer.artik.cloud/documentation/user-management/authentication.html#authorization-code-method) authentication flow or upgrading a device type for [Monetization](https://developer.artik.cloud/documentation/monetization.html). For this to work, first make sure that the redirect URI of your application (server-side), your URL scheme (client-side), and `ArtikCloudSwiftSettings.redirectURI` are set to the same value.
 
-Once your application receives a callback, identify which endpoint it is targeting by passing the `URL` to `ArtikCloudSwiftSettings.identifyRedirectEndpoint(_ callback: URL)`. Use the `RedirectEndpoint` value returned to determine how to process it.
+Once your application receives a callback, identify which flow it is targeting by passing the `URL` to `ArtikCloudSwiftSettings.identifyRedirectEndpoint(_ callback: URL)`. Use the `RedirectEndpoint` value returned to determine how to process it.
 
 ```swift
 // iOS Example
@@ -205,7 +201,7 @@ func websocketDidReceiveAction(socket: DeviceWebsocket, mid: String, data: [Stri
 
 ## API documentation
 
-[Markup documentation](https://github.com/artikcloud/artikcloud-swift/tree/master/Source) is available for all API methods. 
+Markup documentation is available for all API methods in their [respective source files](https://github.com/artikcloud/artikcloud-swift/tree/master/Source). 
 
 You can also refer to our documentation.
 
@@ -227,14 +223,7 @@ You can also refer to our documentation.
 - [Live (Firehose)](https://developer.artik.cloud/documentation/api-reference/websockets-api.html#firehose-websocket)
 - [Device](https://developer.artik.cloud/documentation/api-reference/websockets-api.html#device-channel-websocket)
 
-## Usage
-
-See [tests](https://github.com/artikcloud/artikcloud-swift/tree/master/ArtikCloudSwiftTests) for examples of how to use the SDK.
-
-In addition, our tutorial and sample applications will give you a good overview of what you can do and how to do it. Read more at https://developer.artik.cloud/documentation/tutorials/code-samples/
-
-More about ARTIK Cloud
-----------------------
+## More about ARTIK Cloud
 
 If you are not familiar with ARTIK cloud services, we have extensive documentation at https://developer.artik.cloud/documentation
 
