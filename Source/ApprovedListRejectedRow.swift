@@ -3,7 +3,7 @@
 //  ArtikCloudSwift
 //
 //  Created by Paul-Valentin Mini on 2/1/18.
-//  Copyright © 2018 Paul-Valentin Mini. All rights reserved.
+//  Copyright © 2017-2018 Samsung Electronics Co., Ltd. All rights reserved.
 //
 
 import Foundation
