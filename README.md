@@ -239,6 +239,4 @@ Also see the ARTIK cloud services blog for tutorials, updates, and more: http://
 
 Licensed under the Apache License. See [LICENSE](https://github.com/artikcloud/artikcloud-swift/blob/master/LICENSE).
 
-Written with ❤️ by [Paul-Valentin Mini](https://github.com/Laptopmini) for [SAMSUNG](http://www.samsung.com/us/ssic/).
-
 Copyright © 2017-2018 Samsung Electronics Co., Ltd.
