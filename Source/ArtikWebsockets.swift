@@ -109,6 +109,7 @@ open class ArtikWebsocket: WebSocketDelegate {
     public func disconnect() {
         trace()
         reconnect = false
+        pingUUID = nil
         
         guard isConnected else {
             return
