@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
   s.name         = "ArtikCloudSwift"
   s.version      = "4.0.0"
   s.summary      = "ARTIK Cloud SDK for iOS, tvOS, watchOS & macOS, fully written in Swift."
-  s.homepage     = "https://github.com/Laptopmini/ArtikCloudSwift"
+  s.homepage     = "https://github.com/artikcloud/artikcloud-swift"
 
 
   # ―――  Spec License  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
 
   # ――― Author Metadata  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
-  s.author       = { "Paul-Valentin Mini" => "p.mini@samsung.com" }
+  s.author       = { "ARTIK Cloud" => "support@artik.cloud" }
 
   # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
@@ -27,7 +27,7 @@ Pod::Spec.new do |s|
 
   # ――― Source Location ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
-  s.source        = { :git => "https://github.com/Laptopmini/ArtikCloudSwift.git", :tag => "#{s.version}" }
+  s.source        = { :git => "https://github.com/artikcloud/artikcloud-swift.git", :tag => "#{s.version}" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
