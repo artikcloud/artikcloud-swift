@@ -34,6 +34,7 @@ open class ArtikCloudSwiftSettings {
     // MARK: - Endpoints
     
     internal static var basePath      = "https://api.artik.cloud/v1.1"
+    internal static var securePath    = "https://s-api.artik.cloud/v1.1"
     internal static var authPath      = "https://accounts.artik.cloud"
     internal static var websocketPath = "wss://api.artik.cloud/v1.1"
     
@@ -202,6 +203,6 @@ open class ArtikCloudSwiftSettings {
                 throw ArtikError.applicationCallback(reason: .doesNotMatchRedirectURI)
             }
         }
-        throw ArtikError.swiftyArtikSettings(reason: .noRedirectURI)
+        throw ArtikError.artikCloudSwiftSettings(reason: .noRedirectURI)
     }
 }

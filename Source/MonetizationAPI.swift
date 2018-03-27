@@ -67,7 +67,7 @@ open class MonetizationAPI {
         ]
         
         guard let redirect = ArtikCloudSwiftSettings.getRedirectURI(for: .monetization) else {
-            promise.reject(ArtikError.swiftyArtikSettings(reason: .noRedirectURI))
+            promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noRedirectURI))
             return promise.promise
         }
         

@@ -213,7 +213,7 @@ open class SubscriptionsAPI {
                 promise.reject(error)
             }
         } else {
-            promise.reject(ArtikError.swiftyArtikSettings(reason: .noClientID))
+            promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientID))
         }
         return promise.promise
     }

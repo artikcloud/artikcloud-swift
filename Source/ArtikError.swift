@@ -37,7 +37,7 @@ public enum ArtikError: Error {
     
     // MARK: - SDK Errors
     
-    case swiftyArtikSettings(reason: ArtikCloudSwiftSettingsReason)
+    case artikCloudSwiftSettings(reason: ArtikCloudSwiftSettingsReason)
     
     public enum ArtikCloudSwiftSettingsReason {
         case noUserToken
@@ -49,7 +49,7 @@ public enum ArtikError: Error {
     }
     
     public var isArtikCloudSwiftSettingsError: Bool {
-        if case .swiftyArtikSettings = self { return true }
+        if case .artikCloudSwiftSettings = self { return true }
         return false
     }
     
@@ -257,7 +257,7 @@ extension ArtikError: LocalizedError {
             return description
         case .rateLimit(let reason):
             return reason.localizedDescription
-        case .swiftyArtikSettings(let reason):
+        case .artikCloudSwiftSettings(let reason):
             return reason.localizedDescription
         case .applicationCallback(let reason):
             return reason.localizedDescription
@@ -290,8 +290,6 @@ extension ArtikError: LocalizedError {
         }
     }
 }
-
-
 
 extension ArtikError.RateLimitReason {
     var localizedDescription: String {

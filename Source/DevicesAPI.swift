@@ -280,7 +280,7 @@ open class DevicesAPI {
         let promise = Promise<URLRequest>.pending()
         
         guard let referer = ArtikCloudSwiftSettings.getRedirectURI(for: .cloudAuthorization) else {
-            promise.reject(ArtikError.swiftyArtikSettings(reason: .noRedirectURI))
+            promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noRedirectURI))
             return promise.promise
         }
         
@@ -301,7 +301,7 @@ open class DevicesAPI {
                     promise.reject(ArtikError.url(reason: .failedToInit))
                 }
             } else {
-                promise.reject(ArtikError.swiftyArtikSettings(reason: .noUserToken))
+                promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noUserToken))
             }
         }.catch { error -> Void in
             promise.reject(error)
@@ -315,7 +315,7 @@ open class DevicesAPI {
     /// - Returns: A `Promise<Void>`
     open class func unauthorize(id: String) -> Promise<Void> {
         let promise = Promise<Void>.pending()
-        let path = ArtikCloudSwiftSettings.basePath + "devices/\(id)/providerauth"
+        let path = ArtikCloudSwiftSettings.basePath + "/devices/\(id)/providerauth"
         
         APIHelpers.makeRequest(url: path, method: .delete, parameters: nil, encoding: URLEncoding.default).then { _ -> Void in
             promise.fulfill(())
@@ -540,6 +540,54 @@ open class DevicesAPI {
         
         APIHelpers.makeRequest(url: path, method: .delete, parameters: nil, encoding: URLEncoding.default).then { _ -> Void in
             promise.fulfill(())
+        }.catch { error -> Void in
+            promise.reject(error)
+        }
+        return promise.promise
+    }
+    
+    // MARK: Secure Device Registration
+    
+    /// Update the registration request issued earlier by associating it with an authenticated user and capture all additional information required to add a new device.
+    ///
+    /// - Parameters:
+    ///   - did: The Device's ID.
+    ///   - pin: The PIN obtained in the registration call.
+    /// - Returns: Returns a `Promise<String>` containing the request ID.
+    open class func confirmUser(did: String, pin: String) -> Promise<String> {
+        let promise = Promise<String>.pending()
+        let path = ArtikCloudSwiftSettings.securePath + "/devices/registrations/pin"
+        let parameters = [
+            "deviceId": did,
+            "pin": pin
+        ]
+        
+        APIHelpers.makeRequest(url: path, method: .put, parameters: parameters, encoding: JSONEncoding.default).then { response -> Void in
+            if let data = response["data"] as? [String:Any], let rid = data["rid"] as? String {
+                promise.fulfill(rid)
+            } else {
+                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+            }
+        }.catch { error -> Void in
+            promise.reject(error)
+        }
+        return promise.promise
+    }
+    
+    /// Clears any associations from the secure device registration and returns the targeted device.
+    ///
+    /// - Parameter did: The Device's ID.
+    /// - Returns: A `Promise<Device>`.
+    open class func unregister(did: String) -> Promise<Device> {
+        let promise = Promise<Device>.pending()
+        let path = ArtikCloudSwiftSettings.securePath + "/devices/\(did)/registrations"
+        
+        APIHelpers.makeRequest(url: path, method: .delete, parameters: ["deviceId": did], encoding: URLEncoding.queryString).then { response -> Void in
+            if let data = response["data"] as? [String:Any], let device = Device(JSON: data) {
+                promise.fulfill(device)
+            } else {
+                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+            }
         }.catch { error -> Void in
             promise.reject(error)
         }

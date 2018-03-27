@@ -53,11 +53,11 @@ open class AuthenticationAPI {
     /// - Throws: `ArtikError`
     open class func getAuthorizationCodeURL(usingPKCE pkce: Bool, ignoreCurrentSession: Bool = false, accountType: AccountType? = nil, state: String? = nil) throws -> URL {
         guard let clientID = ArtikCloudSwiftSettings.clientID else {
-            throw ArtikError.swiftyArtikSettings(reason: .noClientID)
+            throw ArtikError.artikCloudSwiftSettings(reason: .noClientID)
         }
         if !pkce {
             guard let _ = ArtikCloudSwiftSettings.clientSecret else {
-                throw ArtikError.swiftyArtikSettings(reason: .noClientSecret)
+                throw ArtikError.artikCloudSwiftSettings(reason: .noClientSecret)
             }
         }
         
@@ -137,7 +137,7 @@ open class AuthenticationAPI {
     open class func processAuthorizationCodeCallback(_ callback: URL, usingPKCE pkce: Bool) -> Promise<UserToken> {
         let promise = Promise<UserToken>.pending()
         guard let clientID = ArtikCloudSwiftSettings.clientID else {
-            promise.reject(ArtikError.swiftyArtikSettings(reason: .noClientID))
+            promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientID))
             return promise.promise
         }
         
@@ -162,7 +162,7 @@ open class AuthenticationAPI {
                 } else if let _ = ArtikCloudSwiftSettings.clientSecret, let headerValue = try APIHelpers.getClientIdAndClientSecretEncodedHeaderValue() {
                     headers = [APIHelpers.authorizationHeaderKey: headerValue]
                 } else {
-                    promise.reject(ArtikError.swiftyArtikSettings(reason: .noClientSecret))
+                    promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientSecret))
                     return promise.promise
                 }
                 
@@ -199,7 +199,7 @@ open class AuthenticationAPI {
     /// - Throws: `ArtikError`
     open class func getImplicitURL(ignoreCurrentSession: Bool = false, accountType: AccountType? = nil, state: String? = nil) throws -> URL {
         guard let clientID = ArtikCloudSwiftSettings.clientID else {
-            throw ArtikError.swiftyArtikSettings(reason: .noClientID)
+            throw ArtikError.artikCloudSwiftSettings(reason: .noClientID)
         }
         
         var path = ArtikCloudSwiftSettings.authPath + (ignoreCurrentSession ? LoginEndpoint.signin.rawValue : LoginEndpoint.authorize.rawValue)
@@ -264,11 +264,11 @@ open class AuthenticationAPI {
     open class func getLimitedInputCode() -> Promise<LimitedInputCode> {
         let promise = Promise<LimitedInputCode>.pending()
         guard let clientID = ArtikCloudSwiftSettings.clientID else {
-            promise.reject(ArtikError.swiftyArtikSettings(reason: .noClientID))
+            promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientID))
             return promise.promise
         }
         guard let _ = ArtikCloudSwiftSettings.clientSecret else {
-            promise.reject(ArtikError.swiftyArtikSettings(reason: .noClientSecret))
+            promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientSecret))
             return promise.promise
         }
         
@@ -349,7 +349,7 @@ open class AuthenticationAPI {
                         promise.reject(error)
                     }
                 } else {
-                    promise.reject(ArtikError.swiftyArtikSettings(reason: .noClientSecret))
+                    promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientSecret))
                 }
             } catch {
                 promise.reject(error)
@@ -385,7 +385,7 @@ open class AuthenticationAPI {
                     promise.reject(error)
                 }
             } else {
-                promise.reject(ArtikError.swiftyArtikSettings(reason: .noClientSecret))
+                promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientSecret))
             }
         } catch {
             promise.reject(error)

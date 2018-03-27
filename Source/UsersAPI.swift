@@ -79,7 +79,7 @@ open class UsersAPI {
                 promise.reject(error)
             }
         } else {
-            promise.reject(ArtikError.swiftyArtikSettings(reason: .noClientID))
+            promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientID))
         }
         return promise.promise
     }
@@ -108,7 +108,7 @@ open class UsersAPI {
                 promise.reject(error)
             }
         } else {
-            promise.reject(ArtikError.swiftyArtikSettings(reason: .noClientID))
+            promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientID))
         }
         return promise.promise
     }

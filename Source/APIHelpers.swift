@@ -89,7 +89,7 @@ internal class APIHelpers {
             if let data = "\(clientID):\(clientSecret)".data(using: .utf8) {
                 return "Basic \(data.base64EncodedString())"
             }
-            throw ArtikError.swiftyArtikSettings(reason: .clientIdAndClientSecretCouldNotBeEncoded)
+            throw ArtikError.artikCloudSwiftSettings(reason: .clientIdAndClientSecretCouldNotBeEncoded)
         }
         return nil
     }
