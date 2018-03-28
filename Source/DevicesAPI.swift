@@ -551,14 +551,14 @@ open class DevicesAPI {
     /// Update the registration request issued earlier by associating it with an authenticated user and capture all additional information required to add a new device.
     ///
     /// - Parameters:
-    ///   - did: The Device's ID.
+    ///   - name: The Device's name.
     ///   - pin: The PIN obtained in the registration call.
     /// - Returns: Returns a `Promise<String>` containing the request ID.
-    open class func confirmUser(did: String, pin: String) -> Promise<String> {
+    open class func confirmUser(name: String, pin: String) -> Promise<String> {
         let promise = Promise<String>.pending()
         let path = ArtikCloudSwiftSettings.securePath + "/devices/registrations/pin"
         let parameters = [
-            "deviceId": did,
+            "deviceName": name,
             "pin": pin
         ]
         
