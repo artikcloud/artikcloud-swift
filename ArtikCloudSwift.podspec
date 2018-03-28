@@ -3,7 +3,7 @@ Pod::Spec.new do |s|
   # ―――  Spec Metadata  ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
   s.name         = "ArtikCloudSwift"
-  s.version      = "4.1.1"
+  s.version      = "4.1.2"
   s.summary      = "ARTIK Cloud SDK for iOS, tvOS, watchOS & macOS, fully written in Swift."
   s.homepage     = "https://github.com/artikcloud/artikcloud-swift"
 

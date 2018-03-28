@@ -556,7 +556,7 @@ open class DevicesAPI {
     /// - Returns: Returns a `Promise<String>` containing the request ID.
     open class func confirmUser(name: String, pin: String) -> Promise<String> {
         let promise = Promise<String>.pending()
-        let path = ArtikCloudSwiftSettings.securePath + "/devices/registrations/pin"
+        let path = ArtikCloudSwiftSettings.basePath + "/devices/registrations/pin"
         let parameters = [
             "deviceName": name,
             "pin": pin
@@ -580,7 +580,7 @@ open class DevicesAPI {
     /// - Returns: A `Promise<Device>`.
     open class func unregister(did: String) -> Promise<Device> {
         let promise = Promise<Device>.pending()
-        let path = ArtikCloudSwiftSettings.securePath + "/devices/\(did)/registrations"
+        let path = ArtikCloudSwiftSettings.basePath + "/devices/\(did)/registrations"
         
         APIHelpers.makeRequest(url: path, method: .delete, parameters: ["deviceId": did], encoding: URLEncoding.queryString).then { response -> Void in
             if let data = response["data"] as? [String:Any], let device = Device(JSON: data) {
