@@ -104,35 +104,35 @@ open class MachineLearningModel: Mappable, RemovableArtikInstance {
     }
     
     public func predict(inputs: [InputOutput]) -> Promise<[InputOutput]> {
-        let promise = Promise<[InputOutput]>.pending()
+        let (promise, resolver) = Promise<[InputOutput]>.pending()
         
         if let id = id {
-            MachineLearningAPI.predict(id: id, inputs: inputs).then { outputs -> Void in
-                promise.fulfill(outputs)
+            MachineLearningAPI.predict(id: id, inputs: inputs).done { outputs in
+                resolver.fulfill(outputs)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - RemovableArtikInstance
     
     public func removeFromArtik() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let id = id {
-            MachineLearningAPI.delete(id: id).then { _ -> Void in
-                promise.fulfill(())
+            MachineLearningAPI.delete(id: id).done {
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
 }

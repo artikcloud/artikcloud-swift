@@ -36,84 +36,84 @@ open class Scene: Mappable, ManageableArtikInstance {
     }
     
     public func activate() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let id = id {
-            ScenesAPI.activate(id: id).then { _ -> Void in
-                promise.fulfill(())
+            ScenesAPI.activate(id: id).done {
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - ManageableArtikInstance
     
     public func updateOnArtik() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let id = id {
-            ScenesAPI.update(id: id, name: name, description: description, actions: actions).then { _ -> Void in
-                promise.fulfill(())
+            ScenesAPI.update(id: id, name: name, description: description, actions: actions).done { _ in
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func pullFromArtik() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let id = id {
-            ScenesAPI.get(id: id).then { scene -> Void in
+            ScenesAPI.get(id: id).done { scene in
                 self.mapping(map: Map(mappingType: .fromJSON, JSON: scene.toJSON(), toObject: true, context: nil, shouldIncludeNilValues: true))
-                promise.fulfill(())
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func removeFromArtik() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let id = id {
-            ScenesAPI.remove(id: id).then { _ -> Void in
-                promise.fulfill(())
+            ScenesAPI.remove(id: id).done {
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func createOrDuplicateOnArtik() -> Promise<ManageableArtikInstance> {
-        let promise = Promise<ManageableArtikInstance>.pending()
+        let (promise, resolver) = Promise<ManageableArtikInstance>.pending()
         
         if let name = name {
             if let actions = actions {
-                ScenesAPI.create(name: name, description: description, actions: actions, uid: uid).then { scene -> Void in
-                    promise.fulfill(scene)
+                ScenesAPI.create(name: name, description: description, actions: actions, uid: uid).done { scene in
+                    resolver.fulfill(scene)
                 }.catch { error -> Void in
-                    promise.reject(error)
+                    resolver.reject(error)
                 }
             } else {
-                promise.reject(ArtikError.missingValue(reason: .noActions))
+                resolver.reject(ArtikError.missingValue(reason: .noActions))
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noName))
+            resolver.reject(ArtikError.missingValue(reason: .noName))
         }
-        return promise.promise
+        return promise
     }
 }

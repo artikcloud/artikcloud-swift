@@ -70,99 +70,99 @@ open class DeviceType: Mappable, PullableArtikInstance {
     // MARK: - Manifest Properties
     
     public func getManifestProperties(version: Int64? = nil) -> Promise<ManifestProperties> {
-        let promise = Promise<ManifestProperties>.pending()
+        let (promise, resolver) = Promise<ManifestProperties>.pending()
         
         if let id = id {
-            DeviceTypesAPI.getManifestProperties(id: id, version: version).then { result -> Void in
-                promise.fulfill(result)
+            DeviceTypesAPI.getManifestProperties(id: id, version: version).done { result in
+                resolver.fulfill(result)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
 
     public func getManifestVersions() -> Promise<[Int64]> {
-        let promise = Promise<[Int64]>.pending()
+        let (promise, resolver) = Promise<[Int64]>.pending()
         
         if let id = id {
-            DeviceTypesAPI.getManifestVersions(id: id).then { result -> Void in
-                promise.fulfill(result)
+            DeviceTypesAPI.getManifestVersions(id: id).done { result in
+                resolver.fulfill(result)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Monetization
     
     public func getTiers(dtid: String, latest: Bool? = nil, status: MonetizationAPI.PricingTiersDetailsStatus? = nil) -> Promise<[PricingTiersDetails]> {
-        let promise = Promise<[PricingTiersDetails]>.pending()
+        let (promise, resolver) = Promise<[PricingTiersDetails]>.pending()
         
         if let id = id {
-            MonetizationAPI.getTiers(dtid: id, latest: latest, status: status).then { result -> Void in
-                promise.fulfill(result)
+            MonetizationAPI.getTiers(dtid: id, latest: latest, status: status).done { result in
+                resolver.fulfill(result)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Subscriptions
     
     public func createSubscription(uid: String, description: String? = nil, includeSharedDevices: Bool = false, callback: String) -> Promise<Subscription> {
-        let promise = Promise<Subscription>.pending()
+        let (promise, resolver) = Promise<Subscription>.pending()
         
         if let id = id {
-            SubscriptionsAPI.create(uid: uid, sdtid: id, description: description, includeSharedDevices: includeSharedDevices, callback: callback).then { result -> Void in
-                promise.fulfill(result)
+            SubscriptionsAPI.create(uid: uid, sdtid: id, description: description, includeSharedDevices: includeSharedDevices, callback: callback).done { result in
+                resolver.fulfill(result)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func createSubscription(uid: String, description: String? = nil, includeSharedDevices: Bool = false, awsKey: String, awsSecret: String, awsRegion: String, awsKinesisStream: String) -> Promise<Subscription> {
-        let promise = Promise<Subscription>.pending()
+        let (promise, resolver) = Promise<Subscription>.pending()
         
         if let id = id {
-            SubscriptionsAPI.create(uid: uid, sdtid: id, description: description, includeSharedDevices: includeSharedDevices, awsKey: awsKey, awsSecret: awsSecret, awsRegion: awsRegion, awsKinesisStream: awsKinesisStream).then { result -> Void in
-                promise.fulfill(result)
+            SubscriptionsAPI.create(uid: uid, sdtid: id, description: description, includeSharedDevices: includeSharedDevices, awsKey: awsKey, awsSecret: awsSecret, awsRegion: awsRegion, awsKinesisStream: awsKinesisStream).done { result in
+                resolver.fulfill(result)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - PullableArtikInstance
     
     public func pullFromArtik() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let id = id {
-            DeviceTypesAPI.get(id: id).then { type -> Void in
+            DeviceTypesAPI.get(id: id).done { type in
                 self.mapping(map: Map(mappingType: .fromJSON, JSON: type.toJSON(), toObject: true, context: nil, shouldIncludeNilValues: true))
-                promise.fulfill(())
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
 }

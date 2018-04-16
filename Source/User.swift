@@ -72,267 +72,267 @@ open class User: NSObject, NSCoding, Mappable {
     // MARK: - Application Properties
     
     public func getApplicationProperties() -> Promise<JSONResponse> {
-        let promise = Promise<JSONResponse>.pending()
+        let (promise, resolver) = Promise<JSONResponse>.pending()
         
         if let id = id {
-            UsersAPI.getApplicationProperties(uid: id).then { response -> Void in
-                promise.fulfill(response)
+            UsersAPI.getApplicationProperties(uid: id).done { response in
+                resolver.fulfill(response)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func createApplicationProperties(properties: [String:Any]) -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let id = id {
-            UsersAPI.createApplicationProperties(uid: id, properties: properties).then { _ -> Void in
-                promise.fulfill(())
+            UsersAPI.createApplicationProperties(uid: id, properties: properties).done {
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func updateApplicationProperties(properties: [String:Any]) -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let id = id {
-            UsersAPI.updateApplicationProperties(uid: id, properties: properties).then { _ -> Void in
-                promise.fulfill(())
+            UsersAPI.updateApplicationProperties(uid: id, properties: properties).done {
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func removeApplicationProperties() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let id = id {
-            UsersAPI.removeApplicationProperties(uid: id).then { _ -> Void in
-                promise.fulfill(())
+            UsersAPI.removeApplicationProperties(uid: id).done {
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Devices
     
     public func getDevices(count: Int, offset: Int = 0, includeProperties: Bool? = nil, owner: DevicesAPI.DeviceOwner? = nil, includeShareInfo: Bool? = nil, includeDeviceTypeInfo: Bool? = nil) -> Promise<Page<Device>> {
-        let promise = Promise<Page<Device>>.pending()
+        let (promise, resolver) = Promise<Page<Device>>.pending()
         
         if let id = id {
-            UsersAPI.getDevices(uid: id, count: count, offset: offset, includeProperties: includeProperties, owner: owner, includeShareInfo: includeShareInfo, includeDeviceTypeInfo: includeDeviceTypeInfo).then { page -> Void in
-                promise.fulfill(page)
+            UsersAPI.getDevices(uid: id, count: count, offset: offset, includeProperties: includeProperties, owner: owner, includeShareInfo: includeShareInfo, includeDeviceTypeInfo: includeDeviceTypeInfo).done { page in
+                resolver.fulfill(page)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func getDevices(includeProperties: Bool? = nil, owner: DevicesAPI.DeviceOwner? = nil, includeShareInfo: Bool? = nil, includeDeviceTypeInfo: Bool? = nil) -> Promise<Page<Device>> {
-        let promise = Promise<Page<Device>>.pending()
+        let (promise, resolver) = Promise<Page<Device>>.pending()
         
         if let id = id {
-            UsersAPI.getDevices(uid: id, includeProperties: includeProperties, owner: owner, includeShareInfo: includeShareInfo, includeDeviceTypeInfo: includeDeviceTypeInfo).then { page -> Void in
-                promise.fulfill(page)
+            UsersAPI.getDevices(uid: id, includeProperties: includeProperties, owner: owner, includeShareInfo: includeShareInfo, includeDeviceTypeInfo: includeDeviceTypeInfo).done { page in
+                resolver.fulfill(page)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func createDevice(dtid: String, name: String, manifestVersion: UInt64? = nil, manifestVersionPolicy: DevicesAPI.ManifestVersionPolicy? = nil) -> Promise<Device> {
-        let promise = Promise<Device>.pending()
+        let (promise, resolver) = Promise<Device>.pending()
         
         if let id = id {
-            DevicesAPI.create(uid: id, dtid: dtid, name: name, manifestVersion: manifestVersion, manifestVersionPolicy: manifestVersionPolicy).then { result -> Void in
-                promise.fulfill(result)
+            DevicesAPI.create(uid: id, dtid: dtid, name: name, manifestVersion: manifestVersion, manifestVersionPolicy: manifestVersionPolicy).done { result in
+                resolver.fulfill(result)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Device Types
     
     public func getDeviceTypes(count: Int, offset: Int = 0, name: String? = nil, includeOrganization: Bool = false) -> Promise<Page<DeviceType>> {
-        let promise = Promise<Page<DeviceType>>.pending()
+        let (promise, resolver) = Promise<Page<DeviceType>>.pending()
         
         if let id = id {
-            UsersAPI.getDeviceTypes(uid: id, count: count, offset: offset, name: name, includeOrganization: includeOrganization).then { page -> Void in
-                promise.fulfill(page)
+            UsersAPI.getDeviceTypes(uid: id, count: count, offset: offset, name: name, includeOrganization: includeOrganization).done { page in
+                resolver.fulfill(page)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Rules
     
     public func getRules(count: Int, offset: Int = 0, scope: RulesAPI.RuleScope = .publicOrOwned, excludeDisabled: Bool = false) -> Promise<Page<Rule>> {
-        let promise = Promise<Page<Rule>>.pending()
+        let (promise, resolver) = Promise<Page<Rule>>.pending()
         
         if let id = id {
-            UsersAPI.getRules(uid: id, count: count, offset: offset, scope: scope, excludeDisabled: excludeDisabled).then { page -> Void in
-                promise.fulfill(page)
+            UsersAPI.getRules(uid: id, count: count, offset: offset, scope: scope, excludeDisabled: excludeDisabled).done { page in
+                resolver.fulfill(page)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func getRules(scope: RulesAPI.RuleScope = .publicOrOwned, excludeDisabled: Bool = false) -> Promise<Page<Rule>> {
-        let promise = Promise<Page<Rule>>.pending()
+        let (promise, resolver) = Promise<Page<Rule>>.pending()
         
         if let id = id {
-            UsersAPI.getRules(uid: id, scope: scope, excludeDisabled: excludeDisabled).then { page -> Void in
-                promise.fulfill(page)
+            UsersAPI.getRules(uid: id, scope: scope, excludeDisabled: excludeDisabled).done { page in
+                resolver.fulfill(page)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Scenes
     
     public func getScenes() -> Promise<Page<Scene>> {
-        let promise = Promise<Page<Scene>>.pending()
+        let (promise, resolver) = Promise<Page<Scene>>.pending()
         
         if let id = id {
-            UsersAPI.getScenes(uid: id).then { page -> Void in
-                promise.fulfill(page)
+            UsersAPI.getScenes(uid: id).done { page in
+                resolver.fulfill(page)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Subscriptions
     
     public func createSubscription(sdtid: String? = nil, sdid: String? = nil, description: String? = nil, includeSharedDevices: Bool = false, callback: String) -> Promise<Subscription> {
-        let promise = Promise<Subscription>.pending()
+        let (promise, resolver) = Promise<Subscription>.pending()
         
         if let id = id {
-            UsersAPI.createSubscription(uid: id, sdtid: sdtid, sdid: sdid, description: description, includeSharedDevices: includeSharedDevices, callback: callback).then { subscription -> Void in
-                promise.fulfill(subscription)
+            UsersAPI.createSubscription(uid: id, sdtid: sdtid, sdid: sdid, description: description, includeSharedDevices: includeSharedDevices, callback: callback).done { subscription in
+                resolver.fulfill(subscription)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func createSubscription(sdtid: String? = nil, sdid: String? = nil, description: String? = nil, includeSharedDevices: Bool = false, awsKey: String, awsSecret: String, awsRegion: String, awsKinesisStream: String) -> Promise<Subscription> {
-        let promise = Promise<Subscription>.pending()
+        let (promise, resolver) = Promise<Subscription>.pending()
         
         if let id = id {
-            UsersAPI.createSubscription(uid: id, sdtid: sdtid, sdid: sdid, description: description, includeSharedDevices: includeSharedDevices, awsKey: awsKey, awsSecret: awsSecret, awsRegion: awsRegion, awsKinesisStream: awsKinesisStream).then { subscription -> Void in
-                promise.fulfill(subscription)
+            UsersAPI.createSubscription(uid: id, sdtid: sdtid, sdid: sdid, description: description, includeSharedDevices: includeSharedDevices, awsKey: awsKey, awsSecret: awsSecret, awsRegion: awsRegion, awsKinesisStream: awsKinesisStream).done { subscription in
+                resolver.fulfill(subscription)
                 }.catch { error -> Void in
-                    promise.reject(error)
+                    resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func createSubscription(ddid: String, description: String? = nil, includeSharedDevices: Bool = false, callback: String) -> Promise<Subscription> {
-        let promise = Promise<Subscription>.pending()
+        let (promise, resolver) = Promise<Subscription>.pending()
         
         if let id = id {
-            UsersAPI.createSubscription(uid: id, ddid: ddid, description: description, includeSharedDevices: includeSharedDevices, callback: callback).then { subscription -> Void in
-                promise.fulfill(subscription)
-                }.catch { error -> Void in
-                    promise.reject(error)
+            UsersAPI.createSubscription(uid: id, ddid: ddid, description: description, includeSharedDevices: includeSharedDevices, callback: callback).done { subscription in
+                resolver.fulfill(subscription)
+            }.catch { error -> Void in
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func createSubscription(ddid: String, description: String? = nil, includeSharedDevices: Bool = false, awsKey: String, awsSecret: String, awsRegion: String, awsKinesisStream: String) -> Promise<Subscription> {
-        let promise = Promise<Subscription>.pending()
+        let (promise, resolver) = Promise<Subscription>.pending()
         
         if let id = id {
-            UsersAPI.createSubscription(uid: id, ddid: ddid, description: description, includeSharedDevices: includeSharedDevices, awsKey: awsKey, awsSecret: awsSecret, awsRegion: awsRegion, awsKinesisStream: awsKinesisStream).then { subscription -> Void in
-                promise.fulfill(subscription)
+            UsersAPI.createSubscription(uid: id, ddid: ddid, description: description, includeSharedDevices: includeSharedDevices, awsKey: awsKey, awsSecret: awsSecret, awsRegion: awsRegion, awsKinesisStream: awsKinesisStream).done { subscription in
+                resolver.fulfill(subscription)
                 }.catch { error -> Void in
-                    promise.reject(error)
+                    resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func getSubscription(count: Int, offset: Int = 0) -> Promise<Page<Subscription>> {
-        let promise = Promise<Page<Subscription>>.pending()
+        let (promise, resolver) = Promise<Page<Subscription>>.pending()
         
         if let id = id {
-            SubscriptionsAPI.get(uid: id, count: count, offset: offset).then { result -> Void in
-                promise.fulfill(result)
+            SubscriptionsAPI.get(uid: id, count: count, offset: offset).done { result in
+                resolver.fulfill(result)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func getSubscription() -> Promise<Page<Subscription>> {
-        let promise = Promise<Page<Subscription>>.pending()
+        let (promise, resolver) = Promise<Page<Subscription>>.pending()
         
         if let id = id {
-            SubscriptionsAPI.get(uid: id).then { result -> Void in
-                promise.fulfill(result)
+            SubscriptionsAPI.get(uid: id).done { result in
+                resolver.fulfill(result)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
 }

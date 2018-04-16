@@ -3,7 +3,7 @@ Pod::Spec.new do |s|
   # ―――  Spec Metadata  ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
   s.name         = "ArtikCloudSwift"
-  s.version      = "4.1.2"
+  s.version      = "4.2.0"
   s.summary      = "ARTIK Cloud SDK for iOS, tvOS, watchOS & macOS, fully written in Swift."
   s.homepage     = "https://github.com/artikcloud/artikcloud-swift"
 
@@ -39,13 +39,13 @@ Pod::Spec.new do |s|
 
   s.requires_arc = true
 
-  s.dependency 'Alamofire', '~> 4.5.1'
-  s.dependency 'PromiseKit', '4.5.0'
+  s.dependency 'Alamofire', '~> 4.7.1'
+  s.dependency 'PromiseKit', '6.2.3'
   s.dependency 'ObjectMapper', '~> 3.1.0'
-  s.dependency 'CryptoSwift', '~> 0.8.0'
-  s.dependency 'Starscream', '~> 3.0.3'
+  s.dependency 'CryptoSwift', '~> 0.9.0'
+  s.dependency 'Starscream', '~> 3.0.5'
 
-  s.pod_target_xcconfig = { 'SWIFT_VERSION' => '4.0' }
+  s.pod_target_xcconfig = { 'SWIFT_VERSION' => '4.1' }
 
   s.cocoapods_version  = '>= 1.1'
 

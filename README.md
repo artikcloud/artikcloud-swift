@@ -10,13 +10,13 @@ This SDK helps you connect your iOS, tvOS, watchOS, and macOS applications to AR
 
 Connect with ARTIK cloud services and handle its response asynchronously. 
 ```swift
-DevicesAPI.get(id: "example-id").then { device -> Void in
+DevicesAPI.get(id: "example-id").done { device in
     if device.isSharable() {
         device.share(email: "email@example.com").catch { error in
             print(error)
         }
     } else {
-        device.removeFromArtik().then { _ -> Void in
+        device.removeFromArtik().done {
             print("We couldn't share the device, so it was removed.")
         }.catch { error in
             print(error)
@@ -29,11 +29,11 @@ DevicesAPI.get(id: "example-id").then { device -> Void in
 
 ## Prerequisites
 
-- [Alamofire](https://github.com/Alamofire/Alamofire) >= 4.5.1
-- [PromiseKit](https://github.com/mxcl/PromiseKit) >= 4.5.0
+- [Alamofire](https://github.com/Alamofire/Alamofire) >= 4.7.1
+- [PromiseKit](https://github.com/mxcl/PromiseKit) >= 6.2.3
 - [ObjectMapper](https://github.com/Hearst-DD/ObjectMapper) >= 3.1.0
-- [CryptoSwift](https://github.com/krzyzanowskim/CryptoSwift) >= 0.8.0
-- [Starscream](https://github.com/daltoniam/Starscream) >= 3.0.3
+- [CryptoSwift](https://github.com/krzyzanowskim/CryptoSwift) >= 0.9.0
+- [Starscream](https://github.com/daltoniam/Starscream) >= 3.0.5
 
 ## Installation
 
@@ -119,7 +119,7 @@ func application(_ application: UIApplication, open url: URL, sourceApplication:
             // Default Callback, used for Authentication flows
             
             // Using Authorization Code + PKCE for example...
-            AuthenticationAPI.processAuthorizationCodeCallback(url, usingPKCE: true).then { token -> Void in
+            AuthenticationAPI.processAuthorizationCodeCallback(url, usingPKCE: true).done { token in
                 // We got a Token!
             }.catch { error -> Void in
                 // Something went wrong...

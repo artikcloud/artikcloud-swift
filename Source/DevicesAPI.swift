@@ -50,7 +50,7 @@ open class DevicesAPI {
     ///   - includeDeviceTypeInfo: (Optional) Include Device Type Info in results
     /// - Returns: A `Promise<Page<Device>>`
     open class func get(uid: String, count: Int, offset: Int = 0, includeProperties: Bool? = nil, owner: DeviceOwner? = nil, includeShareInfo: Bool? = nil, includeDeviceTypeInfo: Bool? = nil) -> Promise<Page<Device>> {
-        let promise = Promise<Page<Device>>.pending()
+        let (promise, resolver) = Promise<Page<Device>>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/users/\(uid)/devices"
         let parameters = APIHelpers.removeNilParameters([
             "count": count,
@@ -61,29 +61,29 @@ open class DevicesAPI {
             "dt_name": includeDeviceTypeInfo
         ])
         
-        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).done { response in
             if let total = response["total"] as? Int64, let offset = response["offset"] as? Int64, let count = response["count"] as? Int64, let devices = (response["data"] as? [String:Any])?["devices"] as? [[String:Any]] {
                 let page = Page<Device>(offset: offset, total: total)
                 if devices.count != Int(count) {
-                    promise.reject(ArtikError.json(reason: .countAndContentDoNotMatch))
+                    resolver.reject(ArtikError.json(reason: .countAndContentDoNotMatch))
                     return
                 }
                 for item in devices {
                     if let device = Device(JSON: item) {
                         page.data.append(device)
                     } else {
-                        promise.reject(ArtikError.json(reason: .invalidItem))
+                        resolver.reject(ArtikError.json(reason: .invalidItem))
                         return
                     }
                 }
-                promise.fulfill(page)
+                resolver.fulfill(page)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Get all of a User's Devices using recursive requests.
@@ -107,20 +107,20 @@ open class DevicesAPI {
     ///   - includeProperties: Include the Device's Properties in the response
     /// - Returns: A `Promise<Device>`
     open class func get(id: String, includeProperties: Bool = false) -> Promise<Device> {
-        let promise = Promise<Device>.pending()
+        let (promise, resolver) = Promise<Device>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/devices/\(id)"
         let parameters: [String:Any]? = includeProperties ? ["includeProperties": true] : nil
         
-        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: includeProperties ? URLEncoding.queryString : URLEncoding.default).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: includeProperties ? URLEncoding.queryString : URLEncoding.default).done { response in
             if let data = response["data"] as? [String:Any], let device = Device(JSON: data) {
-                promise.fulfill(device)
+                resolver.fulfill(device)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Create a new device for a user.
@@ -133,7 +133,7 @@ open class DevicesAPI {
     ///   - manifestVersionPolicy: (Optional) The desired manifest version policy
     /// - Returns: A `Promise<Device>`
     open class func create(uid: String, dtid: String, name: String, manifestVersion: UInt64? = nil, manifestVersionPolicy: ManifestVersionPolicy? = nil) -> Promise<Device> {
-        let promise = Promise<Device>.pending()
+        let (promise, resolver) = Promise<Device>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/devices"
         let parameters = APIHelpers.removeNilParameters([
             "uid": uid,
@@ -143,16 +143,16 @@ open class DevicesAPI {
             "manifestVersionPolicy": manifestVersionPolicy?.rawValue
         ])
         
-        APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: JSONEncoding.default).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: JSONEncoding.default).done { response in
             if let data = response["data"] as? [String:Any], let device = Device(JSON: data) {
-                promise.fulfill(device)
+                resolver.fulfill(device)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     
@@ -165,7 +165,7 @@ open class DevicesAPI {
     ///   - manifestVersionPolicy: (Optional) The Device's new manifest version policy
     /// - Returns: A `Promise<Device>`
     open class func update(id: String, name: String? = nil, manifestVersion: Int64? = nil, manifestVersionPolicy: ManifestVersionPolicy? = nil) -> Promise<Device> {
-        let promise = Promise<Device>.pending()
+        let (promise, resolver) = Promise<Device>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/devices/\(id)"
         
         let parameters = APIHelpers.removeNilParameters([
@@ -174,24 +174,24 @@ open class DevicesAPI {
             "manifestVersionPolicy": manifestVersionPolicy?.rawValue
         ])
         guard parameters.count > 0 else {
-            self.get(id: id).then { result -> Void in
-                promise.fulfill(result)
+            self.get(id: id).done { result in
+                resolver.fulfill(result)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
-            return promise.promise
+            return promise
         }
         
-        APIHelpers.makeRequest(url: path, method: .put, parameters: parameters, encoding: JSONEncoding.default).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .put, parameters: parameters, encoding: JSONEncoding.default).done { response in
             if let data = response["data"] as? [String:Any], let device = Device(JSON: data) {
-                promise.fulfill(device)
+                resolver.fulfill(device)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Remove a Device from ARTIK Cloud.
@@ -199,15 +199,15 @@ open class DevicesAPI {
     /// - Parameter id: The Device's id
     /// - Returns: A `Promise<Void>`
     open class func delete(id: String) -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolve) = Promise<Void>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/devices/\(id)"
         
-        APIHelpers.makeRequest(url: path, method: .delete, parameters: nil, encoding: URLEncoding.default).then { response -> Void in
-            promise.fulfill(())
+        APIHelpers.makeRequest(url: path, method: .delete, parameters: nil, encoding: URLEncoding.default).done { response in
+            resolve.fulfill(())
         }.catch { error -> Void in
-            promise.reject(error)
+            resolve.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Device Token
@@ -220,31 +220,31 @@ open class DevicesAPI {
     ///   - createIfNone: Create the `DeviceToken` if it does not exist
     /// - Returns: A `Promise<DeviceToken>`
     open class func getToken(id: String, createIfNone: Bool) -> Promise<DeviceToken> {
-        let promise = Promise<DeviceToken>.pending()
+        let (promise, resolver) = Promise<DeviceToken>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/devices/\(id)/tokens"
         
-        APIHelpers.makeRequest(url: path, method: .get, parameters: nil, encoding: URLEncoding.default).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .get, parameters: nil, encoding: URLEncoding.default).done { response in
             if let data = response["data"] as? [String:Any], let token = DeviceToken(JSON: data) {
-                promise.fulfill(token)
+                resolver.fulfill(token)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
             if createIfNone, let error = error as? ArtikError, case .responseError(let nestedError, _) = error, let code = (nestedError as? AFError)?.responseCode, code == 404 {
-                APIHelpers.makeRequest(url: path, method: .put, parameters: nil, encoding: URLEncoding.default).then { response -> Void in
+                APIHelpers.makeRequest(url: path, method: .put, parameters: nil, encoding: URLEncoding.default).done { response in
                     if let data = response["data"] as? [String:Any], let token = DeviceToken(JSON: data) {
-                        promise.fulfill(token)
+                        resolver.fulfill(token)
                     } else {
-                        promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                        resolver.reject(ArtikError.json(reason: .unexpectedFormat))
                     }
                 }.catch { error -> Void in
-                    promise.reject(error)
+                    resolver.reject(error)
                 }
             } else {
-                promise.reject(error)
+                resolver.reject(error)
             }
         }
-        return promise.promise
+        return promise
     }
     
     /// Revoke a Device's Token.
@@ -252,19 +252,19 @@ open class DevicesAPI {
     /// - Parameter id: The Device's id
     /// - Returns: A `Promise<DeviceToken>` returning the removed token
     open class func revokeToken(id: String) -> Promise<DeviceToken> {
-        let promise = Promise<DeviceToken>.pending()
+        let (promise, resolver) = Promise<DeviceToken>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/devices/\(id)/tokens"
         
-        APIHelpers.makeRequest(url: path, method: .delete, parameters: nil, encoding: URLEncoding.default).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .delete, parameters: nil, encoding: URLEncoding.default).done { response in
             if let data = response["data"] as? [String:Any], let token = DeviceToken(JSON: data) {
-                promise.fulfill(token)
+                resolver.fulfill(token)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Cloud Connector
@@ -277,14 +277,13 @@ open class DevicesAPI {
     ///   - id: The Device's id
     /// - Returns: A `Promise<URLRequest>`
     open class func authorize(id: String) -> Promise<URLRequest> {
-        let promise = Promise<URLRequest>.pending()
-        
+        let (promise, resolver) = Promise<URLRequest>.pending()
         guard let referer = ArtikCloudSwiftSettings.getRedirectURI(for: .cloudAuthorization) else {
-            promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noRedirectURI))
-            return promise.promise
+            resolver.reject(ArtikError.artikCloudSwiftSettings(reason: .noRedirectURI))
+            return promise
         }
         
-        ArtikCloudSwiftSettings.getUserToken().then { token -> Void in
+        ArtikCloudSwiftSettings.getUserToken().done { token in
             if let token = token {
                 let headers = [
                     APIHelpers.authorizationHeaderKey: token.getHeaderValue(),
@@ -296,17 +295,17 @@ open class DevicesAPI {
                     var request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 10.0)
                     request.httpMethod = "POST"
                     request.allHTTPHeaderFields = headers
-                    promise.fulfill(request)
+                    resolver.fulfill(request)
                 } else {
-                    promise.reject(ArtikError.url(reason: .failedToInit))
+                    resolver.reject(ArtikError.url(reason: .failedToInit))
                 }
             } else {
-                promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noUserToken))
+                resolver.reject(ArtikError.artikCloudSwiftSettings(reason: .noUserToken))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Unauthorize a Cloud Connector's access.
@@ -314,15 +313,15 @@ open class DevicesAPI {
     /// - Parameter id: The Device's id
     /// - Returns: A `Promise<Void>`
     open class func unauthorize(id: String) -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/devices/\(id)/providerauth"
         
-        APIHelpers.makeRequest(url: path, method: .delete, parameters: nil, encoding: URLEncoding.default).then { _ -> Void in
-            promise.fulfill(())
+        APIHelpers.makeRequest(url: path, method: .delete, parameters: nil, encoding: URLEncoding.default).done { _ in
+            resolver.fulfill(())
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Device Status
@@ -335,23 +334,23 @@ open class DevicesAPI {
     ///   - includeSnapshotTimestamp: (Optional) Include timestamps in the device's snapshot, if included
     /// - Returns: A `Promise<DeviceStatus>`
     open class func getStatus(id: String, includeSnapshot: Bool? = nil, includeSnapshotTimestamp: Bool? = nil) -> Promise<DeviceStatus> {
-        let promise = Promise<DeviceStatus>.pending()
+        let (promise, resolver) = Promise<DeviceStatus>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/devices/\(id)/status"
         let parameters = APIHelpers.removeNilParameters([
             "includeSnapshot": includeSnapshot,
             "includeSnapshotTimestamp": includeSnapshotTimestamp
         ])
         
-        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).done { response in
             if let status = DeviceStatus(JSON: response) {
-                promise.fulfill(status)
+                resolver.fulfill(status)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Get Devices' Statuses using recursive requests.
@@ -377,18 +376,18 @@ open class DevicesAPI {
     ///   - value: The new availability value
     /// - Returns: A `Promise<Void>`
     open class func updateStatus(id: String, to value: DeviceStatus.DeviceStatusAvailability) -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/devices/\(id)/status"
         let parameters = [
             "availability": value.rawValue
         ]
         
-        APIHelpers.makeRequest(url: path, method: .put, parameters: parameters, encoding: JSONEncoding.default).then { _ -> Void in
-            promise.fulfill(())
+        APIHelpers.makeRequest(url: path, method: .put, parameters: parameters, encoding: JSONEncoding.default).done { _ in
+            resolver.fulfill(())
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Device Sharing
@@ -401,24 +400,24 @@ open class DevicesAPI {
     ///   - offset: The offset of the pagination
     /// - Returns: A `Promise<Page<DeviceShare>>`
     open class func getShares(id: String, count: Int, offset: Int = 0) -> Promise<Page<DeviceShare>> {
-        let promise = Promise<Page<DeviceShare>>.pending()
+        let (promise, resolver) = Promise<Page<DeviceShare>>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/devices/\(id)/shares"
         let parameters: [String:Any] = [
             "count": count,
             "offset": offset
         ]
         
-        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).done { response in
             do {
                 let page = try paginatedDeviceSharesToInstance(response)
-                promise.fulfill(page)
+                resolver.fulfill(page)
             } catch {
-                promise.reject(error)
+                resolver.reject(error)
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Get all of a Device's Shares using recursive requests.
@@ -439,7 +438,7 @@ open class DevicesAPI {
     ///   - filter: The device share status filter for the results
     /// - Returns: A `Promise<Page<DeviceShare>>`
     open class func getShares(uid: String, count: Int, offset: Int = 0, filter: DeviceShareFilter = .all) -> Promise<Page<DeviceShare>> {
-        let promise = Promise<Page<DeviceShare>>.pending()
+        let (promise, resolver) = Promise<Page<DeviceShare>>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/users/\(uid)/shares"
         let parameters: [String:Any] = [
             "count": count,
@@ -447,17 +446,17 @@ open class DevicesAPI {
             "filter": filter.rawValue
         ]
         
-        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).done { response in
             do {
                 let page = try paginatedDeviceSharesToInstance(response)
-                promise.fulfill(page)
+                resolver.fulfill(page)
             } catch {
-                promise.reject(error)
+                resolver.reject(error)
             }
          }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Get all of a user's Device Shares using recursive requests
@@ -478,19 +477,19 @@ open class DevicesAPI {
     ///   - sid: The Device Share's id
     /// - Returns: A `Promise<DeviceShare>`
     open class func getShare(id: String, sid: String) -> Promise<DeviceShare> {
-        let promise = Promise<DeviceShare>.pending()
+        let (promise, resolver) = Promise<DeviceShare>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/devices/\(id)/shares/\(sid)"
         
-        APIHelpers.makeRequest(url: path, method: .get, parameters: nil, encoding: URLEncoding.default).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .get, parameters: nil, encoding: URLEncoding.default).done { response in
             if let data = response["data"] as? [String:Any], let share = DeviceShare(JSON: data) {
-                promise.fulfill(share)
+                resolver.fulfill(share)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Share a Device with someone by sending an invitation to the recipient's email.
@@ -500,7 +499,7 @@ open class DevicesAPI {
     ///   - email: The recipient's email
     /// - Returns: A `Promise<DeviceShare>`
     open class func share(id: String, email: String) -> Promise<DeviceShare> {
-        let promise = Promise<DeviceShare>.pending()
+        let (promise, resolver) = Promise<DeviceShare>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/devices/\(id)/shares"
         
         if isValidEmail(email: email) {
@@ -508,23 +507,23 @@ open class DevicesAPI {
                 "email": email
             ]
             
-            APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: JSONEncoding.default).then { response -> Void in
+            APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: JSONEncoding.default).done { response in
                 if let data = response["data"] as? [String:Any], let sid = data["id"] as? String {
-                    self.getShare(id: id, sid: sid).then { share -> Void in
-                        promise.fulfill(share)
+                    self.getShare(id: id, sid: sid).done { share -> Void in
+                        resolver.fulfill(share)
                     }.catch { error -> Void in
-                        promise.reject(error)
+                        resolver.reject(error)
                     }
                 } else {
-                    promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                    resolver.reject(ArtikError.json(reason: .unexpectedFormat))
                 }
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noEmailOrInvalid))
+            resolver.reject(ArtikError.missingValue(reason: .noEmailOrInvalid))
         }
-        return promise.promise
+        return promise
     }
     
     
@@ -535,15 +534,15 @@ open class DevicesAPI {
     ///   - sid: The Device Share's id
     /// - Returns: A `Promise<Void>`
     open class func unshare(id: String, sid: String) -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/devices/\(id)/shares/\(sid)"
         
-        APIHelpers.makeRequest(url: path, method: .delete, parameters: nil, encoding: URLEncoding.default).then { _ -> Void in
-            promise.fulfill(())
+        APIHelpers.makeRequest(url: path, method: .delete, parameters: nil, encoding: URLEncoding.default).done { _ in
+            resolver.fulfill(())
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: Secure Device Registration
@@ -555,23 +554,23 @@ open class DevicesAPI {
     ///   - pin: The PIN obtained in the registration call.
     /// - Returns: Returns a `Promise<String>` containing the request ID.
     open class func confirmUser(name: String, pin: String) -> Promise<String> {
-        let promise = Promise<String>.pending()
+        let (promise, resolver) = Promise<String>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/devices/registrations/pin"
         let parameters = [
             "deviceName": name,
             "pin": pin
         ]
         
-        APIHelpers.makeRequest(url: path, method: .put, parameters: parameters, encoding: JSONEncoding.default).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .put, parameters: parameters, encoding: JSONEncoding.default).done { response in
             if let data = response["data"] as? [String:Any], let rid = data["rid"] as? String {
-                promise.fulfill(rid)
+                resolver.fulfill(rid)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Clears any associations from the secure device registration and returns the targeted device.
@@ -579,47 +578,47 @@ open class DevicesAPI {
     /// - Parameter did: The Device's ID.
     /// - Returns: A `Promise<Device>`.
     open class func unregister(did: String) -> Promise<Device> {
-        let promise = Promise<Device>.pending()
+        let (promise, resolver) = Promise<Device>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/devices/\(did)/registrations"
         
-        APIHelpers.makeRequest(url: path, method: .delete, parameters: ["deviceId": did], encoding: URLEncoding.queryString).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .delete, parameters: ["deviceId": did], encoding: URLEncoding.queryString).done { response in
             if let data = response["data"] as? [String:Any], let device = Device(JSON: data) {
-                promise.fulfill(device)
+                resolver.fulfill(device)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Private Methods
     
     fileprivate class func getRecursive(_ container: Page<Device>, uid: String, offset: Int = 0, includeProperties: Bool? = nil, owner: DeviceOwner? = nil, includeShareInfo: Bool? = nil, includeDeviceTypeInfo: Bool? = nil) -> Promise<Page<Device>> {
-        let promise = Promise<Page<Device>>.pending()
+        let (promise, resolver) = Promise<Page<Device>>.pending()
         
-        DevicesAPI.get(uid: uid, count: 100, offset: offset, includeProperties: includeProperties, owner: owner, includeShareInfo: includeShareInfo, includeDeviceTypeInfo: includeDeviceTypeInfo).then { result -> Void in
+        DevicesAPI.get(uid: uid, count: 100, offset: offset, includeProperties: includeProperties, owner: owner, includeShareInfo: includeShareInfo, includeDeviceTypeInfo: includeDeviceTypeInfo).done { result in
             container.data.append(contentsOf: result.data)
             container.total = result.total
             
             if container.total > Int64(container.data.count) {
-                self.getRecursive(container, uid: uid, offset: Int(result.offset) + result.data.count, includeProperties: includeProperties, owner: owner, includeShareInfo: includeShareInfo, includeDeviceTypeInfo: includeDeviceTypeInfo).then { result -> Void in
-                    promise.fulfill(result)
+                self.getRecursive(container, uid: uid, offset: Int(result.offset) + result.data.count, includeProperties: includeProperties, owner: owner, includeShareInfo: includeShareInfo, includeDeviceTypeInfo: includeDeviceTypeInfo).done { result in
+                    resolver.fulfill(result)
                 }.catch { error -> Void in
-                    promise.reject(error)
+                    resolver.reject(error)
                 }
             } else {
-                promise.fulfill(container)
+                resolver.fulfill(container)
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     private class func getStatusesRecursive(_ container: Page<DeviceStatus>, ids: [String], parameters: [String:Any]? = nil) -> Promise<Page<DeviceStatus>> {
-        let promise = Promise<Page<DeviceStatus>>.pending()
+        let (promise, resolver) = Promise<Page<DeviceStatus>>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/devices/status"
         let maxIdsCount = 100
         var currentIds = ids
@@ -637,10 +636,10 @@ open class DevicesAPI {
             var finalParams = (parameters ?? [String:Any]())
             finalParams["dids"] = dids
             
-            APIHelpers.makeRequest(url: path, method: .get, parameters: finalParams, encoding: URLEncoding.queryString).then { response -> Void in
+            APIHelpers.makeRequest(url: path, method: .get, parameters: finalParams, encoding: URLEncoding.queryString).done { response in
                 if let total = response["total"] as? Int64, let count = response["count"] as? Int64, let data = response["data"] as? [[String:Any]] {
                     if data.count != Int(count) {
-                        promise.reject(ArtikError.json(reason: .countAndContentDoNotMatch))
+                        resolver.reject(ArtikError.json(reason: .countAndContentDoNotMatch))
                         return
                     }
                     container.total += total
@@ -649,76 +648,76 @@ open class DevicesAPI {
                         if let status = DeviceStatus(JSON: item) {
                             container.data.append(status)
                         } else {
-                            promise.reject(ArtikError.json(reason: .invalidItem))
+                            resolver.reject(ArtikError.json(reason: .invalidItem))
                             return
                         }
                     }
                     
                     if let nextIds = nextIds {
-                        getStatusesRecursive(container, ids: nextIds, parameters: parameters).then { final -> Void in
-                            promise.fulfill(final)
+                        getStatusesRecursive(container, ids: nextIds, parameters: parameters).done { final in
+                            resolver.fulfill(final)
                         }.catch { error -> Void in
-                            promise.reject(error)
+                            resolver.reject(error)
                         }
                     } else {
-                        promise.fulfill(container)
+                        resolver.fulfill(container)
                     }
                 } else {
-                    promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                    resolver.reject(ArtikError.json(reason: .unexpectedFormat))
                 }
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.fulfill(container)
+            resolver.fulfill(container)
         }
-        return promise.promise
+        return promise
     }
     
     private class func getSharesRecursive(_ container: Page<DeviceShare>, id: String, offset: Int = 0) -> Promise<Page<DeviceShare>> {
-        let promise = Promise<Page<DeviceShare>>.pending()
+        let (promise, resolver) = Promise<Page<DeviceShare>>.pending()
         
-        self.getShares(id: id, count: 100, offset: offset).then { result -> Void in
+        self.getShares(id: id, count: 100, offset: offset).done { result in
             container.data.append(contentsOf: result.data)
             container.total = result.total
             container.offset = result.offset
             
             if container.total > Int64(container.data.count) {
-                self.getSharesRecursive(container, id: id, offset: Int(result.offset) + result.data.count).then { result -> Void in
-                    promise.fulfill(result)
+                self.getSharesRecursive(container, id: id, offset: Int(result.offset) + result.data.count).done { result in
+                    resolver.fulfill(result)
                 }.catch { error -> Void in
-                    promise.reject(error)
+                    resolver.reject(error)
                 }
             } else {
-                promise.fulfill(container)
+                resolver.fulfill(container)
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     private class func getSharesRecursive(_ container: Page<DeviceShare>, uid: String, offset: Int = 0, filter: DeviceShareFilter = .all) -> Promise<Page<DeviceShare>> {
-        let promise = Promise<Page<DeviceShare>>.pending()
+        let (promise, resolver) = Promise<Page<DeviceShare>>.pending()
         
-        self.getShares(uid: uid, count: 100, offset: offset, filter: filter).then { result -> Void in
+        self.getShares(uid: uid, count: 100, offset: offset, filter: filter).done { result in
             container.data.append(contentsOf: result.data)
             container.total = result.total
             container.offset = result.offset
             
             if container.total > Int64(container.data.count) {
-                self.getSharesRecursive(container, uid: uid, offset: Int(result.offset) + result.data.count, filter: filter).then { result -> Void in
-                    promise.fulfill(result)
+                self.getSharesRecursive(container, uid: uid, offset: Int(result.offset) + result.data.count, filter: filter).done { result in
+                    resolver.fulfill(result)
                 }.catch { error -> Void in
-                    promise.reject(error)
+                    resolver.reject(error)
                 }
             } else {
-                promise.fulfill(container)
+                resolver.fulfill(container)
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     fileprivate class func paginatedDeviceSharesToInstance(_ response: [String:Any]) throws -> Page<DeviceShare> {

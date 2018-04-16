@@ -60,32 +60,30 @@ open class MonetizationAPI {
     ///   - action: The desired upgrade phase on which to start.
     /// - Returns: A `Promise<URL>`
     open class func getUpgradeURL(did: String, action: MonetizationUpgradeAction = .upgrade) -> Promise<URL> {
-        let promise = Promise<URL>.pending()
+        let (promise, resolver) = Promise<URL>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/pricing/devices/\(did)/revenueshare/upgradepath"
         let parameters = [
             "action": action.rawValue
         ]
-        
         guard let redirect = ArtikCloudSwiftSettings.getRedirectURI(for: .monetization) else {
-            promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noRedirectURI))
-            return promise.promise
+            resolver.reject(ArtikError.artikCloudSwiftSettings(reason: .noRedirectURI))
+            return promise
         }
         
-        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).done { response in
             if let data = response["data"] as? [String:Any], let urlRaw = data["url"] as? String {
                 if let url = URL(string: urlRaw + "?redirect_uri=\(redirect)") {
-                    promise.fulfill(url)
+                    resolver.fulfill(url)
                 } else {
-                    promise.reject(ArtikError.url(reason: .failedToInit))
+                    resolver.reject(ArtikError.url(reason: .failedToInit))
                 }
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        
-        return promise.promise
+        return promise
     }
     
     #if os(iOS)
@@ -96,14 +94,14 @@ open class MonetizationAPI {
     ///   - action: The desired upgrade phase on which to start
     /// - Returns: A `Promise<SFSafariViewController>`
     open class func getUpgradeController(did: String, action: MonetizationUpgradeAction = .upgrade) -> Promise<SFSafariViewController> {
-        let promise = Promise<SFSafariViewController>.pending()
+        let (promise, resolver) = Promise<SFSafariViewController>.pending()
         
-        getUpgradeURL(did: did, action: action).then { url -> Void in
-            promise.fulfill(SFSafariViewController(url: url))
+        getUpgradeURL(did: did, action: action).done { url in
+            resolver.fulfill(SFSafariViewController(url: url))
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     #endif
     
@@ -131,32 +129,32 @@ open class MonetizationAPI {
     ///   - status: (Optional) Filter results by status.
     /// - Returns: A `Promise<[PricingTiersDetails]>`
     open class func getTiers(dtid: String, latest: Bool? = nil, status: PricingTiersDetailsStatus? = nil) -> Promise<[PricingTiersDetails]> {
-        let promise = Promise<[PricingTiersDetails]>.pending()
+        let (promise, resolver) = Promise<[PricingTiersDetails]>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/pricing/devicetypes/\(dtid)/pricingtiers"
         let parameters = APIHelpers.removeNilParameters([
             "latest": latest,
             "status": status
         ])
         
-        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).done { response in
             if let pricingTiers = (response["data"] as? [String:Any])?["pricingTiers"] as? [[String:Any]] {
                 var result = [PricingTiersDetails]()
                 for json in pricingTiers {
                     if let tier = PricingTiersDetails(JSON: json) {
                         result.append(tier)
                     } else {
-                        promise.reject(ArtikError.json(reason: .invalidItem))
+                        resolver.reject(ArtikError.json(reason: .invalidItem))
                         return
                     }
                 }
-                promise.fulfill(result)
+                resolver.fulfill(result)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Get the Monetization Tiers of a Device
@@ -166,31 +164,31 @@ open class MonetizationAPI {
     ///   - active: (Optional) Filter results by their `active` state.
     /// - Returns: A `Promise<[PricingTier]>`
     open class func getTiers(did: String, active: Bool? = nil) -> Promise<[PricingTier]> {
-        let promise = Promise<[PricingTier]>.pending()
+        let (promise, resolver) = Promise<[PricingTier]>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/pricing/devices/\(did)/pricingtiers"
         let parameters = APIHelpers.removeNilParameters([
             "active": active
         ])
         
-        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).done { response in
             if let pricingTiersJson = (response["data"] as? [String:Any])?["pricingTiers"] as? [[String:Any]] {
                 var result = [PricingTier]()
                 for json in pricingTiersJson {
                     if let tier = PricingTier(JSON: json) {
                         result.append(tier)
                     } else {
-                        promise.reject(ArtikError.json(reason: .invalidItem))
+                        resolver.reject(ArtikError.json(reason: .invalidItem))
                         return
                     }
                 }
-                promise.fulfill(result)
+                resolver.fulfill(result)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
 }

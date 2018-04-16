@@ -86,7 +86,7 @@ open class ArtikWebsocket: WebSocketDelegate {
             self.token = token
             websocket.connect()
         } else {
-            APIHelpers.getAuthToken(preference: ArtikCloudSwiftSettings.preferredTokenForWebsockets).then { token -> Void in
+            APIHelpers.getAuthToken(preference: ArtikCloudSwiftSettings.preferredTokenForWebsockets).done { token in
                 self.token = token
                 self.websocket.connect()
             }.catch { error -> Void in
@@ -506,9 +506,9 @@ open class DeviceWebsocket: ArtikWebsocket {
         return URL(string: ArtikCloudSwiftSettings.websocketPath + endpoint + "?ack=\(ack)")!
     }
     
-    fileprivate var listPromise: (promise: Promise<[String]>, fulfill: ([String]) -> Void, reject: (Error) -> Void)?
-    fileprivate var registrationPromise: (promise: Promise<Void>, fulfill: () -> Void, reject: (Error) -> Void)?
-    fileprivate var messagePromise: (promise: Promise<String?>, fulfill: (String?) -> Void, reject: (Error) -> Void)?
+    fileprivate var listPromise: Resolver<[String]>?
+    fileprivate var registrationPromise: Resolver<Void>?
+    fileprivate var messagePromise: Resolver<String?>?
     public fileprivate(set) var ack: Bool
     var isResponsePending: Bool {
         return registrationPromise != nil || listPromise != nil || messagePromise != nil
@@ -558,22 +558,22 @@ open class DeviceWebsocket: ArtikWebsocket {
     ///   - token: (Optional) A specific `Token` to use. If ommited, the `Token` provided when connecting will be used, or one from `ArtikCloudSwiftSettings`.
     /// - Returns: A `Promise<Void>`. If `ack` is `True`, waits for the response to fulfill.
     public func register(did: String, token: Token? = nil) -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         trace()
         if isResponsePending {
-            promise.reject(ArtikError.websocket(reason: .writeAlreadyOngoing))
-            return promise.promise
+            resolver.reject(ArtikError.websocket(reason: .writeAlreadyOngoing))
+            return promise
         } else if ack {
-            registrationPromise = promise
+            registrationPromise = resolver
         }
         guard isConnected else {
-            promise.reject(ArtikError.websocket(reason: .socketIsNotConnected))
-            return promise.promise
+            resolver.reject(ArtikError.websocket(reason: .socketIsNotConnected))
+            return promise
         }
         
         guard let token = token ?? self.token else {
-            promise.reject(ArtikError.websocket(reason: .tokenRequired))
-            return promise.promise
+            resolver.reject(ArtikError.websocket(reason: .tokenRequired))
+            return promise
         }
         
         var parameters: [String:Any] = [
@@ -586,13 +586,13 @@ open class DeviceWebsocket: ArtikWebsocket {
         }
         do {
             let completion: (() -> ())? = ack ? nil : {
-                promise.fulfill(())
+                resolver.fulfill(())
             }
             websocket.write(string: try toJson(parameters), completion: completion)
         } catch {
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Unregister a device from the socket.
@@ -600,17 +600,17 @@ open class DeviceWebsocket: ArtikWebsocket {
     /// - Parameter did: The Device's ID.
     /// - Returns: A `Promise<Void>`. If `ack` is `True`, waits for the response to fulfill.
     public func unregister(did: String) -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         trace()
         if isResponsePending {
-            promise.reject(ArtikError.websocket(reason: .writeAlreadyOngoing))
-            return promise.promise
+            resolver.reject(ArtikError.websocket(reason: .writeAlreadyOngoing))
+            return promise
         } else if ack {
-            registrationPromise = promise
+            registrationPromise = resolver
         }
         guard isConnected else {
-            promise.reject(ArtikError.websocket(reason: .socketIsNotConnected))
-            return promise.promise
+            resolver.reject(ArtikError.websocket(reason: .socketIsNotConnected))
+            return promise
         }
         
         var parameters: [String:Any] = [
@@ -622,30 +622,30 @@ open class DeviceWebsocket: ArtikWebsocket {
         }
         do {
             let completion: (() -> ())? = ack ? nil : {
-                promise.fulfill(())
+                resolver.fulfill(())
             }
             websocket.write(string: try toJson(parameters), completion: completion)
         } catch {
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Get a list of devices currently registered on the socket.
     ///
     /// - Returns: A `Promise<[String]>` containing the devices' IDs.
     public func list() -> Promise<[String]> {
-        let promise = Promise<[String]>.pending()
+        let (promise, resolver) = Promise<[String]>.pending()
         trace()
         if isResponsePending {
-            promise.reject(ArtikError.websocket(reason: .writeAlreadyOngoing))
-            return promise.promise
+            resolver.reject(ArtikError.websocket(reason: .writeAlreadyOngoing))
+            return promise
         } else if ack {
-            listPromise = promise
+            listPromise = resolver
         }
         guard isConnected else {
-            promise.reject(ArtikError.websocket(reason: .socketIsNotConnected))
-            return promise.promise
+            resolver.reject(ArtikError.websocket(reason: .socketIsNotConnected))
+            return promise
         }
         
         var parameters: [String:Any] = ["type": MessageType.list.rawValue]
@@ -655,9 +655,9 @@ open class DeviceWebsocket: ArtikWebsocket {
         do {
             websocket.write(string: try toJson(parameters))
         } catch {
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Send a message from a device through the socket.
@@ -690,7 +690,7 @@ open class DeviceWebsocket: ArtikWebsocket {
         if ack {
             if let promise = registrationPromise {
                 if let data = json["data"] as? [String:Any], let code = data["code"] as? Int, code == 200, let message = data["message"] as? String, message == "OK" {
-                    promise.fulfill()
+                    promise.fulfill(())
                     registrationPromise = nil
                     return
                 } else {
@@ -709,7 +709,7 @@ open class DeviceWebsocket: ArtikWebsocket {
                 }
             }
         } else {
-            registrationPromise?.fulfill()
+            registrationPromise?.fulfill(())
             registrationPromise = nil
             
             messagePromise?.fulfill(nil)
@@ -760,17 +760,17 @@ open class DeviceWebsocket: ArtikWebsocket {
     }
     
     fileprivate func sendMessage(ddid: String?, sdid: String?, data: [String:Any], ts: ArtikTimestamp? = nil) -> Promise<String?> {
-        let promise = Promise<String?>.pending()
+        let (promise, resolver) = Promise<String?>.pending()
         trace()
         if isResponsePending {
-            promise.reject(ArtikError.websocket(reason: .writeAlreadyOngoing))
-            return promise.promise
+            resolver.reject(ArtikError.websocket(reason: .writeAlreadyOngoing))
+            return promise
         } else if ack {
-            messagePromise = promise
+            messagePromise = resolver
         }
         guard isConnected else {
-            promise.reject(ArtikError.websocket(reason: .socketIsNotConnected))
-            return promise.promise
+            resolver.reject(ArtikError.websocket(reason: .socketIsNotConnected))
+            return promise
         }
         
         var parameters: [String:Any] = [
@@ -791,12 +791,12 @@ open class DeviceWebsocket: ArtikWebsocket {
         
         do {
             let completion: (() -> ())? = ack ? nil : {
-                promise.fulfill(nil)
+                resolver.fulfill(nil)
             }
             websocket.write(string: try toJson(parameters), completion: completion)
         } catch {
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
 }

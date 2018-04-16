@@ -36,9 +36,9 @@ open class SubscriptionsAPI {
     /// - Returns: A `Promise<Subscription>`
     open class func create(uid: String, sdtid: String? = nil, sdid: String? = nil, description: String? = nil, includeSharedDevices: Bool = false, callback: String) -> Promise<Subscription> {
         guard sdtid == nil || sdid == nil else {
-            let promise = Promise<Subscription>.pending()
-            promise.reject(ArtikError.subscription(reason: .cannotUseBothSdtidAndSdid))
-            return promise.promise
+            let (promise, resolver) = Promise<Subscription>.pending()
+            resolver.reject(ArtikError.subscription(reason: .cannotUseBothSdtidAndSdid))
+            return promise
         }
         return self._create(uid: uid, sdtid: sdtid, sdid: sdid, callback: callback, messageType: .message, description: description, includeSharedDevices: includeSharedDevices)
     }
@@ -58,9 +58,9 @@ open class SubscriptionsAPI {
     /// - Returns: A `Promise<Subscription>`
     open class func create(uid: String, sdtid: String? = nil, sdid: String? = nil, description: String? = nil, includeSharedDevices: Bool = false, awsKey: String, awsSecret: String, awsRegion: String, awsKinesisStream: String) -> Promise<Subscription> {
         guard sdtid == nil || sdid == nil else {
-            let promise = Promise<Subscription>.pending()
-            promise.reject(ArtikError.subscription(reason: .cannotUseBothSdtidAndSdid))
-            return promise.promise
+            let (promise, resolver) = Promise<Subscription>.pending()
+            resolver.reject(ArtikError.subscription(reason: .cannotUseBothSdtidAndSdid))
+            return promise
         }
         return self._create(uid: uid, sdtid: sdtid, sdid: sdid, awsKey: awsKey, awsSecret: awsSecret, awsRegion: awsRegion, awsKinesisStream: awsKinesisStream, messageType: .message, description: description, includeSharedDevices: includeSharedDevices)
     }
@@ -101,15 +101,15 @@ open class SubscriptionsAPI {
     /// - Parameter sid: The Subscription's id.
     /// - Returns: A `Promise<Void>`
     open class func remove(sid: String) -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/subscriptions/\(sid)"
         
-        APIHelpers.makeRequest(url: path, method: .delete, parameters: nil, encoding: URLEncoding.default).then { _ -> Void in
-            promise.fulfill(())
+        APIHelpers.makeRequest(url: path, method: .delete, parameters: nil, encoding: URLEncoding.default).done { _ in
+            resolver.fulfill(())
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Get
@@ -119,19 +119,19 @@ open class SubscriptionsAPI {
     /// - Parameter sid: The Subscription's id.
     /// - Returns: A `Promise<Subscription>`
     open class func get(sid: String) -> Promise<Subscription> {
-        let promise = Promise<Subscription>.pending()
+        let (promise, resolver) = Promise<Subscription>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/subscriptions/\(sid)"
         
-        APIHelpers.makeRequest(url: path, method: .get, parameters: nil, encoding: URLEncoding.default).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .get, parameters: nil, encoding: URLEncoding.default).done { response in
             if let data = response["data"] as? [String:Any], let subscription = Subscription(JSON: data) {
-                promise.fulfill(subscription)
+                resolver.fulfill(subscription)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Get all Subscriptions for the current Application using pagination.
@@ -142,36 +142,36 @@ open class SubscriptionsAPI {
     ///   - offset: (Optional) The offset for pagination, default `0`.
     /// - Returns: A `Promise<Page<Subscription>>`
     open class func get(uid: String? = nil, count: Int, offset: Int = 0) -> Promise<Page<Subscription>> {
-        let promise = Promise<Page<Subscription>>.pending()
+        let (promise, resolver) = Promise<Page<Subscription>>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/subscriptions"
         let parameters: [String:Any] = [
             "count": count,
             "offset": offset
         ]
         
-        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).done { response in
             if let offset = response["offset"] as? Int64, let total = response["total"] as? Int64, let count = response["count"] as? Int64, let subscriptions = response["data"] as? [[String:Any]] {
                 let page = Page<Subscription>(offset: offset, total: total)
                 guard subscriptions.count == Int(count) else {
-                    promise.reject(ArtikError.json(reason: .countAndContentDoNotMatch))
+                    resolver.reject(ArtikError.json(reason: .countAndContentDoNotMatch))
                     return
                 }
                 for item in subscriptions {
                     if let subscription = Subscription(JSON: item) {
                         page.data.append(subscription)
                     } else {
-                        promise.reject(ArtikError.json(reason: .invalidItem))
+                        resolver.reject(ArtikError.json(reason: .invalidItem))
                         return
                     }
                 }
-                promise.fulfill(page)
+                resolver.fulfill(page)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Get all Subscriptions for the current Application using recursive requests.
@@ -194,7 +194,7 @@ open class SubscriptionsAPI {
     ///   - nonce: Nonce for authentication.
     /// - Returns: A `Promise<Subscription>`
     open class func confirm(sid: String, aid: String? = nil, nonce: String) -> Promise<Subscription> {
-        let promise = Promise<Subscription>.pending()
+        let (promise, resolver) = Promise<Subscription>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/subscriptions/\(sid)/validate"
         
         if let aid = aid ?? ArtikCloudSwiftSettings.clientID {
@@ -203,25 +203,25 @@ open class SubscriptionsAPI {
                 "nonce": nonce
             ]
             
-            APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: JSONEncoding.default, includeAuthHeader: false).then { response -> Void in
+            APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: JSONEncoding.default, includeAuthHeader: false).done { response in
                 if let data = response["data"] as? [String:Any], let subscription = Subscription(JSON: data) {
-                    promise.fulfill(subscription)
+                    resolver.fulfill(subscription)
                 } else {
-                    promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                    resolver.reject(ArtikError.json(reason: .unexpectedFormat))
                 }
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientID))
+            resolver.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientID))
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Private Methods
     
     private class func _create(uid: String, sdtid: String? = nil, sdid: String? = nil, ddid: String? = nil, callback: String? = nil, awsKey: String? = nil, awsSecret: String? = nil, awsRegion: String? = nil, awsKinesisStream: String? = nil, messageType: MessagesAPI.MessageType, description: String? = nil, includeSharedDevices: Bool? = nil) -> Promise<Subscription> {
-        let promise = Promise<Subscription>.pending()
+        let (promise, resolver) = Promise<Subscription>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/subscriptions"
         let parameters = APIHelpers.removeNilParameters([
             "uid": uid,
@@ -238,37 +238,37 @@ open class SubscriptionsAPI {
             "awsKinesisStream": awsKinesisStream
         ])
         
-        APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: JSONEncoding.default).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: JSONEncoding.default).done { response in
             if let data = response["data"] as? [String:Any], let subscription = Subscription(JSON: data) {
-                promise.fulfill(subscription)
+                resolver.fulfill(subscription)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     private class func getRecursive(_ container: Page<Subscription>, uid: String? = nil, offset: Int = 0) -> Promise<Page<Subscription>> {
-        let promise = Promise<Page<Subscription>>.pending()
+        let (promise, resolver) = Promise<Page<Subscription>>.pending()
         
-        SubscriptionsAPI.get(uid: uid, count: 100, offset: offset).then { page -> Void in
+        SubscriptionsAPI.get(uid: uid, count: 100, offset: offset).done { page in
             container.data.append(contentsOf: page.data)
             container.total = page.total
             
             if container.total > Int64(container.data.count) {
-                self.getRecursive(container, uid: uid, offset: Int(page.offset) + page.data.count).then { page -> Void in
-                    promise.fulfill(page)
+                self.getRecursive(container, uid: uid, offset: Int(page.offset) + page.data.count).done { page in
+                    resolver.fulfill(page)
                 }.catch { error -> Void in
-                    promise.reject(error)
+                    resolver.reject(error)
                 }
             } else {
-                promise.fulfill(container)
+                resolver.fulfill(container)
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
 }

@@ -69,107 +69,106 @@ open class Rule: Mappable, ManageableArtikInstance {
     }
     
     public func testActions() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let id = id {
             if isTestable ?? false {
-                RulesAPI.testActions(id: id).then { _ -> Void in
-                    promise.fulfill(())
+                RulesAPI.testActions(id: id).done {
+                    resolver.fulfill(())
                 }.catch { error -> Void in
-                    promise.reject(error)
+                    resolver.reject(error)
                 }
             } else {
-                promise.reject(ArtikError.rule(reason: .oneOrMoreActionNotTestable))
+                resolver.reject(ArtikError.rule(reason: .oneOrMoreActionNotTestable))
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func getStatistics() -> Promise<RuleStatistics> {
-        let promise = Promise<RuleStatistics>.pending()
+        let (promise, resolver) = Promise<RuleStatistics>.pending()
         
         if let id = id {
-            RulesAPI.getStatistics(id: id).then { results -> Void in
-                promise.fulfill(results)
+            RulesAPI.getStatistics(id: id).done { results in
+                resolver.fulfill(results)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - AccessibleArtikInstance
     
     public func updateOnArtik() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let id = id {
-            RulesAPI.update(id: id, name: name, uid: uid, description: description, rule: rule, enabled: enabled).then { result -> Void in
+            RulesAPI.update(id: id, name: name, uid: uid, description: description, rule: rule, enabled: enabled).done { result in
                 self.mapping(map: Map(mappingType: .fromJSON, JSON: result.toJSON(), toObject: true, context: nil, shouldIncludeNilValues: true))
-                promise.fulfill(())
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func pullFromArtik() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let id = id {
-            RulesAPI.get(id: id).then { rule -> Void in
+            RulesAPI.get(id: id).done { rule in
                 self.mapping(map: Map(mappingType: .fromJSON, JSON: rule.toJSON(), toObject: true, context: nil, shouldIncludeNilValues: true))
-                promise.fulfill(())
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        
-        return promise.promise
+        return promise
     }
     
     // MARK: - ManageableArtikInstance
     
     public func createOrDuplicateOnArtik() -> Promise<ManageableArtikInstance> {
-        let promise = Promise<ManageableArtikInstance>.pending()
+        let (promise, resolver) = Promise<ManageableArtikInstance>.pending()
         
         if let name = name {
             if let rule = rule {
-                RulesAPI.create(name: name, uid: uid, description: description, rule: rule, enabled: enabled ?? true).then { result -> Void in
-                    promise.fulfill(result)
+                RulesAPI.create(name: name, uid: uid, description: description, rule: rule, enabled: enabled ?? true).done { result in
+                    resolver.fulfill(result)
                 }.catch { error -> Void in
-                    promise.reject(error)
+                    resolver.reject(error)
                 }
             } else {
-                promise.reject(ArtikError.missingValue(reason: .noRule))
+                resolver.reject(ArtikError.missingValue(reason: .noRule))
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noName))
+            resolver.reject(ArtikError.missingValue(reason: .noName))
         }
-        return promise.promise
+        return promise
     }
     
     public func removeFromArtik() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let id = id {
-            RulesAPI.remove(id: id).then { _ -> Void in
-                promise.fulfill(())
+            RulesAPI.remove(id: id).done {
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
 }

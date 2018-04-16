@@ -43,18 +43,18 @@ open class Message: Mappable, PullableArtikInstance {
     // MARK: - PullableArtikInstance
     
     public func pullFromArtik() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let id = mid {
-            MessagesAPI.getMessage(mid: id).then { message -> Void in
+            MessagesAPI.getMessage(mid: id).done { message in
                 self.mapping(map: Map(mappingType: .fromJSON, JSON: message.toJSON(), toObject: true, context: nil, shouldIncludeNilValues: true))
-                promise.fulfill(())
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
 }

@@ -18,19 +18,19 @@ open class UsersAPI {
     ///
     /// - Returns: A `Promise<User>`
     open class func getSelf() -> Promise<User> {
-        let promise = Promise<User>.pending()
+        let (promise, resolver) = Promise<User>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/users/self"
         
-        APIHelpers.makeRequest(url: path, method: .get, parameters: nil, encoding: URLEncoding.default).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .get, parameters: nil, encoding: URLEncoding.default).done { response in
             if let data = response["data"] as? [String:Any], let user = User(JSON: data) {
-                promise.fulfill(user)
+                resolver.fulfill(user)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Application Properties
@@ -40,19 +40,19 @@ open class UsersAPI {
     /// - Parameter uid: The User's id.
     /// - Returns: A `Promise<JSONResponse>`
     open class func getApplicationProperties(uid: String) -> Promise<JSONResponse> {
-        let promise = Promise<JSONResponse>.pending()
+        let (promise, resolver) = Promise<JSONResponse>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/users/\(uid)/properties"
         
-        APIHelpers.makeRequest(url: path, method: .get, parameters: nil, encoding: URLEncoding.default).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .get, parameters: nil, encoding: URLEncoding.default).done { response in
             if let data = response["data"] as? [String:Any], let properties = data["properties"] as? JSONResponse {
-                promise.fulfill(properties)
+                resolver.fulfill(properties)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Create application properties for a User.
@@ -63,7 +63,7 @@ open class UsersAPI {
     ///   - properties: The desired application properties.
     /// - Returns: A `Promise<Void>`
     open class func createApplicationProperties(uid: String, aid: String? = nil, properties: [String:Any]) -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/users/\(uid)/properties"
         
         if let clientID = aid ?? ArtikCloudSwiftSettings.clientID {
@@ -73,15 +73,15 @@ open class UsersAPI {
                 "properties": properties
             ]
             
-            APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: JSONEncoding.default).then { response -> Void in
-                promise.fulfill(())
+            APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: JSONEncoding.default).done { response in
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientID))
+            resolver.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientID))
         }
-        return promise.promise
+        return promise
     }
     
     /// Update the application properties of a User.
@@ -92,7 +92,7 @@ open class UsersAPI {
     ///   - properties: The desired application properties.
     /// - Returns: A `Promise<Void>`
     open class func updateApplicationProperties(uid: String, aid: String? = nil, properties: [String:Any]) -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/users/\(uid)/properties"
         
         if let clientID = aid ?? ArtikCloudSwiftSettings.clientID {
@@ -102,15 +102,15 @@ open class UsersAPI {
                 "properties": properties
             ]
             
-            APIHelpers.makeRequest(url: path, method: .put, parameters: parameters, encoding: JSONEncoding.default).then { response -> Void in
-                promise.fulfill(())
+            APIHelpers.makeRequest(url: path, method: .put, parameters: parameters, encoding: JSONEncoding.default).done { response in
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientID))
+            resolver.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientID))
         }
-        return promise.promise
+        return promise
     }
     
     /// Remove the application properties associated with a User.
@@ -118,15 +118,15 @@ open class UsersAPI {
     /// - Parameter uid: The User's id.
     /// - Returns: A `Promise<Void>`
     open class func removeApplicationProperties(uid: String) -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/users/\(uid)/properties"
         
-        APIHelpers.makeRequest(url: path, method: .delete, parameters: nil, encoding: URLEncoding.default).then { response -> Void in
-            promise.fulfill(())
+        APIHelpers.makeRequest(url: path, method: .delete, parameters: nil, encoding: URLEncoding.default).done { response in
+            resolver.fulfill(())
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Devices

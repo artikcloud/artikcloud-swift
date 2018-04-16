@@ -113,72 +113,72 @@ open class MessagePage: Mappable {
     }
     
     public func nextPage() -> Promise<MessagePage> {
-        let promise = Promise<MessagePage>.pending()
+        let (promise, resolver) = Promise<MessagePage>.pending()
         
         if let did = did {
             if let startDate = startDate {
                 if let endDate = endDate {
                     if let cursor = next {
                         if (type ?? .message) == .message {
-                            MessagesAPI.getMessages(did: did, startDate: startDate, endDate: endDate, count: count ?? 100, offset: cursor, order: order, fieldPresence: fieldPresence).then { page -> Void in
-                                promise.fulfill(page)
+                            MessagesAPI.getMessages(did: did, startDate: startDate, endDate: endDate, count: count ?? 100, offset: cursor, order: order, fieldPresence: fieldPresence).done { page in
+                                resolver.fulfill(page)
                             }.catch { error -> Void in
-                                promise.reject(error)
+                                resolver.reject(error)
                             }
                         } else {
-                            MessagesAPI.getActions(did: did, startDate: startDate, endDate: endDate, count: count ?? 100, offset: cursor, order: order, name: name).then { page -> Void in
-                                promise.fulfill(page)
+                            MessagesAPI.getActions(did: did, startDate: startDate, endDate: endDate, count: count ?? 100, offset: cursor, order: order, name: name).done { page in
+                                resolver.fulfill(page)
                             }.catch { error -> Void in
-                                promise.reject(error)
+                                resolver.reject(error)
                             }
                         }
                     } else {
-                        promise.reject(ArtikError.missingValue(reason: .noOffsetCursor))
+                        resolver.reject(ArtikError.missingValue(reason: .noOffsetCursor))
                     }
                 } else {
-                    promise.reject(ArtikError.missingValue(reason: .noEndDate))
+                    resolver.reject(ArtikError.missingValue(reason: .noEndDate))
                 }
             } else {
-                promise.reject(ArtikError.missingValue(reason: .noStartDate))
+                resolver.reject(ArtikError.missingValue(reason: .noStartDate))
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func previousPage() -> Promise<MessagePage> {
-        let promise = Promise<MessagePage>.pending()
+        let (promise, resolver) = Promise<MessagePage>.pending()
         
         if let did = did {
             if let startDate = startDate {
                 if let endDate = endDate {
                     if let cursor = prev {
                         if (type ?? .message) == .message {
-                            MessagesAPI.getMessages(did: did, startDate: startDate, endDate: endDate, count: count ?? 100, offset: cursor, order: order, fieldPresence: fieldPresence).then { page -> Void in
-                                promise.fulfill(page)
+                            MessagesAPI.getMessages(did: did, startDate: startDate, endDate: endDate, count: count ?? 100, offset: cursor, order: order, fieldPresence: fieldPresence).done { page in
+                                resolver.fulfill(page)
                             }.catch { error -> Void in
-                                promise.reject(error)
+                                resolver.reject(error)
                             }
                         } else {
-                            MessagesAPI.getActions(did: did, startDate: startDate, endDate: endDate, count: count ?? 100, offset: cursor, order: order, name: name).then { page -> Void in
-                                promise.fulfill(page)
+                            MessagesAPI.getActions(did: did, startDate: startDate, endDate: endDate, count: count ?? 100, offset: cursor, order: order, name: name).done { page in
+                                resolver.fulfill(page)
                             }.catch { error -> Void in
-                                promise.reject(error)
+                                resolver.reject(error)
                             }
                         }
                     } else {
-                        promise.reject(ArtikError.missingValue(reason: .noOffsetCursor))
+                        resolver.reject(ArtikError.missingValue(reason: .noOffsetCursor))
                     }
                 } else {
-                    promise.reject(ArtikError.missingValue(reason: .noEndDate))
+                    resolver.reject(ArtikError.missingValue(reason: .noEndDate))
                 }
             } else {
-                promise.reject(ArtikError.missingValue(reason: .noStartDate))
+                resolver.reject(ArtikError.missingValue(reason: .noStartDate))
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
 }

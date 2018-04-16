@@ -55,7 +55,7 @@ open class MessagesAPI {
     ///   - fieldPresence: (Optional) Return only messages which contain the provided field names
     /// - Returns: A `Promise<MessagePage>`
     open class func getMessages(did: String, startDate: ArtikTimestamp, endDate: ArtikTimestamp, count: Int = 100, offset: String? = nil, order: PaginationOrder? = nil, fieldPresence: [String]? = nil) -> Promise<MessagePage> {
-        let promise = Promise<MessagePage>.pending()
+        let (promise, resolver) = Promise<MessagePage>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/messages"
         var presenceValue: String?
         if let fieldPresence = fieldPresence {
@@ -71,18 +71,18 @@ open class MessagesAPI {
             "filter": presenceValue
         ])
         
-        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).done { response in
             if let page = MessagePage(JSON: response) {
                 page.count = count
                 page.fieldPresence = fieldPresence
-                promise.fulfill(page)
+                resolver.fulfill(page)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Get a specific Message
@@ -92,7 +92,7 @@ open class MessagesAPI {
     ///   - uid: (Optional) The owner's user ID, required when using an `ApplicationToken`.
     /// - Returns: A `Promise<Message>`
     open class func getMessage(mid: String, uid: String? = nil) -> Promise<Message> {
-        let promise = Promise<Message>.pending()
+        let (promise, resolver) = Promise<Message>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/messages"
         var parameters = [
             "mid": mid
@@ -101,16 +101,16 @@ open class MessagesAPI {
             parameters["uid"] = uid
         }
         
-        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).done { response in
             if let data = (response["data"] as? [[String:Any]])?.first, let message = Message(JSON: data) {
-                promise.fulfill(message)
+                resolver.fulfill(message)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Get the presence of Messages for a given time period.
@@ -123,7 +123,7 @@ open class MessagesAPI {
     ///   - interval: The grouping interval
     /// - Returns: A `Promise<MessagesPresence>`
     open class func getPresence(sdid: String?, fieldPresence: String? = nil, startDate: ArtikTimestamp, endDate: ArtikTimestamp, interval: MessageStatisticsInterval) -> Promise<MessagesPresence> {
-        let promise = Promise<MessagesPresence>.pending()
+        let (promise, resolver) = Promise<MessagesPresence>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/messages/presence"
         let parameters = APIHelpers.removeNilParameters([
             "sdid": sdid,
@@ -133,16 +133,16 @@ open class MessagesAPI {
             "endDate": endDate
         ])
         
-        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).done { response in
             if let presence = MessagesPresence(JSON: response) {
-                promise.fulfill(presence)
+                resolver.fulfill(presence)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Get the latest messages sent by a Device.
@@ -153,14 +153,14 @@ open class MessagesAPI {
     ///   - fieldPresence: (Optional) Return only messages which contain the provided field names
     /// - Returns: A `Promise<MessagePage>`
     open class func getLastMessages(did: String, count: Int = 100, fieldPresence: [String]? = nil) -> Promise<MessagePage> {
-        let promise = Promise<MessagePage>.pending()
+        let (promise, resolver) = Promise<MessagePage>.pending()
         
-        getMessages(did: did, startDate: 1, endDate: currentArtikEpochtime(), count: count, order: .descending, fieldPresence: fieldPresence).then { page -> Void in
-            promise.fulfill(page)
+        getMessages(did: did, startDate: 1, endDate: currentArtikEpochtime(), count: count, order: .descending, fieldPresence: fieldPresence).done { page in
+            resolver.fulfill(page)
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Get the lastest message sent by a Device.
@@ -168,18 +168,18 @@ open class MessagesAPI {
     /// - Parameter did: The Device's id.
     /// - Returns: A `Promise<Message>`
     open class func getLastMessage(did: String) -> Promise<Message?> {
-        let promise = Promise<Message?>.pending()
+        let (promise, resolver) = Promise<Message?>.pending()
         
-        getLastMessages(did: did, count: 1).then { page -> Void in
+        getLastMessages(did: did, count: 1).done { page in
             if let message = page.data.first {
-                promise.fulfill(message)
+                resolver.fulfill(message)
             } else {
-                promise.fulfill(nil)
+                resolver.fulfill(nil)
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Actions
@@ -253,7 +253,7 @@ open class MessagesAPI {
     ///   - name: (Optional) Return only actions with the provided name.
     /// - Returns: A `Promise<MessagePage>`
     open class func getActions(did: String, startDate: ArtikTimestamp, endDate: ArtikTimestamp, count: Int = 100, offset: String? = nil, order: PaginationOrder? = nil, name: String? = nil) -> Promise<MessagePage> {
-        let promise = Promise<MessagePage>.pending()
+        let (promise, resolver) = Promise<MessagePage>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/actions"
         let parameters = APIHelpers.removeNilParameters([
             "sdid": did,
@@ -265,18 +265,18 @@ open class MessagesAPI {
             "name": name
         ])
         
-        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).done { response in
             if let page = MessagePage(JSON: response) {
                 page.count = count
                 page.name = name
-                promise.fulfill(page)
+                resolver.fulfill(page)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Get a particular action sent to a Device.
@@ -286,7 +286,7 @@ open class MessagesAPI {
     ///   - uid: (Optional) The owner's user ID, required when using an `ApplicationToken`.
     /// - Returns: A `Promise<Message>`
     open class func getAction(mid: String, uid: String? = nil) -> Promise<Message> {
-        let promise = Promise<Message>.pending()
+        let (promise, resolver) = Promise<Message>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/actions"
         var parameters = [
             "mid": mid
@@ -295,16 +295,16 @@ open class MessagesAPI {
             parameters["uid"] = uid
         }
         
-        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).done { response in
             if let data = (response["data"] as? [[String:Any]])?.first, let message = Message(JSON: data) {
-                promise.fulfill(message)
+                resolver.fulfill(message)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Get the latest actions sent to a Device.
@@ -315,14 +315,14 @@ open class MessagesAPI {
     ///   - name: (Optional) Return only actions with the provided name.
     /// - Returns: A `Promise<MessagePage>`
     open class func getLastActions(did: String, count: Int = 100, name: String? = nil) -> Promise<MessagePage> {
-        let promise = Promise<MessagePage>.pending()
+        let (promise, resolver) = Promise<MessagePage>.pending()
         
-        getActions(did: did, startDate: 1, endDate: currentArtikEpochtime(), count: count, order: .descending, name: name).then { page -> Void in
-            promise.fulfill(page)
+        getActions(did: did, startDate: 1, endDate: currentArtikEpochtime(), count: count, order: .descending, name: name).done { page in
+            resolver.fulfill(page)
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Get the latest action sent to a Device
@@ -330,18 +330,18 @@ open class MessagesAPI {
     /// - Parameter did: The Device's id.
     /// - Returns: A `Promise<Message?>`
     open class func getLastAction(did: String) -> Promise<Message?> {
-        let promise = Promise<Message?>.pending()
+        let (promise, resolver) = Promise<Message?>.pending()
         
-        getLastActions(did: did, count: 1).then { page -> Void in
+        getLastActions(did: did, count: 1).done { page in
             if let message = page.data.first {
-                promise.fulfill(message)
+                resolver.fulfill(message)
             } else {
-                promise.fulfill(nil)
+                resolver.fulfill(nil)
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Analytics
@@ -355,7 +355,7 @@ open class MessagesAPI {
     ///   - field: Message field being queried for analytics.
     /// - Returns: A `Promise<MessageAggregates>`
     open class func getAggregates(sdid: String, startDate: ArtikTimestamp, endDate: ArtikTimestamp, field: String) -> Promise<MessageAggregates> {
-        let promise = Promise<MessageAggregates>.pending()
+        let (promise, resolver) = Promise<MessageAggregates>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/messages/analytics/aggregates"
         let parameters: [String:Any] = [
             "sdid": sdid,
@@ -364,16 +364,16 @@ open class MessagesAPI {
             "field": field
         ]
         
-        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).done { response in
             if let aggregate = MessageAggregates(JSON: response) {
-                promise.fulfill(aggregate)
+                resolver.fulfill(aggregate)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Returns message aggregates over equal intervals, which can be used to draw a histogram.
@@ -386,7 +386,7 @@ open class MessagesAPI {
     ///   - field: Message field being queried for histogram aggregation (histogram Y-axis).
     /// - Returns: A `Promise<MessageHistogram>`
     open class func getHistogram(sdid: String, startDate: ArtikTimestamp, endDate: ArtikTimestamp, interval: MessageStatisticsInterval, field: String) -> Promise<MessageHistogram> {
-        let promise = Promise<MessageHistogram>.pending()
+        let (promise, resolver) = Promise<MessageHistogram>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/messages/analytics/histogram"
         let parameters: [String:Any] = [
             "sdid": sdid,
@@ -396,16 +396,16 @@ open class MessagesAPI {
             "field": field
         ]
         
-        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .get, parameters: parameters, encoding: URLEncoding.queryString).done { response in
             if let histogram = MessageHistogram(JSON: response) {
-                promise.fulfill(histogram)
+                resolver.fulfill(histogram)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Snapshots
@@ -417,7 +417,7 @@ open class MessagesAPI {
     ///   - includeTimestamp: (Optional) Include the timestamp of the last modification for each field.
     /// - Returns: A `Promise<[String:[String:Any]]>` where the `key` is the Device id and the `value` is its snapshot.
     open class func getSnapshots(dids: [String], includeTimestamp: Bool? = nil) -> Promise<[String:[String:Any]]> {
-        let promise = Promise<[String:[String:Any]]>.pending()
+        let (promise, resolver) = Promise<[String:[String:Any]]>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/messages/snapshots"
         
         if dids.count > 0 {
@@ -426,28 +426,28 @@ open class MessagesAPI {
                 didsString += "\(did),"
             }
             
-            APIHelpers.makeRequest(url: path, method: .get, parameters: ["sdids": didsString], encoding: URLEncoding.queryString).then { response -> Void in
+            APIHelpers.makeRequest(url: path, method: .get, parameters: ["sdids": didsString], encoding: URLEncoding.queryString).done { response in
                 if let data = response["data"] as? [[String:Any]] {
                     var result = [String:[String:Any]]()
                     for item in data {
                         if let sdid = item["sdid"] as? String, let data = item["data"] as? [String:Any] {
                             result[sdid] = data
                         } else {
-                            promise.reject(ArtikError.json(reason: .invalidItem))
+                            resolver.reject(ArtikError.json(reason: .invalidItem))
                             return
                         }
                     }
-                    promise.fulfill(result)
+                    resolver.fulfill(result)
                 } else {
-                    promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                    resolver.reject(ArtikError.json(reason: .unexpectedFormat))
                 }
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.fulfill([:])
+            resolver.fulfill([:])
         }
-        return promise.promise
+        return promise
     }
     
     /// Get the last received value for all Manifest fields (aka device "state") of a device.
@@ -457,18 +457,18 @@ open class MessagesAPI {
     ///   - includeTimestamp: (Optional) Include the timestamp of the last modification for each field.
     /// - Returns: A `Promise<[String:Any]>` returning the snapshot
     open class func getSnapshot(did: String, includeTimestamp: Bool? = nil) -> Promise<[String:Any]> {
-        let promise = Promise<[String:Any]>.pending()
+        let (promise, resolver) = Promise<[String:Any]>.pending()
         
-        getSnapshots(dids: [did], includeTimestamp: includeTimestamp).then { result -> Void in
+        getSnapshots(dids: [did], includeTimestamp: includeTimestamp).done { result in
             if let snapshot = result[did] {
-                promise.fulfill(snapshot)
+                resolver.fulfill(snapshot)
             } else {
-                promise.fulfill([:])
+                resolver.fulfill([:])
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Private Methods
@@ -478,23 +478,23 @@ open class MessagesAPI {
     }
     
     fileprivate class func postMessage(baseParameters: [String:Any], timestamp: Int64?) -> Promise<String> {
-        let promise = Promise<String>.pending()
+        let (promise, resolver) = Promise<String>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/messages"
         var parameters = baseParameters
         if let timestamp = timestamp {
             parameters["ts"] = timestamp
         }
         
-        APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: JSONEncoding.default).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: JSONEncoding.default).done { response in
             if let mid = (response["data"] as? [String:Any])?["mid"] as? String {
-                promise.fulfill(mid)
+                resolver.fulfill(mid)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
 }

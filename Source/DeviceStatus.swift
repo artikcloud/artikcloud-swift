@@ -40,38 +40,38 @@ open class DeviceStatus: Mappable, AccessibleArtikInstance {
     // MARK: - AccessibleArtikInstance
     
     public func updateOnArtik() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let did = did {
             if let availability = availability {
-                DevicesAPI.updateStatus(id: did, to: availability).then { _ -> Void in
-                    promise.fulfill(())
+                DevicesAPI.updateStatus(id: did, to: availability).done {
+                    resolver.fulfill(())
                 }.catch { error -> Void in
-                    promise.reject(error)
+                    resolver.reject(error)
                 }
             } else {
-                promise.reject(ArtikError.missingValue(reason: .noAvailability))
+                resolver.reject(ArtikError.missingValue(reason: .noAvailability))
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func pullFromArtik() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let did = did {
-            DevicesAPI.getStatus(id: did).then { status -> Void in
+            DevicesAPI.getStatus(id: did).done { status in
                 self.mapping(map: Map(mappingType: .fromJSON, JSON: status.toJSON(), toObject: true, context: nil, shouldIncludeNilValues: true))
-                promise.fulfill(())
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
 }

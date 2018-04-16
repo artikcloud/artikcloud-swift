@@ -65,65 +65,65 @@ open class Device: Mappable, AccessibleArtikInstance, RemovableArtikInstance {
     // MARK: - Token
     
     public func getToken(createIfNone: Bool) -> Promise<DeviceToken> {
-        let promise = Promise<DeviceToken>.pending()
+        let (promise, resolver) = Promise<DeviceToken>.pending()
         
         if let id = id {
-            DevicesAPI.getToken(id: id, createIfNone: createIfNone).then { token -> Void in
-                promise.fulfill(token)
+            DevicesAPI.getToken(id: id, createIfNone: createIfNone).done { token in
+                resolver.fulfill(token)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func revokeToken() -> Promise<DeviceToken> {
-        let promise = Promise<DeviceToken>.pending()
+        let (promise, resolver) = Promise<DeviceToken>.pending()
         
         if let id = id {
-            DevicesAPI.revokeToken(id: id).then { token -> Void in
-                promise.fulfill(token)
+            DevicesAPI.revokeToken(id: id).done { token in
+                resolver.fulfill(token)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Cloud Connector
     
     public func authorize() -> Promise<URLRequest> {
-        let promise = Promise<URLRequest>.pending()
+        let (promise, resolver) = Promise<URLRequest>.pending()
         
         if let id = id {
-            DevicesAPI.authorize(id: id).then { request -> Void in
-                promise.fulfill(request)
+            DevicesAPI.authorize(id: id).done { request in
+                resolver.fulfill(request)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func unauthorize() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let id = id {
-            DevicesAPI.unauthorize(id: id).then { _ -> Void in
-                promise.fulfill(())
+            DevicesAPI.unauthorize(id: id).done {
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func isCloudAuthorized() -> Bool {
@@ -138,110 +138,110 @@ open class Device: Mappable, AccessibleArtikInstance, RemovableArtikInstance {
     // MARK: - Status
     
     public func getStatus(includeSnapshot: Bool? = nil, includeSnapshotTimestamp: Bool? = nil) -> Promise<DeviceStatus> {
-        let promise = Promise<DeviceStatus>.pending()
+        let (promise, resolver) = Promise<DeviceStatus>.pending()
         
         if let id = id {
-            DevicesAPI.getStatus(id: id, includeSnapshot: includeSnapshot, includeSnapshotTimestamp: includeSnapshotTimestamp).then { status -> Void in
-                promise.fulfill(status)
+            DevicesAPI.getStatus(id: id, includeSnapshot: includeSnapshot, includeSnapshotTimestamp: includeSnapshotTimestamp).done { status in
+                resolver.fulfill(status)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func updateStatus(to value: DeviceStatus.DeviceStatusAvailability) -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let id = id {
-            DevicesAPI.updateStatus(id: id, to: value).then { _ -> Void in
-                promise.fulfill(())
+            DevicesAPI.updateStatus(id: id, to: value).done {
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Sharing
     
     public func getShares(count: Int, offset: Int = 0) -> Promise<Page<DeviceShare>> {
-        let promise = Promise<Page<DeviceShare>>.pending()
+        let (promise, resolver) = Promise<Page<DeviceShare>>.pending()
         
         if let id = id {
-            DevicesAPI.getShares(id: id, count: count, offset: offset).then { page -> Void in
-                promise.fulfill(page)
+            DevicesAPI.getShares(id: id, count: count, offset: offset).done { page in
+                resolver.fulfill(page)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func getShares() -> Promise<Page<DeviceShare>> {
-        let promise = Promise<Page<DeviceShare>>.pending()
+        let (promise, resolver) = Promise<Page<DeviceShare>>.pending()
         
         if let id = id {
-            DevicesAPI.getShares(id: id).then { page -> Void in
-                promise.fulfill(page)
+            DevicesAPI.getShares(id: id).done { page in
+                resolver.fulfill(page)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func getShare(id: String) -> Promise<DeviceShare> {
-        let promise = Promise<DeviceShare>.pending()
+        let (promise, resolver) = Promise<DeviceShare>.pending()
         
         if let did = self.id {
-            DevicesAPI.getShare(id: did, sid: id).then { share -> Void in
-                promise.fulfill(share)
+            DevicesAPI.getShare(id: did, sid: id).done { share in
+                resolver.fulfill(share)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func share(email: String) -> Promise<DeviceShare> {
-        let promise = Promise<DeviceShare>.pending()
+        let (promise, resolver) = Promise<DeviceShare>.pending()
         
         if let id = id {
-            DevicesAPI.share(id: id, email: email).then { share -> Void in
-                promise.fulfill(share)
+            DevicesAPI.share(id: id, email: email).done { share in
+                resolver.fulfill(share)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func unshare(id: String) -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let did = self.id {
-            DevicesAPI.unshare(id: did, sid: id).then { _ -> Void in
-                promise.fulfill(())
+            DevicesAPI.unshare(id: did, sid: id).done {
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func isSharable() -> Bool {
@@ -251,99 +251,99 @@ open class Device: Mappable, AccessibleArtikInstance, RemovableArtikInstance {
     // MARK: - Monetization
     
     public func getUpgradeURL(action: MonetizationAPI.MonetizationUpgradeAction = .upgrade) -> Promise<URL> {
-        let promise = Promise<URL>.pending()
+        let (promise, resolver) = Promise<URL>.pending()
         
         if let id = id {
-            MonetizationAPI.getUpgradeURL(did: id, action: action).then { result -> Void in
-                promise.fulfill(result)
+            MonetizationAPI.getUpgradeURL(did: id, action: action).done { result in
+                resolver.fulfill(result)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     #if os(iOS)
     public func getUpgradeController(action: MonetizationAPI.MonetizationUpgradeAction = .upgrade) -> Promise<SFSafariViewController> {
-        let promise = Promise<SFSafariViewController>.pending()
+        let (promise, resolver) = Promise<SFSafariViewController>.pending()
         
         if let id = id {
-            MonetizationAPI.getUpgradeController(did: id, action: action).then { result -> Void in
-                promise.fulfill(result)
+            MonetizationAPI.getUpgradeController(did: id, action: action).done { result in
+                resolver.fulfill(result)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     #endif
     
     public func getTiers(active: Bool? = nil) -> Promise<[PricingTier]> {
-        let promise = Promise<[PricingTier]>.pending()
+        let (promise, resolver) = Promise<[PricingTier]>.pending()
         
         if let id = id {
-            MonetizationAPI.getTiers(did: id, active: active).then { result -> Void in
-                promise.fulfill(result)
+            MonetizationAPI.getTiers(did: id, active: active).done { result in
+                resolver.fulfill(result)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - AccessibleArtikInstance
     
     public func updateOnArtik() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let id = id {
-            DevicesAPI.update(id: id, name: name, manifestVersion: manifestVersion, manifestVersionPolicy: manifestVersionPolicy).then { _ -> Void in
-                promise.fulfill(())
+            DevicesAPI.update(id: id, name: name, manifestVersion: manifestVersion, manifestVersionPolicy: manifestVersionPolicy).done { _ in
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func pullFromArtik() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let id = id {
-            DevicesAPI.get(id: id, includeProperties: true).then { device -> Void in
+            DevicesAPI.get(id: id, includeProperties: true).done { device in
                 self.mapping(map: Map(mappingType: .fromJSON, JSON: device.toJSON(), toObject: true, context: nil, shouldIncludeNilValues: true))
-                promise.fulfill(())
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - RemovableArtikInstance
     
     public func removeFromArtik() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let id = id {
-            DevicesAPI.delete(id: id).then { _ -> Void in
-                promise.fulfill(())
+            DevicesAPI.delete(id: id).done {
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
 }

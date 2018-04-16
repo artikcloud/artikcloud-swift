@@ -62,24 +62,24 @@ open class TokenExpiring: Token {
     }
     
     public func validateToken(andUpdateInstance: Bool) -> Promise<TokenValidation> {
-        let promise = Promise<TokenValidation>.pending()
+        let (promise, resolver) = Promise<TokenValidation>.pending()
         
-        AuthenticationAPI.validateToken(self).then { validation -> Void in
+        AuthenticationAPI.validateToken(self).done { validation in
             if andUpdateInstance {
                 if let expiresIn = validation.expiresIn {
                     self.expiresIn = expiresIn
                     self.setExpireTimestamp()
-                    promise.fulfill(validation)
+                    resolver.fulfill(validation)
                 } else {
-                    promise.reject(ArtikError.missingValue(reason: .noExpiresIn))
+                    resolver.reject(ArtikError.missingValue(reason: .noExpiresIn))
                 }
             } else {
-                promise.fulfill(validation)
+                resolver.fulfill(validation)
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
 }
 
@@ -147,7 +147,7 @@ open class UserToken: TokenExpiring, NSCoding {
     // MARK: Misc.
     
     public func refresh() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let refreshToken = refreshToken {
             let path = ArtikCloudSwiftSettings.basePath + "/accounts/token"
@@ -164,25 +164,25 @@ open class UserToken: TokenExpiring, NSCoding {
                     header = [APIHelpers.authorizationHeaderKey: getHeaderValue()]
                 }
             } catch {
-                promise.reject(error)
-                return promise.promise
+                resolver.reject(error)
+                return promise
             }
             
-            APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: URLEncoding.httpBody, includeAuthHeader: false, additionalHeaders: header).then { response -> Void in
+            APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: URLEncoding.httpBody, includeAuthHeader: false, additionalHeaders: header).done { response in
                 self.mapping(map: Map(mappingType: .fromJSON, JSON: response, toObject: true, shouldIncludeNilValues: true))
                 self.setExpireTimestamp()
                 if !self.isValid() {
-                    promise.reject(ArtikError.token(reason: .failedToRefresh))
+                    resolver.reject(ArtikError.token(reason: .failedToRefresh))
                 } else {
-                    promise.fulfill(())
+                    resolver.fulfill(())
                 }
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.token(reason: .noRefreshToken))
+            resolver.reject(ArtikError.token(reason: .noRefreshToken))
         }
-        return promise.promise
+        return promise
     }
     
     public func revokeToken() -> Promise<Void> {
@@ -213,16 +213,16 @@ open class DeviceToken: Token {
     }
     
     public func revokeToken() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         if let did = did {
-            DevicesAPI.revokeToken(id: did).then { _ -> Void in
-                promise.fulfill(())
+            DevicesAPI.revokeToken(id: did).done { _ in
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
 }

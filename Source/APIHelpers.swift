@@ -41,35 +41,35 @@ internal class APIHelpers {
     // MARK: - Request Makers
     
     class func makeRequest(url: URLConvertible, method: RequestMethod, parameters: [String: Any]?, encoding: RequestEncoding, includeAuthHeader: Bool = true, additionalHeaders headers: [String:String]? = nil) -> Promise<JSONResponse> {
-        let promise = Promise<JSONResponse>.pending()
+        let (promise, resolver) = Promise<JSONResponse>.pending()
         let closure: (([String:String]?) -> (Void)) = { headers in
             let trace: ((Bool, Error?, JSONResponse?) -> (String)) = { success, error, json in
                 return getTrace(isSuccess: success, url: url, method: method, parameters: parameters, encoding: encoding, headers: headers, error: error, json: json)
             }
             
             Alamofire.request(url, method: method, parameters: parameters, encoding: encoding, headers: headers).validate().responseJSON { response -> Void in
-                processResponse(response, promise: promise, trace: trace)
+                processResponse(response, resolver: resolver, trace: trace)
             }
         }
-        execute(closure, promise: promise, headers: headers, includeAuthHeader: includeAuthHeader)
-        return promise.promise
+        execute(closure, resolver: resolver, headers: headers, includeAuthHeader: includeAuthHeader)
+        return promise
     }
     
     // MARK: - File Uploaders
     
     class func uploadData(_ data: Data, to url: URLConvertible, method: RequestMethod, includeAuthHeader: Bool = true, additionalHeaders headers: [String:String]? = nil) -> Promise<JSONResponse> {
-        let promise = Promise<JSONResponse>.pending()
+        let (promise, resolver) = Promise<JSONResponse>.pending()
         let closure: (([String:String]?) -> (Void)) = { headers in
             let trace: ((Bool, Error?, JSONResponse?) -> (String)) = { success, error, json in
                 return getTrace(isSuccess: success, url: url, method: method, parameters: nil, encoding: nil, headers: headers, error: error, json: json)
             }
             
             Alamofire.upload(data, to: url, method: method, headers: headers).validate().responseJSON { response -> Void in
-                processResponse(response, promise: promise, trace: trace)
+                processResponse(response, resolver: resolver, trace: trace)
             }
         }
-        execute(closure, promise: promise, headers: headers, includeAuthHeader: includeAuthHeader)
-        return promise.promise
+        execute(closure, resolver: resolver, headers: headers, includeAuthHeader: includeAuthHeader)
+        return promise
     }
     
     // MARK: - Internal Helper Methods
@@ -95,75 +95,75 @@ internal class APIHelpers {
     }
     
     class func getAuthToken(preference: Token.Type? = nil) -> Promise<Token?> {
-        let promise = Promise<Token?>.pending()
+        let (promise, resolver) = Promise<Token?>.pending()
         var skipApplication = false
         var skipDevice = false
         
         if preference != nil {
             if let _ = preference as? UserToken.Type {
-                ArtikCloudSwiftSettings.getUserToken().then { token -> Void in
+                ArtikCloudSwiftSettings.getUserToken().done { token in
                     do {
                         if let token = token {
-                            promise.fulfill(token)
+                            resolver.fulfill(token)
                         } else if let token = try ArtikCloudSwiftSettings.getApplicationToken() {
-                            promise.fulfill(token)
+                            resolver.fulfill(token)
                         } else if let token = ArtikCloudSwiftSettings.getDeviceToken() {
-                            promise.fulfill(token)
+                            resolver.fulfill(token)
                         } else {
-                            promise.fulfill(nil)
+                            resolver.fulfill(nil)
                         }
                     } catch {
-                        promise.reject(error)
+                        resolver.reject(error)
                     }
                 }.catch { error -> Void in
-                    promise.reject(error)
+                    resolver.reject(error)
                 }
-                return promise.promise
+                return promise
             } else if let _ = preference as? ApplicationToken.Type {
                 do {
                     if let token = try ArtikCloudSwiftSettings.getApplicationToken() {
-                        promise.fulfill(token)
-                        return promise.promise
+                        resolver.fulfill(token)
+                        return promise
                     }
                     skipApplication = true
                 } catch {
-                    promise.reject(error)
-                    return promise.promise
+                    resolver.reject(error)
+                    return promise
                 }
             } else if let _ = preference as? DeviceToken.Type {
                 if let token = ArtikCloudSwiftSettings.getDeviceToken() {
-                    promise.fulfill(token)
-                    return promise.promise
+                    resolver.fulfill(token)
+                    return promise
                 }
                 skipDevice = true
             }
         }
         
-        ArtikCloudSwiftSettings.getUserToken().then { token -> Void in
+        ArtikCloudSwiftSettings.getUserToken().done { token in
             do {
                 if let token = token {
-                    promise.fulfill(token)
+                    resolver.fulfill(token)
                 } else if !skipApplication, let token = try ArtikCloudSwiftSettings.getApplicationToken() {
-                    promise.fulfill(token)
+                    resolver.fulfill(token)
                 } else if !skipDevice, let token = ArtikCloudSwiftSettings.getDeviceToken() {
-                    promise.fulfill(token)
+                    resolver.fulfill(token)
                 } else {
-                    promise.fulfill(nil)
+                    resolver.fulfill(nil)
                 }
             } catch {
-                promise.reject(error)
+                resolver.reject(error)
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Private Methods
     
-    fileprivate class func execute(_ completion: @escaping (([String:String]?) -> (Void)), promise: (promise: Promise<JSONResponse>, fulfill: (JSONResponse) -> Void, reject: (Error) -> Void), headers: [String:String]?, includeAuthHeader: Bool) {
+    fileprivate class func execute(_ completion: @escaping (([String:String]?) -> (Void)), resolver: Resolver<JSONResponse>, headers: [String:String]?, includeAuthHeader: Bool) {
         if includeAuthHeader {
-            getAuthToken(preference: ArtikCloudSwiftSettings.preferredTokenForRequests).then { token -> Void in
+            getAuthToken(preference: ArtikCloudSwiftSettings.preferredTokenForRequests).done { token in
                 if let token = token {
                     var allHeaders = (headers ?? [String:String]())
                     allHeaders[self.authorizationHeaderKey] = token.getHeaderValue()
@@ -172,14 +172,14 @@ internal class APIHelpers {
                     completion(headers)
                 }
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
             completion(headers)
         }
     }
     
-    fileprivate class func processResponse(_ response: DataResponse<Any>, promise: (promise: Promise<JSONResponse>, fulfill: (JSONResponse) -> Void, reject: (Error) -> Void), trace: ((Bool, Error?, JSONResponse?) -> (String))) {
+    fileprivate class func processResponse(_ response: DataResponse<Any>, resolver: Resolver<JSONResponse>, trace: ((Bool, Error?, JSONResponse?) -> (String))) {
         var responseHeaderStatus: ResponseHeaderStatus?
         if let _ = ArtikCloudSwiftSettings.delegate {
             responseHeaderStatus = processResponseHeaders(response.response?.allHeaderFields)
@@ -189,11 +189,11 @@ internal class APIHelpers {
         case .success(let JSON):
             if let JSON = JSON as? JSONResponse {
                 ArtikCloudSwiftSettings.trace?(trace(true, nil, JSON))
-                promise.fulfill(JSON)
+                resolver.fulfill(JSON)
             } else {
                 let error = ArtikError.json(reason: .unexpectedFormat)
                 ArtikCloudSwiftSettings.trace?(trace(true, error, nil))
-                promise.reject(error)
+                resolver.reject(error)
             }
         case .failure(let error):
             var jsonResponse: JSONResponse?
@@ -220,23 +220,23 @@ internal class APIHelpers {
                                 }
                             }
                         }
-                        promise.reject(ArtikError.rateLimit(reason: .deviceQuotaReached(did: target, quota: quota)))
+                        resolver.reject(ArtikError.rateLimit(reason: .deviceQuotaReached(did: target, quota: quota)))
                         return
                     case .organizationQuotaReached:
-                        promise.reject(ArtikError.rateLimit(reason: .organizationQuotaReached))
+                        resolver.reject(ArtikError.rateLimit(reason: .organizationQuotaReached))
                         return
                     case .rateLimitMinuteReached:
-                        promise.reject(ArtikError.rateLimit(reason: .rateLimitMinuteReached))
+                        resolver.reject(ArtikError.rateLimit(reason: .rateLimitMinuteReached))
                         return
                     case .rateLimitDailyReached:
-                        promise.reject(ArtikError.rateLimit(reason: .rateLimitDailyReached))
+                        resolver.reject(ArtikError.rateLimit(reason: .rateLimitDailyReached))
                         return
                     default:
                         break
                     }
                 }
             }
-            promise.reject(ArtikError.responseError(error: error, response: jsonResponse))
+            resolver.reject(ArtikError.responseError(error: error, response: jsonResponse))
         }
     }
     

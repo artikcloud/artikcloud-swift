@@ -64,39 +64,38 @@ open class ArtikCloudSwiftSettings {
     /// - Parameter andValidate: Whether or not the token should be validated locally before being returned.
     /// - Returns: A `Promise<UserToken?>`.
     open class func getUserToken(andValidate: Bool = true) -> Promise<UserToken?> {
-        let promise = Promise<UserToken?>.pending()
+        let (promise, resolver) = Promise<UserToken?>.pending()
         
         if let token = self.userToken {
             if andValidate {
                 if token.isValid() {
-                    promise.fulfill(token)
+                    resolver.fulfill(token)
                 } else if self.attemptToRefreshToken {
                     let refreshPromise = self.refreshPromise ?? token.refresh()
                     if self.refreshPromise == nil {
-                        refreshPromise.always {
+                        _ = refreshPromise.ensure {
                             setUserToken(token)
                             delegate?.tokenRefreshed?(token)
                             self.refreshPromise = nil
                         }
                     }
                     
-                    self.refreshPromise = refreshPromise.then { _ -> Void in
-                        promise.fulfill(token)
+                    self.refreshPromise = refreshPromise.done {
+                        resolver.fulfill(token)
                     }
-                        
                     self.refreshPromise?.catch { error -> Void in
-                        promise.reject(error)
+                        resolver.reject(error)
                     }
                 } else {
-                    promise.reject(ArtikError.token(reason: .invalidToken))
+                    resolver.reject(ArtikError.token(reason: .invalidToken))
                 }
             } else {
-                promise.fulfill(token)
+                resolver.fulfill(token)
             }
         } else {
-            promise.fulfill(nil)
+            resolver.fulfill(nil)
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Application Token Access Methods

@@ -48,53 +48,52 @@ open class Subscription: Mappable, PullableArtikInstance, RemovableArtikInstance
     }
     
     public func confirm(aid: String? = nil, nonce: String) -> Promise<Subscription> {
-        let promise = Promise<Subscription>.pending()
+        let (promise, resolver) = Promise<Subscription>.pending()
         
         if let id = id {
-            SubscriptionsAPI.confirm(sid: id, aid: aid, nonce: nonce).then { result -> Void in
-                promise.fulfill(result)
+            SubscriptionsAPI.confirm(sid: id, aid: aid, nonce: nonce).done { result in
+                resolver.fulfill(result)
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - PullableArtikInstance
     
     public func pullFromArtik() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let id = id {
-            SubscriptionsAPI.get(sid: id).then { result -> Void in
+            SubscriptionsAPI.get(sid: id).done { result in
                 self.mapping(map: Map(mappingType: .fromJSON, JSON: result.toJSON(), toObject: true, context: nil, shouldIncludeNilValues: true))
-                promise.fulfill(())
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        
-        return promise.promise
+        return promise
     }
     
     // MARK: - RemovableArtikInstance
     
     public func removeFromArtik() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let id = id {
-            SubscriptionsAPI.remove(sid: id).then { _ -> Void in
-                promise.fulfill(())
+            SubscriptionsAPI.remove(sid: id).done { _ in
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
 }

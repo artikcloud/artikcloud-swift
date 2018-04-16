@@ -135,10 +135,10 @@ open class AuthenticationAPI {
     ///   - pkce: Enable Proof Key for Code Exchange (PKCE), required if the flow was initiated with it
     /// - Returns: A `Promise` containing the resulting `UserToken`
     open class func processAuthorizationCodeCallback(_ callback: URL, usingPKCE pkce: Bool) -> Promise<UserToken> {
-        let promise = Promise<UserToken>.pending()
+        let (promise, resolver) = Promise<UserToken>.pending()
         guard let clientID = ArtikCloudSwiftSettings.clientID else {
-            promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientID))
-            return promise.promise
+            resolver.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientID))
+            return promise
         }
         
         do {
@@ -154,37 +154,37 @@ open class AuthenticationAPI {
                 
                 if pkce {
                     guard let code_verifier = self.code_verifier else {
-                        promise.reject(ArtikError.authorizationCodeAuthentication(reason: .codeVerifierNotFound))
-                        return promise.promise
+                        resolver.reject(ArtikError.authorizationCodeAuthentication(reason: .codeVerifierNotFound))
+                        return promise
                     }
                     parameters["client_id"] = clientID
                     parameters["code_verifier"] = code_verifier
                 } else if let _ = ArtikCloudSwiftSettings.clientSecret, let headerValue = try APIHelpers.getClientIdAndClientSecretEncodedHeaderValue() {
                     headers = [APIHelpers.authorizationHeaderKey: headerValue]
                 } else {
-                    promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientSecret))
-                    return promise.promise
+                    resolver.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientSecret))
+                    return promise
                 }
                 
-                APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: URLEncoding.queryString, includeAuthHeader: false, additionalHeaders: headers).then { response -> Void in
+                APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: URLEncoding.queryString, includeAuthHeader: false, additionalHeaders: headers).done { response in
                     code_verifier = nil
                     if let token = UserToken(JSON: response) {
                         token.setExpireTimestamp()
-                        promise.fulfill(token)
+                        resolver.fulfill(token)
                     } else {
-                        promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                        resolver.reject(ArtikError.json(reason: .unexpectedFormat))
                     }
                 }.catch { error -> Void in
                     code_verifier = nil
-                    promise.reject(error)
+                    resolver.reject(error)
                 }
             } else {
-                promise.reject(ArtikError.applicationCallback(reason: .missingDeviceCode))
+                resolver.reject(ArtikError.applicationCallback(reason: .missingDeviceCode))
             }
         } catch {
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Implicit
@@ -262,14 +262,14 @@ open class AuthenticationAPI {
     ///
     /// - Returns: The `LimitedInputCode`
     open class func getLimitedInputCode() -> Promise<LimitedInputCode> {
-        let promise = Promise<LimitedInputCode>.pending()
+        let (promise, resolver) = Promise<LimitedInputCode>.pending()
         guard let clientID = ArtikCloudSwiftSettings.clientID else {
-            promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientID))
-            return promise.promise
+            resolver.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientID))
+            return promise
         }
         guard let _ = ArtikCloudSwiftSettings.clientSecret else {
-            promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientSecret))
-            return promise.promise
+            resolver.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientSecret))
+            return promise
         }
         
         let path = ArtikCloudSwiftSettings.authPath + "/device/code"
@@ -277,16 +277,16 @@ open class AuthenticationAPI {
             "client_id": clientID
         ]
         
-        APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: URLEncoding.queryString, includeAuthHeader: false).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: URLEncoding.queryString, includeAuthHeader: false).done { response in
             if let limitedInputCode = LimitedInputCode(JSON: response) {
-                promise.fulfill(limitedInputCode)
+                resolver.fulfill(limitedInputCode)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     /// Poll for a `UserToken` using a `LimitedInputCode` used in the Limited Input authentication method.
@@ -295,7 +295,7 @@ open class AuthenticationAPI {
     /// - Parameter attempts: The amount of times it will try to poll with the given `LimitedInputCode`'s interval
     /// - Returns: A `Promise<UserToken>`. Errors specific to this flow are rejected as `ArtikError.limitedInputAuthentication`
     open class func pollForUserToken(using limitedInputCode: LimitedInputCode, attempts: UInt = 10) -> Promise<UserToken> {
-        let promise = Promise<UserToken>.pending()
+        let (promise, resolver) = Promise<UserToken>.pending()
         let path = ArtikCloudSwiftSettings.authPath + "/token"
         
         if let code = limitedInputCode.deviceCode, let interval = limitedInputCode.interval {
@@ -308,56 +308,56 @@ open class AuthenticationAPI {
                 if let headerValue = try APIHelpers.getClientIdAndClientSecretEncodedHeaderValue() {
                     let headers = [APIHelpers.authorizationHeaderKey: headerValue]
                     
-                    APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: URLEncoding.queryString, includeAuthHeader: false, additionalHeaders: headers).then { response -> Void in
+                    APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: URLEncoding.queryString, includeAuthHeader: false, additionalHeaders: headers).done { response in
                         if let token = UserToken(JSON: response) {
                             token.setExpireTimestamp()
-                            promise.fulfill(token)
+                            resolver.fulfill(token)
                         } else {
-                            promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                            resolver.reject(ArtikError.json(reason: .unexpectedFormat))
                         }
                     }.catch { error -> Void in
                         if let error = error as? ArtikError, case .responseError(_, let response) = error {
                             if let title = response?["error"] as? String {
                                 switch title {
                                 case "access_denied":
-                                    promise.reject(ArtikError.limitedInputAuthentication(reason: .accessDenied))
+                                    resolver.reject(ArtikError.limitedInputAuthentication(reason: .accessDenied))
                                     return
                                 case "authorization_pending":
                                     if attempts > 0 {
                                         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(Int(interval)), execute: {
-                                            pollForUserToken(using: limitedInputCode, attempts: attempts - 1).then { token -> Void in
-                                                promise.fulfill(token)
+                                            pollForUserToken(using: limitedInputCode, attempts: attempts - 1).done { token in
+                                                resolver.fulfill(token)
                                             }.catch { error -> Void in
-                                                promise.reject(error)
+                                                resolver.reject(error)
                                             }
                                         })
                                     } else {
-                                        promise.reject(ArtikError.limitedInputAuthentication(reason: .pending))
+                                        resolver.reject(ArtikError.limitedInputAuthentication(reason: .pending))
                                     }
                                     return
                                 case "slow_down":
-                                    promise.reject(ArtikError.limitedInputAuthentication(reason: .slowDown))
+                                    resolver.reject(ArtikError.limitedInputAuthentication(reason: .slowDown))
                                     return
                                 case "expired_token":
-                                    promise.reject(ArtikError.limitedInputAuthentication(reason: .expiredCode))
+                                    resolver.reject(ArtikError.limitedInputAuthentication(reason: .expiredCode))
                                     return
                                 default:
                                     break
                                 }
                             }
                         }
-                        promise.reject(error)
+                        resolver.reject(error)
                     }
                 } else {
-                    promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientSecret))
+                    resolver.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientSecret))
                 }
             } catch {
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.limitedInputAuthentication(reason: .missingDeviceCode))
+            resolver.reject(ArtikError.limitedInputAuthentication(reason: .missingDeviceCode))
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Client Credentials
@@ -366,7 +366,7 @@ open class AuthenticationAPI {
     ///
     /// - Returns: The resulting `ApplicationToken`
     open class func getApplicationToken() -> Promise<ApplicationToken> {
-        let promise = Promise<ApplicationToken>.pending()
+        let (promise, resolver) = Promise<ApplicationToken>.pending()
         let path = ArtikCloudSwiftSettings.authPath + "/token"
         let parameters = [
             "grant_type": GrantType.clientCredentials.rawValue
@@ -374,23 +374,23 @@ open class AuthenticationAPI {
         
         do {
             if let headerValue = try APIHelpers.getClientIdAndClientSecretEncodedHeaderValue() {
-                APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: URLEncoding.queryString, includeAuthHeader: false, additionalHeaders: [APIHelpers.authorizationHeaderKey: headerValue]).then { response -> Void in
+                APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: URLEncoding.queryString, includeAuthHeader: false, additionalHeaders: [APIHelpers.authorizationHeaderKey: headerValue]).done { response in
                     if let token = ApplicationToken(JSON: response) {
                         token.setExpireTimestamp()
-                        promise.fulfill(token)
+                        resolver.fulfill(token)
                     } else {
-                        promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                        resolver.reject(ArtikError.json(reason: .unexpectedFormat))
                     }
                 }.catch { error -> Void in
-                    promise.reject(error)
+                    resolver.reject(error)
                 }
             } else {
-                promise.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientSecret))
+                resolver.reject(ArtikError.artikCloudSwiftSettings(reason: .noClientSecret))
             }
         } catch {
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Logout
@@ -427,22 +427,22 @@ open class AuthenticationAPI {
     /// - Parameter token: The `Token`
     /// - Returns: A `Promise` with the results of the validation
     open class func validateToken(_ token: Token) -> Promise<TokenValidation> {
-        let promise = Promise<TokenValidation>.pending()
+        let (promise, resolver) = Promise<TokenValidation>.pending()
         let path = ArtikCloudSwiftSettings.authPath + "/tokenInfo"
         let headers: [String:String] = [
             APIHelpers.authorizationHeaderKey: token.getHeaderValue()
         ]
         
-        APIHelpers.makeRequest(url: path, method: .get, parameters: nil, encoding: URLEncoding.default, includeAuthHeader: false, additionalHeaders: headers).then { response -> Void in
+        APIHelpers.makeRequest(url: path, method: .get, parameters: nil, encoding: URLEncoding.default, includeAuthHeader: false, additionalHeaders: headers).done { response in
             if let data = response["data"] as? [String:Any], let validation = TokenValidation(JSON: data) {
-                promise.fulfill(validation)
+                resolver.fulfill(validation)
             } else {
-                promise.reject(ArtikError.json(reason: .unexpectedFormat))
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
             }
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     
@@ -451,18 +451,18 @@ open class AuthenticationAPI {
     /// - Parameter token: The `UserToken`
     /// - Returns: A `Promise<Void>`
     open class func revokeUserToken(_ token: UserToken) -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         let path = ArtikCloudSwiftSettings.authPath + "/revokeToken"
         let headers: [String:String] = [
             APIHelpers.authorizationHeaderKey: token.getHeaderValue()
         ]
         
-        APIHelpers.makeRequest(url: path, method: .put, parameters: nil, encoding: URLEncoding.default, includeAuthHeader: false, additionalHeaders: headers).then { _ -> Void in
-            promise.fulfill(())
+        APIHelpers.makeRequest(url: path, method: .put, parameters: nil, encoding: URLEncoding.default, includeAuthHeader: false, additionalHeaders: headers).done { _ in
+            resolver.fulfill(())
         }.catch { error -> Void in
-            promise.reject(error)
+            resolver.reject(error)
         }
-        return promise.promise
+        return promise
     }
     
     // MARK: - Private Helpers

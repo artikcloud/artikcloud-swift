@@ -21,7 +21,7 @@ open class MessagesPresence: Mappable, PullableArtikInstance {
     class PresenceTimestampsTransform: TransformType {
         func transformFromJSON(_ value: Any?) -> [ArtikTimestamp]? {
             if let value = value as? [[String:ArtikTimestamp]] {
-                return value.flatMap {
+                return value.compactMap {
                     $0["startDate"]
                 }
             }
@@ -54,26 +54,26 @@ open class MessagesPresence: Mappable, PullableArtikInstance {
     // MARK: - PullableArtikInstance
     
     public func pullFromArtik() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let startDate = startDate {
             if let endDate = endDate {
                 if let interval = interval {
-                    MessagesAPI.getPresence(sdid: sdid, fieldPresence: fieldPresence, startDate: startDate, endDate: endDate, interval: interval).then { result -> Void in
+                    MessagesAPI.getPresence(sdid: sdid, fieldPresence: fieldPresence, startDate: startDate, endDate: endDate, interval: interval).done { result in
                         self.mapping(map: Map(mappingType: .fromJSON, JSON: result.toJSON(), toObject: true, context: nil, shouldIncludeNilValues: true))
-                        promise.fulfill(())
+                        resolver.fulfill(())
                     }.catch { error -> Void in
-                        promise.reject(error)
+                        resolver.reject(error)
                     }
                 } else {
-                    promise.reject(ArtikError.missingValue(reason: .noInterval))
+                    resolver.reject(ArtikError.missingValue(reason: .noInterval))
                 }
             } else {
-                promise.reject(ArtikError.missingValue(reason: .noEndDate))
+                resolver.reject(ArtikError.missingValue(reason: .noEndDate))
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noStartDate))
+            resolver.reject(ArtikError.missingValue(reason: .noStartDate))
         }
-        return promise.promise
+        return promise
     }
 }

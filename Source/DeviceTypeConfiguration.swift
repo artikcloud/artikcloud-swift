@@ -36,33 +36,33 @@ open class DeviceTypeConfiguration: Mappable, AccessibleArtikInstance {
     // MARK: - AccessibleArtikInstance
     
     public func pullFromArtik() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let dtid = dtid {
-            DeviceManagementAPI.getDeviceTypeConfiguration(dtid: dtid).then { result -> Void in
+            DeviceManagementAPI.getDeviceTypeConfiguration(dtid: dtid).done { result in
                 self.mapping(map: Map(mappingType: .fromJSON, JSON: result.toJSON(), toObject: true, context: nil, shouldIncludeNilValues: true))
-                promise.fulfill(())
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
     
     public func updateOnArtik() -> Promise<Void> {
-        let promise = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         
         if let dtid = dtid {
-            DeviceManagementAPI.setDeviceTypeConfiguration(dtid: dtid, devicePropertiesEnabled: devicePropertiesEnabled, pmin: pmin, pmax: pmax, taskExpiresAfter: taskExpiresAfter).then { _ -> Void in
-                promise.fulfill(())
+            DeviceManagementAPI.setDeviceTypeConfiguration(dtid: dtid, devicePropertiesEnabled: devicePropertiesEnabled, pmin: pmin, pmax: pmax, taskExpiresAfter: taskExpiresAfter).done { _ in
+                resolver.fulfill(())
             }.catch { error -> Void in
-                promise.reject(error)
+                resolver.reject(error)
             }
         } else {
-            promise.reject(ArtikError.missingValue(reason: .noID))
+            resolver.reject(ArtikError.missingValue(reason: .noID))
         }
-        return promise.promise
+        return promise
     }
 }
