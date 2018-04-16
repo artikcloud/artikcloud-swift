@@ -408,24 +408,50 @@ open class LiveWebsocket: ArtikWebsocket {
         return "/live"
     }
     override public var url: URL {
-        var string = ArtikCloudSwiftSettings.websocketPath + endpoint + "?includeSharedDevices=\(includeSharedDevices)"
-        if let uid = uid {
-            string += "&uid=\(uid)"
+        var string = ArtikCloudSwiftSettings.websocketPath + endpoint
+        if let sdids = sdids {
+            string += "?sdids=\(sdids.joined(separator: ","))"
+        } else if let sdtids = sdtids {
+            string += "?sdtids=\(sdtids.joined(separator: ","))"
+        } else {
+            string += "?includeSharedDevices=\(includeSharedDevices)"
+            if let uid = uid {
+                string += "&uid=\(uid)"
+            }
         }
         return URL(string: string)!
     }
     
     fileprivate var ignoreDids = Set<String>()
     public fileprivate(set) var uid: String?
-    public fileprivate(set) var includeSharedDevices: Bool
+    public fileprivate(set) var includeSharedDevices: Bool = false
+    public fileprivate(set) var sdids: [String]?
+    public fileprivate(set) var sdtids: [String]?
     
-    /// Initialize a Live (Firehose) Websocket
+    /// Initialize a Live (Firehose) Websocket for a specific user
     ///
-    /// - Parameter uid: (Optional) User ID of the target stream.
-    /// - Parameter includeSharedDevices: (Optional) Include shared devices (default: `false`). Only applies when connecting with `UserToken` or providing a uid.
+    /// - Parameter uid: (Optional) User ID of the target stream, inferred from token if ommited.
+    /// - Parameter includeSharedDevices: (Optional) Include shared devices (default: `false`).
     public init(uid: String? = nil, includeSharedDevices: Bool = false) {
         self.uid = uid
         self.includeSharedDevices = includeSharedDevices
+        super.init()
+    }
+    
+    /// Initialize a Live (Firehose) Websocket for specific devices
+    ///
+    /// - Parameter sdids: List of source device IDs.
+    public init(sdids: [String]) {
+        self.sdids = sdids
+        super.init()
+    }
+    
+    
+    /// Initialize a Live (Firehose) Websocket for specific device types
+    ///
+    /// - Parameter sdtids: List of source device type IDs.
+    public init(sdtids: [String]) {
+        self.sdtids = sdtids
         super.init()
     }
     
