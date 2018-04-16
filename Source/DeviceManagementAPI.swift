@@ -210,8 +210,8 @@ open class DeviceManagementAPI {
     ///   - property: Property to operate on, using dot notation.
     ///   - parameters: (Optional) JSON object containing additional parameters for the task.
     /// - Returns: A `Promise<DeviceManagementTask>`.
-    open class func createTask(dtid: String, filter: [String]? = nil, type: DeviceManagementTask.TaskType, property: String, parameters: [String:Any]? = nil) -> Promise<DeviceManagementTask> {
-        return createTask(dtid: dtid, dids: nil, filter: filter, type: type, property: property, parameters: parameters)
+    open class func createTask(dtid: String, filter: [String]? = nil, type: DeviceManagementTask.TaskType, property: String, parameters: [String:Any]? = nil, needsAcceptance: Bool? = nil) -> Promise<DeviceManagementTask> {
+        return createTask(dtid: dtid, dids: nil, filter: filter, type: type, property: property, parameters: parameters, needsAcceptance: needsAcceptance)
     }
     
     /// Creates a new task for one or more devices of a single device type.
@@ -223,8 +223,8 @@ open class DeviceManagementAPI {
     ///   - property: Property to operate on, using dot notation.
     ///   - parameters: (Optional) JSON object containing additional parameters for the task.
     /// - Returns: A `Promise<DeviceManagementTask>`.
-    open class func createTask(dtid: String, dids: [String], type: DeviceManagementTask.TaskType, property: String, parameters: [String:Any]? = nil) -> Promise<DeviceManagementTask> {
-        return createTask(dtid: dtid, dids: dids, filter: nil, type: type, property: property, parameters: parameters)
+    open class func createTask(dtid: String, dids: [String], type: DeviceManagementTask.TaskType, property: String, parameters: [String:Any]? = nil, needsAcceptance: Bool? = nil) -> Promise<DeviceManagementTask> {
+        return createTask(dtid: dtid, dids: dids, filter: nil, type: type, property: property, parameters: parameters, needsAcceptance: needsAcceptance)
     }
     
     /// Returns a Task.
@@ -543,7 +543,7 @@ open class DeviceManagementAPI {
         return promise
     }
     
-    fileprivate class func createTask(dtid: String, dids: [String]?, filter: [String]?, type: DeviceManagementTask.TaskType, property: String, parameters params: [String:Any]?) -> Promise<DeviceManagementTask> {
+    fileprivate class func createTask(dtid: String, dids: [String]?, filter: [String]?, type: DeviceManagementTask.TaskType, property: String, parameters params: [String:Any]?, needsAcceptance: Bool?) -> Promise<DeviceManagementTask> {
         let (promise, resolver) = Promise<DeviceManagementTask>.pending()
         let path = ArtikCloudSwiftSettings.basePath + "/devicemgmt/tasks"
         let parameters = APIHelpers.removeNilParameters([
@@ -551,7 +551,8 @@ open class DeviceManagementAPI {
             "dids": dids,
             "filter": filter?.joined(separator: ","),
             "taskType": type.rawValue,
-            "taskParameters": params
+            "taskParameters": params,
+            "needsAcceptance": needsAcceptance
         ])
         
         APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: JSONEncoding.default).done { response in
