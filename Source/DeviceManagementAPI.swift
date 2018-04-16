@@ -361,6 +361,26 @@ open class DeviceManagementAPI {
         return getTasksRecursive(Page<DeviceManagementTask>(), did: did, status: status)
     }
     
+    /// Returns OTA Update tasks that require user acceptance and are pending a response.
+    ///
+    /// - Parameter did: The Device's ID.
+    /// - Returns: A `Promise<[String]>`.
+    open class func getDeviceTaskPendingAcceptance(did: String) -> Promise<[String]> {
+        let (promise, resolver) = Promise<[String]>.pending()
+        let path = ArtikCloudSwiftSettings.basePath + "/devicemgmt/devices/\(did)/pendingtasks"
+        
+        APIHelpers.makeRequest(url: path, method: .get, parameters: nil, encoding: URLEncoding.default).done { response in
+            if let data = response["data"] as? [String] {
+                resolver.fulfill(data)
+            } else {
+                resolver.reject(ArtikError.json(reason: .unexpectedFormat))
+            }
+        }.catch { error in
+            resolver.reject(error)
+        }
+        return promise
+    }
+    
     /// Returns individual device task statuses using pagination.
     ///
     /// - Parameters:
