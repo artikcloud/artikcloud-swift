@@ -381,6 +381,26 @@ open class DeviceManagementAPI {
         return promise
     }
     
+    /// Informs ARTIK cloud services that a user has accepted/rejected an OTA Update task.
+    ///
+    /// - Parameters:
+    ///   - id: The Task's ID.
+    ///   - did: The Device's ID.
+    ///   - acceptance: Acceptance status of an OTA Update task to be set.
+    /// - Returns: A `Promise<Void>`.
+    open class func setDeviceTaskAcceptance(id: String, did: String, acceptance: Bool) -> Promise<Void> {
+        let (promise, resolver) = Promise<Void>.pending()
+        let path = ArtikCloudSwiftSettings.basePath + "/devicemgmt/tasks/\(id)/devices/\(did)/acceptance"
+        let parameters = ["acceptanceStatus": acceptance ? "ACCEPTED" : "REJECTED"]
+        
+        APIHelpers.makeRequest(url: path, method: .post, parameters: parameters, encoding: JSONEncoding.default).done { response in
+            resolver.fulfill(())
+        }.catch { error in
+            resolver.reject(error)
+        }
+        return promise
+    }
+    
     /// Returns individual device task statuses using pagination.
     ///
     /// - Parameters:
