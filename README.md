@@ -105,7 +105,7 @@ func application(_ application: UIApplication, open url: URL, sourceApplication:
         case .cloudAuthorization:
             // User was authorizing a Cloud Connector
         case .monetization:
-        	// User has attempted to upgrade a device
+            // User has attempted to upgrade a device
             do {
                 if try MonetizationAPI.processUpgradeCallback(url) == .accepted {
                 	// Device was upgraded!
