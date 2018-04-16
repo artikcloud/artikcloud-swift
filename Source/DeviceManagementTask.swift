@@ -76,6 +76,7 @@ open class DeviceManagementTask: Mappable {
     public var status: TaskStatus?
     public var createdOn: ArtikTimestamp?
     public var modifiedOn: ArtikTimestamp?
+    public var needsAcceptance: Bool?
     public var counts: TaskStatusCounts?
     
     public required init?(map: Map) {}
@@ -93,6 +94,7 @@ open class DeviceManagementTask: Mappable {
         status <- map["status"]
         createdOn <- map["createdOn"]
         modifiedOn <- map["modifiedOn"]
+        needsAcceptance <- map["needsAcceptance"]
         counts <- map["statusCounts"]
     }
 }

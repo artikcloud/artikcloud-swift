@@ -48,12 +48,21 @@ open class DeviceManagementDeviceTaskState: DeviceManagementBaseTaskState {
         case cancelled = "CANCELLED"
     }
     
+    public enum AcceptanceStatus: String {
+        case notRequired = "NOT_REQUIRED"
+        case waiting = "WAITING"
+        case rejected = "REJECTED"
+        case accepted = "ACCEPTED"
+    }
+    
     public var did: String?
     public var status: TaskStatus?
+    public var acceptance: AcceptanceStatus?
     
     public override func mapping(map: Map) {
         super.mapping(map: map)
         did <- map["did"]
         status <- map["status"]
+        acceptance <- map["acceptanceStatus"]
     }
 }
