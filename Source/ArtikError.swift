@@ -24,10 +24,10 @@ public enum ArtikError: Error {
     case rateLimit(reason: RateLimitReason)
     
     public enum RateLimitReason {
-        case rateLimitMinuteReached
-        case rateLimitDailyReached
-        case organizationQuotaReached
-        case deviceQuotaReached(did: String?, quota: UInt64)
+        case rateLimitMinuteReached(resetIn: Int64)
+        case rateLimitDailyReached(resetIn: Int64)
+        case organizationQuotaReached(ends: ArtikTimestamp)
+        case deviceQuotaReached(did: String?, quota: UInt64, ends: ArtikTimestamp)
     }
     
     public var isRateLimitError: Bool {
@@ -294,20 +294,18 @@ extension ArtikError: LocalizedError {
 extension ArtikError.RateLimitReason {
     var localizedDescription: String {
         switch self {
-        case .rateLimitMinuteReached:
-            return "Rate Limit Minute Reached."
-        case .rateLimitDailyReached:
-            return "Rate Limit Daily Reached."
-        case .organizationQuotaReached:
-            return "Organization Quota Reached."
-        case .deviceQuotaReached(let did, let quota):
+        case .rateLimitMinuteReached(let reset):
+            return "Rate Limit Minute Reached, resets in \(reset) second(s)."
+        case .rateLimitDailyReached(let reset):
+            return "Rate Limit Daily Reached, resets in \(reset) second(s)."
+        case .organizationQuotaReached(let ends):
+            return "Organization Quota Reached, ends \(Date(timeIntervalSince1970: Double(ends) / 1000))."
+        case .deviceQuotaReached(let did, let quota, let ends):
             var description = "Device Quota of \"\(quota)\" reached"
             if let did = did {
-                description += " for did: \(did)"
-            } else {
-                description += "."
+                description += " for did: \"\(did)\""
             }
-            return description
+            return description + ", ends \(Date(timeIntervalSince1970: Double(ends) / 1000))."
         }
     }
 }

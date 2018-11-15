@@ -11,12 +11,20 @@ import PromiseKit
 
 // MARK: - SDK Delegate
 
-@objc public protocol ArtikCloudSwiftDelegate: class {
-    @objc optional func maxPayload(_ size: UInt64)
-    @objc optional func rateLimit(_ rate: APIRateLimit)
-    @objc optional func organizationQuota(_ quota: APIOrganizationQuota)
-    @objc optional func deviceQuota(_ quota: APIDeviceQuota)
-    @objc optional func tokenRefreshed(_ token: UserToken)
+public protocol ArtikCloudSwiftDelegate: class {
+    func maxPayload(_ size: UInt64)
+    func rateLimit(_ rate: APIRateLimit)
+    func organizationQuota(_ quota: APIOrganizationQuota)
+    func deviceQuota(_ quota: APIDeviceQuota)
+    func tokenRefreshed(_ token: UserToken)
+}
+
+public extension ArtikCloudSwiftDelegate {
+    func maxPayload(_ size: UInt64) {}
+    func rateLimit(_ rate: ArtikCloudSwift.APIRateLimit) {}
+    func organizationQuota(_ quota: ArtikCloudSwift.APIOrganizationQuota) {}
+    func deviceQuota(_ quota: ArtikCloudSwift.APIDeviceQuota) {}
+    func tokenRefreshed(_ token: ArtikCloudSwift.UserToken) {}
 }
 
 // MARK: - ARTIK Instance Protocols

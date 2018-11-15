@@ -1,7 +1,7 @@
 # ArtikCloudSwift
-![Supported Version](https://img.shields.io/badge/Swift-4.0-green.svg)
+![Supported Version](https://img.shields.io/badge/Swift-4.2-green.svg)
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
-![CocoaPods](https://img.shields.io/badge/CocoaPods-1.1-green.svg)
+![CocoaPods](https://img.shields.io/badge/CocoaPods-1.5.3-green.svg)
 ![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20iOS%20%7C%20watchOS%20%7C%20tvOS-lightgrey.svg)
 
 This SDK helps you connect your iOS, tvOS, watchOS, and macOS applications to ARTIK cloud services. It exposes a number of methods to easily execute REST and WebSockets calls to ARTIK cloud services.
@@ -29,11 +29,11 @@ DevicesAPI.get(id: "example-id").done { device in
 
 ## Prerequisites
 
-- [Alamofire](https://github.com/Alamofire/Alamofire) >= 4.7.1
-- [PromiseKit](https://github.com/mxcl/PromiseKit) >= 6.2.3
-- [ObjectMapper](https://github.com/Hearst-DD/ObjectMapper) >= 3.1.0
-- [CryptoSwift](https://github.com/krzyzanowskim/CryptoSwift) >= 0.9.0
-- [Starscream](https://github.com/daltoniam/Starscream) >= 3.0.5
+- [Alamofire](https://github.com/Alamofire/Alamofire) >= 4.7.3
+- [PromiseKit](https://github.com/mxcl/PromiseKit) >= 6.5.1
+- [ObjectMapper](https://github.com/Hearst-DD/ObjectMapper) >= 3.3.0
+- [CryptoSwift](https://github.com/krzyzanowskim/CryptoSwift) >= 0.12.0
+- [Starscream](https://github.com/daltoniam/Starscream) >= 3.0.6
 
 ## Installation
 
@@ -129,6 +129,10 @@ func application(_ application: UIApplication, open url: URL, sourceApplication:
     return true
 }
 ```
+
+### Rate Limit Recovery
+
+[Rate limiting](https://developer.artik.cloud/documentation/data-management/rate-limiting.html) is used by most endpoints on the platform, regardless of the type of authentication used, to prevent abuse of our services. When you reach a limit, you will have to wait for the specific time window to expire before you can try again. This framework will attempt to do this for you by waiting the required amount of time and re-attempting the request automatically. You can adjust the maximum amount of attempts and the maximum acceptable wait time for a window to expire using `ArtikCloudSwiftSettings`'s `rateLimitAttemptsCount` and `rateLimitAttemptsThreshold`. You can disable this feature by setting the maximum number of attempts to `0`. In the case where the framework fails to recover or this feature is disabled, an `ArtikError.rateLimit` will be thrown.
 
 ### ArtikCloudSwiftDelegate
 

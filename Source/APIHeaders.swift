@@ -19,10 +19,10 @@ public class APIRequestCountValues {
 }
 
 public class APIResetValues {
-    public let slidingMinute: ArtikTimestamp
-    public let daily: ArtikTimestamp
+    public let slidingMinute: Int64 // Seconds
+    public let daily: Int64 // Seconds
     
-    init(slidingMinute: ArtikTimestamp, daily: ArtikTimestamp) {
+    init(slidingMinute: Int64, daily: Int64) {
         self.slidingMinute = slidingMinute
         self.daily = daily
     }

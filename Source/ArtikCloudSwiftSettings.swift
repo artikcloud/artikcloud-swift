@@ -24,6 +24,8 @@ open class ArtikCloudSwiftSettings {
     public static var attemptToRefreshToken = true
     public static var preferredTokenForRequests: Token.Type?
     public static var preferredTokenForWebsockets: Token.Type?
+    public static var rateLimitAttemptsThreshold: Int64 = 60
+    public static var rateLimitAttemptsCount: Int = 3
     
     // MARK: - ARTIK Application Settings
     
@@ -75,7 +77,7 @@ open class ArtikCloudSwiftSettings {
                     if self.refreshPromise == nil {
                         _ = refreshPromise.ensure {
                             setUserToken(token)
-                            delegate?.tokenRefreshed?(token)
+                            delegate?.tokenRefreshed(token)
                             self.refreshPromise = nil
                         }
                     }
